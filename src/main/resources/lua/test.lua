@@ -1,4 +1,4 @@
-local bot = Bot(2912775665, '18218452607ltt')
+local bot = Bot(0, '')
 bot:login()
 print("登录成功")
 bot:subscribeFriendMsg(function(bot, msg, sender)
