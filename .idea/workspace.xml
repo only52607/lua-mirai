@@ -1,38 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="luaMirai.main:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="5bbf6276-0898-4cb0-90b7-6b09c50443c9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules/luaMirai.main.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaBot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaGroupMember.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaMsg.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaQQ.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/lib/BotLib.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiBot.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiGlobals.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiGroup.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiGroupMember.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiQQ.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/lib/MiraiBotLib.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/main.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/lua/test.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/kotlin/test.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/luaMirai_main_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/apis.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resource/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/lua.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/luac.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/luajc.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/script/LuaScriptEngine.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/script/LuaScriptEngineFactory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/script/LuajContext.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/test.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiBot.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiBot.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/lua/test.lua" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/lua/test.lua" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,9 +54,9 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="project.structure.side.proportion" value="0.14749263" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
@@ -84,6 +67,7 @@
       <recent name="D:\WorkSpaces\Idea\luaMirai\src\main\java" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\WorkSpaces\Idea\lua-mirai\src\test\resources" />
       <recent name="D:\WorkSpaces\Idea\lua-mirai\src\main\kotlin\com\ooooonly\luaMirai\lua" />
     </key>
   </component>
@@ -139,7 +123,21 @@
       <option name="project" value="LOCAL" />
       <updated>1586255724538</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Add the sending and receiving of messages from friends and groups.">
+      <created>1586359018307</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1586359018307</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add the sending and receiving of messages from friends and groups.">
+      <created>1586359525195</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1586359525195</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -147,17 +145,27 @@
       <path value="$PROJECT_DIR$/lua-mirai" />
     </ignored-roots>
     <MESSAGE value="rename project" />
-    <option name="LAST_COMMIT_MESSAGE" value="rename project" />
+    <MESSAGE value="Add the sending and receiving of messages from friends and groups." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add the sending and receiving of messages from friends and groups." />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="406" y="116" key="#Auto_Import" timestamp="1586268953209">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
     <state x="406" y="116" key="#Auto_Import/0.40.1536.824@0.40.1536.824" timestamp="1586268953209" />
+    <state x="434" y="176" key="#Project_Structure" timestamp="1586406741723">
+      <screen x="0" y="40" width="1536" height="824" />
+    </state>
+    <state x="434" y="176" key="#Project_Structure/0.40.1536.824@0.40.1536.824" timestamp="1586406741723" />
     <state x="625" y="177" key="#com.intellij.ide.util.MemberChooser" timestamp="1586358084886">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
     <state x="625" y="177" key="#com.intellij.ide.util.MemberChooser/0.40.1536.824@0.40.1536.824" timestamp="1586358084886" />
+    <state x="748" y="285" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1586409438071">
+      <screen x="0" y="40" width="1536" height="824" />
+    </state>
+    <state x="748" y="285" key="#com.intellij.ide.util.TreeClassChooserDialog/0.40.1536.824@0.40.1536.824" timestamp="1586409438071" />
     <state x="766" y="345" width="439" height="294" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1586350787643">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
@@ -166,37 +174,41 @@
       <screen x="0" y="40" width="1536" height="824" />
     </state>
     <state x="692" y="40" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.40.1536.824@0.40.1536.824" timestamp="1586337853214" />
-    <state x="409" y="45" key="CommitChangelistDialog2" timestamp="1586358966487">
+    <state x="409" y="45" key="CommitChangelistDialog2" timestamp="1586359523956">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state x="409" y="45" key="CommitChangelistDialog2/0.40.1536.824@0.40.1536.824" timestamp="1586358966487" />
-    <state width="1189" height="182" key="GridCell.Tab.0.bottom" timestamp="1586358966643">
+    <state x="409" y="45" key="CommitChangelistDialog2/0.40.1536.824@0.40.1536.824" timestamp="1586359523956" />
+    <state x="715" y="212" key="FileChooserDialogImpl" timestamp="1586410184852">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state width="1189" height="182" key="GridCell.Tab.0.bottom/0.40.1536.824@0.40.1536.824" timestamp="1586358966643" />
-    <state width="1189" height="182" key="GridCell.Tab.0.center" timestamp="1586358966643">
+    <state x="715" y="212" key="FileChooserDialogImpl/0.40.1536.824@0.40.1536.824" timestamp="1586410184852" />
+    <state width="1189" height="182" key="GridCell.Tab.0.bottom" timestamp="1586412178693">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state width="1189" height="182" key="GridCell.Tab.0.center/0.40.1536.824@0.40.1536.824" timestamp="1586358966643" />
-    <state width="1189" height="182" key="GridCell.Tab.0.left" timestamp="1586358966642">
+    <state width="1189" height="182" key="GridCell.Tab.0.bottom/0.40.1536.824@0.40.1536.824" timestamp="1586412178693" />
+    <state width="1189" height="182" key="GridCell.Tab.0.center" timestamp="1586412178692">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state width="1189" height="182" key="GridCell.Tab.0.left/0.40.1536.824@0.40.1536.824" timestamp="1586358966642" />
-    <state width="1189" height="182" key="GridCell.Tab.0.right" timestamp="1586358966643">
+    <state width="1189" height="182" key="GridCell.Tab.0.center/0.40.1536.824@0.40.1536.824" timestamp="1586412178692" />
+    <state width="1189" height="182" key="GridCell.Tab.0.left" timestamp="1586412178692">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state width="1189" height="182" key="GridCell.Tab.0.right/0.40.1536.824@0.40.1536.824" timestamp="1586358966643" />
-    <state x="331" y="40" key="SettingsEditor" timestamp="1586255644554">
+    <state width="1189" height="182" key="GridCell.Tab.0.left/0.40.1536.824@0.40.1536.824" timestamp="1586412178692" />
+    <state width="1189" height="182" key="GridCell.Tab.0.right" timestamp="1586412178692">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state x="331" y="40" key="SettingsEditor/0.40.1536.824@0.40.1536.824" timestamp="1586255644554" />
+    <state width="1189" height="182" key="GridCell.Tab.0.right/0.40.1536.824@0.40.1536.824" timestamp="1586412178692" />
+    <state x="415" y="40" key="SettingsEditor" timestamp="1586410229789">
+      <screen x="0" y="40" width="1536" height="824" />
+    </state>
+    <state x="415" y="40" key="SettingsEditor/0.40.1536.824@0.40.1536.824" timestamp="1586410229789" />
     <state x="449" y="276" key="com.intellij.ide.util.TipDialog" timestamp="1586331635172">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
     <state x="449" y="276" key="com.intellij.ide.util.TipDialog/0.40.1536.824@0.40.1536.824" timestamp="1586331635172" />
-    <state x="410" y="185" width="672" height="678" key="search.everywhere.popup" timestamp="1586358230093">
+    <state x="410" y="186" width="672" height="678" key="search.everywhere.popup" timestamp="1586396786482">
       <screen x="0" y="40" width="1536" height="824" />
     </state>
-    <state x="410" y="185" width="672" height="678" key="search.everywhere.popup/0.40.1536.824@0.40.1536.824" timestamp="1586358230093" />
+    <state x="410" y="186" width="672" height="678" key="search.everywhere.popup/0.40.1536.824@0.40.1536.824" timestamp="1586396786482" />
   </component>
 </project>

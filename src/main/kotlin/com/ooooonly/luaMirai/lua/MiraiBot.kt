@@ -57,6 +57,7 @@ class MiraiLoginFunction : LuaBot.LoginFunction() {
                 luaBot.bot.alsoLogin()
             }
         }
+        if (luaBot != null) return luaBot
         return LuaValue.NIL
     }
 }
