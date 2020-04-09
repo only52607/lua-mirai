@@ -38,10 +38,10 @@ bot:join() --挂起机器人
 3. 开始使用
     - 使用控制台界面
         1. 进入jar包所在目录
-        2. 创建main.lua文件，填入以下内容并将账号密码更改为机器人的账号和密码
+        2. 创建main.lua文件，填入以下内容并将account和password更改为机器人的账号和密码
             ```LUA
             --来自示例复读机源码
-            local bot = Bot(qq账号, 'qq密码'):login() --创建机器人并登录
+            local bot = Bot(account, 'password'):login() --创建机器人并登录
             bot:subscribeFriendMsg(function(bot, msg, sender) --监听好友消息
                sender:sendMsg(msg) --回复相同消息
             end) 
