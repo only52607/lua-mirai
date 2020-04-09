@@ -2,6 +2,7 @@
  这是一个基于mirai-core接口实现的qq机器人框架，通过它，你将可以使用lua脚本语言开发qq机器人程序。
 
 ##特性
+
 * 配置简易，快速上手
     - 相比于同类型mirai框架，lua-mirai基于mirai-core开发，使用时省略了繁琐的依赖配置过程，你仅需java执行环境和lua-mirai核心jar包，便可以启动你的lua-mirai机器人
 * 与java良好的交互性
@@ -56,14 +57,21 @@ bot:join() --挂起机器人
 
 
 ##开发lua-mirai脚本
+
 ###lua语言开发基础
+
 请参阅 [`RUNOOB:Lua教程`](https://github.com/mamoe/mirai)
+
 ###可用API列表
+
 请参阅 [`lua-mirai api列表`](/docs/apis.md)
 
 ###在lua中调用java类
+
 请参阅 [`CSDN:在Lua中操作Java对象`](https://blog.csdn.net/lgj123xj/article/details/81677036)
-###在lua中动态加载lua代码或外部lua脚本    
+
+###在lua中动态加载lua代码或外部lua脚本   
+ 
 * load   
 > 用于加载一个数据块.从字符串或者函数中加载一个代码块为方法并返回.   
 > 示例:   
@@ -81,4 +89,5 @@ bot:join() --挂起机器人
  - [`luaj`](https://github.com/luaj/luaj): 一个 Java 的轻量级、高性能 Lua 解释器，基于 Lua 5.2.x 版本.
 
 ### 许可证
+
 基于原项目mirai使用[`GNU AGPLv3`](https://choosealicense.com/licenses/agpl-3.0/)作为开发许可证，该项目同样使用了[`GNU AGPLv3`](https://choosealicense.com/licenses/agpl-3.0/) 作为开源许可证, 因此,在使用时务必遵守相应的规则.  
