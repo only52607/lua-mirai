@@ -1,7 +1,7 @@
 # lua-mirai
  这是一个基于mirai-core接口实现的qq机器人框架，通过它，你将可以使用lua脚本语言开发qq机器人程序。
 
-##特性
+## 特性
 
 * 配置简易，快速上手
     - 相比于同类型mirai框架，lua-mirai基于mirai-core开发，使用时省略了繁琐的依赖配置过程，你仅需java执行环境和lua-mirai核心jar包，便可以启动你的lua-mirai机器人
@@ -14,7 +14,7 @@
 * 示例：一个简单的“复读机”脚本
 
  ``` LUA
-local bot = Bot(qq账号, 'qq密码'):login() --创建机器人并登录
+local bot = Bot(qq账号, "qq密码"):login() --创建机器人并登录
 bot:subscribeFriendMsg(function(bot, msg, sender) --监听好友消息
     sender:sendMsg(msg) --回复相同消息
 end) 
@@ -22,7 +22,7 @@ bot:join() --挂起机器人
 ```
 
 
-##运行你的第一个lua-mirai脚本
+## 运行你的第一个lua-mirai脚本
 
 1. 安装java运行环境(jdk/jre)
     - 请参阅 [`RUNOOB:Java 开发环境配置`](https://www.runoob.com/java/java-environment-setup.html)
@@ -38,10 +38,10 @@ bot:join() --挂起机器人
 3. 开始使用
     - 使用控制台界面
         1. 进入jar包所在目录
-        2. 创建main.lua文件，填入以下内容并将account和password更改为机器人的账号和密码
+        2. 创建main.lua文件，填入以下内容并将账号和密码更改为机器人的账号和密码
             ```LUA
             --来自示例复读机源码
-            local bot = Bot(account, 'password'):login() --创建机器人并登录
+            local bot = Bot(qq账号, "QQ密码"):login() --创建机器人并登录
             bot:subscribeFriendMsg(function(bot, msg, sender) --监听好友消息
                sender:sendMsg(msg) --回复相同消息
             end) 
@@ -56,21 +56,21 @@ bot:join() --挂起机器人
         - 待完成，敬请期待。
 
 
-##开发lua-mirai脚本
+## 开发lua-mirai脚本
 
-###lua语言开发基础
+### lua语言开发基础
 
 请参阅 [`RUNOOB:Lua教程`](https://github.com/mamoe/mirai)
 
-###可用API列表
+### 可用API列表
 
 请参阅 [`lua-mirai api列表`](/docs/apis.md)
 
-###在lua中调用java类
+### 在lua中调用java类
 
 请参阅 [`CSDN:在Lua中操作Java对象`](https://blog.csdn.net/lgj123xj/article/details/81677036)
 
-###在lua中动态加载lua代码或外部lua脚本   
+### 在lua中动态加载lua代码或外部lua脚本   
  
 * load   
 > 用于加载一个数据块.从字符串或者函数中加载一个代码块为方法并返回.   
