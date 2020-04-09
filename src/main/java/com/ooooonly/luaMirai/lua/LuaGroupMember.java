@@ -48,7 +48,7 @@ abstract public class LuaGroupMember extends LuaTable {
             if (varargs.arg1() instanceof LuaGroupMember) {
                 return op(varargs);
             }
-            return null;
+            return LuaValue.NIL;
         }
 
         public abstract Varargs op(Varargs varargs);

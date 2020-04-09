@@ -22,35 +22,35 @@ class MiraiBot : LuaBot {
     }
 
     override fun getLoginFunction(): LuaBot.LoginFunction {
-        return MiraiLoginFunction()
+        return MiraiLoginFunction
     }
 
     override fun getCloseFunction(): CloseFunction {
-        return MiraiCloseFunction()
+        return MiraiCloseFunction
     }
 
     override fun getSubscribeGroupMsgFunction(): SubscribeMsgFunction {
-        return MiraiSubscribeGroupMsgFunction()
+        return MiraiSubscribeGroupMsgFunction
     }
 
     override fun getJoinFunction(): JoinFunction {
-        return MiraiJoinFunction()
+        return MiraiJoinFunction
     }
 
     override fun getGetGroupFunction(): GetGroupFunction {
-        return MiraiGetGroupFunction()
+        return MiraiGetGroupFunction
     }
 
     override fun getGetFriendFunction(): LuaBot.GetFriendFunction {
-        return MiraiGetFriendFunction()
+        return MiraiGetFriendFunction
     }
 
     override fun getSubscribeFriendMsgFunction(): SubscribeMsgFunction {
-        return MiraiSubscribeFriendMsgFunction()
+        return MiraiSubscribeFriendMsgFunction
     }
 }
 
-class MiraiLoginFunction : LuaBot.LoginFunction() {
+object MiraiLoginFunction : LuaBot.LoginFunction() {
     override fun login(luaBot: LuaBot?): LuaValue {
         if (luaBot is MiraiBot) {
             runBlocking {
@@ -62,19 +62,19 @@ class MiraiLoginFunction : LuaBot.LoginFunction() {
     }
 }
 
-class MiraiGetFriendFunction : LuaBot.GetFriendFunction() {
+object MiraiGetFriendFunction : LuaBot.GetFriendFunction() {
     override fun getFriend(luaBot: LuaBot, id: Long): LuaQQ {
         return MiraiQQ(luaBot, id)
     }
 }
 
-class MiraiGetGroupFunction : LuaBot.GetGroupFunction() {
+object MiraiGetGroupFunction : LuaBot.GetGroupFunction() {
     override fun getGroup(luaBot: LuaBot, id: Long): LuaGroup {
         return MiraiGroup(luaBot, id)
     }
 }
 
-class MiraiJoinFunction : LuaBot.JoinFunction() {
+object MiraiJoinFunction : LuaBot.JoinFunction() {
     override fun join(luaBot: LuaBot?): LuaValue {
         if (luaBot is MiraiBot) {
             runBlocking {
@@ -85,7 +85,7 @@ class MiraiJoinFunction : LuaBot.JoinFunction() {
     }
 }
 
-class MiraiCloseFunction : LuaBot.CloseFunction() {
+object MiraiCloseFunction : LuaBot.CloseFunction() {
     override fun close(luaBot: LuaBot?): LuaValue {
         if (luaBot is MiraiBot) {
             runBlocking {
@@ -96,7 +96,7 @@ class MiraiCloseFunction : LuaBot.CloseFunction() {
     }
 }
 
-class MiraiSubscribeFriendMsgFunction : LuaBot.SubscribeMsgFunction() {
+object MiraiSubscribeFriendMsgFunction : LuaBot.SubscribeMsgFunction() {
     override fun subscribeFriendMsg(luaBot: LuaBot?, listener: LuaFunction?): LuaValue {
         (luaBot as MiraiBot).bot.subscribeAlways<FriendMessage> {
             if (listener != null) {
@@ -107,7 +107,7 @@ class MiraiSubscribeFriendMsgFunction : LuaBot.SubscribeMsgFunction() {
     }
 }
 
-class MiraiSubscribeGroupMsgFunction : LuaBot.SubscribeMsgFunction() {
+object MiraiSubscribeGroupMsgFunction : LuaBot.SubscribeMsgFunction() {
     override fun subscribeFriendMsg(luaBot: LuaBot?, listener: LuaFunction?): LuaValue {
         (luaBot as MiraiBot).bot.subscribeAlways<GroupMessage> {
             if (listener != null) {
