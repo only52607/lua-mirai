@@ -60,7 +60,7 @@ bot:join() --挂起机器人
 
 ### lua语言开发基础
 
-请参阅 [`RUNOOB:Lua教程`](https://github.com/mamoe/mirai)
+请参阅 [`RUNOOB:Lua教程`](https://www.runoob.com/lua/lua-tutorial.html)
 
 ### 可用API列表
 
