@@ -38,10 +38,16 @@ class MiraiMemberOpFunction(type: Int) : LuaGroupMember.MemberOpFunction(type) {
             IS_OWNER -> LuaValue.valueOf(miraiMember.member.isOwner())
             MUTE -> runBlocking {
                 miraiMember.member.mute(varargs.optint(2, 0))
-                LuaValue.NIL
+                miraiMember
             }
-            UN_MUTE -> LuaValue.valueOf(miraiMember.member.nick)
-            KICK -> LuaValue.valueOf(miraiMember.member.nick)
+            UN_MUTE -> runBlocking {
+                miraiMember.member.unmute()
+                miraiMember
+            }
+            KICK -> runBlocking {
+                miraiMember.member.kick(varargs.optjstring(2, ""))
+                miraiMember
+            }
             else -> LuaValue.NIL
         }
     }

@@ -1,14 +1,15 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.lua.LuaBot.*
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
-import net.mamoe.mirai.Bot
-import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.closeAndJoin
+import net.mamoe.mirai.*
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessage
 import net.mamoe.mirai.message.GroupMessage
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaValue
+import org.luaj.vm2.Varargs
 
 class MiraiBot : LuaBot {
     var bot: Bot
@@ -21,79 +22,55 @@ class MiraiBot : LuaBot {
         this.bot = bot
     }
 
-    override fun getLoginFunction(): LuaBot.LoginFunction {
-        return MiraiLoginFunction
-    }
-
-    override fun getCloseFunction(): CloseFunction {
-        return MiraiCloseFunction
-    }
-
     override fun getSubscribeGroupMsgFunction(): SubscribeMsgFunction {
         return MiraiSubscribeGroupMsgFunction
-    }
-
-    override fun getJoinFunction(): JoinFunction {
-        return MiraiJoinFunction
-    }
-
-    override fun getGetGroupFunction(): GetGroupFunction {
-        return MiraiGetGroupFunction
-    }
-
-    override fun getGetFriendFunction(): LuaBot.GetFriendFunction {
-        return MiraiGetFriendFunction
     }
 
     override fun getSubscribeFriendMsgFunction(): SubscribeMsgFunction {
         return MiraiSubscribeFriendMsgFunction
     }
+
+    override fun getBotOpFunction(type: Int): BotOpFunction {
+        return MiraiBotOpFunction(type)
+    }
 }
 
-object MiraiLoginFunction : LuaBot.LoginFunction() {
-    override fun login(luaBot: LuaBot?): LuaValue {
-        if (luaBot is MiraiBot) {
-            runBlocking {
-                luaBot.bot.alsoLogin()
+class MiraiBotOpFunction(type: Int) : LuaBot.BotOpFunction(type) {
+    override fun op(varargs: Varargs): Varargs {
+        var bot = varargs.arg1() as MiraiBot
+        return when (type) {
+            LOGIN -> runBlocking {
+                bot.bot.alsoLogin()
+                bot
             }
-        }
-        if (luaBot != null) return luaBot
-        return LuaValue.NIL
-    }
-}
-
-object MiraiGetFriendFunction : LuaBot.GetFriendFunction() {
-    override fun getFriend(luaBot: LuaBot, id: Long): LuaQQ {
-        return MiraiQQ(luaBot, id)
-    }
-}
-
-object MiraiGetGroupFunction : LuaBot.GetGroupFunction() {
-    override fun getGroup(luaBot: LuaBot, id: Long): LuaGroup {
-        return MiraiGroup(luaBot, id)
-    }
-}
-
-object MiraiJoinFunction : LuaBot.JoinFunction() {
-    override fun join(luaBot: LuaBot?): LuaValue {
-        if (luaBot is MiraiBot) {
-            runBlocking {
-                luaBot.bot.join()
+            JOIN -> runBlocking {
+                bot.bot.join()
+                bot
             }
-        }
-        return LuaValue.NIL
-    }
-}
-
-object MiraiCloseFunction : LuaBot.CloseFunction() {
-    override fun close(luaBot: LuaBot?): LuaValue {
-        if (luaBot is MiraiBot) {
-            runBlocking {
-                luaBot.bot.closeAndJoin()
+            CLOSE_AND_JOIN -> runBlocking {
+                bot.bot.closeAndJoin()
+                bot
             }
+            GET_FRIEND -> MiraiQQ(bot, varargs.optlong(2, 0))
+            GET_GROUP -> MiraiGroup(bot, varargs.optlong(2, 0))
+            GET_SELF_QQ -> MiraiQQ(bot, bot.bot.selfQQ)
+            GET_ID -> LuaValue.valueOf(bot.bot.id.toString())
+            ADD_FRIEND -> runBlocking {
+                LuaValue.valueOf(
+                    bot.bot.addFriend(
+                        varargs.optlong(2, 0),
+                        varargs.optjstring(3, ""),
+                        varargs.optjstring(4, "")
+                    ).toString()
+                )
+            }
+            CONTAINS_FRIEND -> LuaValue.valueOf(bot.bot.containsFriend(varargs.optlong(2, 0)))
+            CONTAINS_GROUP -> LuaValue.valueOf(bot.bot.containsGroup(varargs.optlong(2, 0)))
+            IS_ACTIVE -> LuaValue.valueOf(bot.bot.isActive)
+            else -> LuaValue.NIL
         }
-        return LuaValue.NIL
     }
+
 }
 
 object MiraiSubscribeFriendMsgFunction : LuaBot.SubscribeMsgFunction() {
