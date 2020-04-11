@@ -679,14 +679,23 @@ public class LexState extends Constants {
 					return TK_NUMBER;
 				}
 			}
-		    case '0': case '1': case '2': case '3': case '4':
-		    case '5': case '6': case '7': case '8': case '9': {
-		        read_numeral(seminfo);
-		        return TK_NUMBER;
-		    }
-		 	case EOZ: {
-				return TK_EOS;
-			}
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9': {
+					read_numeral(seminfo);
+					return TK_NUMBER;
+				}
+				case EOZ: {
+					return TK_EOS;
+				}
+			/*
 			default: {
 				if (isspace(current)) {
 					_assert (!currIsNewline());
@@ -696,7 +705,7 @@ public class LexState extends Constants {
 					read_numeral(seminfo);
 					return TK_NUMBER;
 				} else if (isalpha(current) || current == '_') {
-					/* identifier or reserved word */
+					// identifier or reserved word
 					LuaString ts;
 					do {
 						save_and_next();
@@ -711,9 +720,49 @@ public class LexState extends Constants {
 				} else {
 					int c = current;
 					nextChar();
-					return c; /* single-char tokens (+ - / ...) */
+					return c; // single-char tokens (+ - / ...)
 				}
 			}
+			*/
+				//增加中文解析
+				default: {
+					if (isspace(current)) {
+						_assert(!currIsNewline());
+						nextChar();
+						continue;
+					} else if (isdigit(current)) {
+						read_numeral(seminfo);
+						return TK_NUMBER;
+					} else if (isalpha(current) || current == '_' || isChineseCode(current)) {
+						/* identifier or reserved word */
+						LuaString ts;
+						do {
+							//支持中文
+							if (isChineseCode(current)) {
+								save_and_next();
+								save_and_next();
+								save_and_next(); // 处理了一个中文字符
+							} else {
+								save_and_next(); // 处理英文字符或者下划线
+							}
+						} while (isalnum(current) || current == '_' || isChineseCode(current));
+						//中文转换
+						String str_s = charToByteToString();
+						ts = L.newTString(str_s);
+						if (RESERVED.containsKey(ts))
+							return ((Integer) RESERVED.get(ts)).intValue();
+						else {
+							seminfo.ts = ts;
+							return TK_NAME;
+						}
+					} else {
+						int c = current;
+						nextChar();
+						return c; /* single-char tokens (+ - / ...) */
+					}
+				}
+
+
 			}
 		}
 	}
@@ -2133,17 +2182,34 @@ public class LexState extends Constants {
 	*/
 	public void mainfunc(FuncState funcstate) {
 		  BlockCnt bl = new BlockCnt();
-		  open_func(funcstate, bl);
-		  fs.f.is_vararg = 1;  /* main function is always vararg */
-		  expdesc v = new expdesc();
-		  v.init(VLOCAL, 0);  /* create and... */
-		  fs.newupvalue(envn, v);  /* ...set environment upvalue */
-		  next();  /* read first token */
-		  statlist();  /* parse main body */
-		  check(TK_EOS);
-		  close_func();
+		open_func(funcstate, bl);
+		fs.f.is_vararg = 1;  /* main function is always vararg */
+		expdesc v = new expdesc();
+		v.init(VLOCAL, 0);  /* create and... */
+		fs.newupvalue(envn, v);  /* ...set environment upvalue */
+		next();  /* read first token */
+		statlist();  /* parse main body */
+		check(TK_EOS);
+		close_func();
 	}
-	
+
+	private boolean isChineseCode(int charint) {
+		if (charint == -1) {
+			return false;
+		}
+		return ((char) charint > 0x80);
+	}
+
+	public String charToByteToString() {
+		byte[] strs = new byte[nbuff];
+		for (int i = 0; i < nbuff; i++) {
+			char char_str = buff[i];
+			byte byte_str = (byte) char_str;
+			strs[i] = byte_str;
+		}
+		return new String(strs);
+	}
+
 	/* }====================================================================== */
-		
+
 }
