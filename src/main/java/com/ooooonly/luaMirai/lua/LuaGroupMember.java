@@ -6,7 +6,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 
-abstract public class LuaGroupMember extends LuaTable {
+abstract public class LuaGroupMember extends LuaContact {
 
     public static final int GET_NICK = 0;
     public static final int GET_NAME_CARD = 1;
@@ -19,50 +19,35 @@ abstract public class LuaGroupMember extends LuaTable {
     public static final int UN_MUTE = 8;
     public static final int KICK = 9;
 
+    private static LuaTable metaTable;
+
     public LuaGroupMember(LuaBot luaBot, LuaGroup luaGroup, long id) {
+        super(id);
         this.set("bot", luaBot);
         this.set("group", luaGroup);
-        this.set("id", LuaValue.valueOf(id));
-        this.set("getNick", getMemberOpFunction(GET_NICK));
-        this.set("getNameCard", getMemberOpFunction(GET_NAME_CARD));
-        this.set("getMuteRemain", getMemberOpFunction(GET_MUTE_REMAIN));
-        this.set("getSpecialTitle", getMemberOpFunction(GET_SPECIAL_TITLE));
-        this.set("isMuted", getMemberOpFunction(IS_MUTE));
-        this.set("isAdministrator", getMemberOpFunction(IS_ADMINISTRATOR));
-        this.set("isOwner", getMemberOpFunction(IS_OWNER));
-        this.set("mute", getMemberOpFunction(MUTE));
-        this.set("unMute", getMemberOpFunction(UN_MUTE));
-        this.set("kick", getMemberOpFunction(KICK));
     }
 
-
-    public static abstract class MemberOpFunction extends VarArgFunction {
-        protected int type;
-
-        public MemberOpFunction(int type) {
-            this.type = type;
-        }
-
-        @Override
-        public Varargs onInvoke(Varargs varargs) {
-            if (varargs.arg1() instanceof LuaGroupMember) {
-                return op(varargs);
-            }
-            return LuaValue.NIL;
-        }
-
-        public abstract Varargs op(Varargs varargs);
+    @Override
+    protected LuaTable getMetaTable() {
+        if (metaTable != null) return metaTable;
+        metaTable = new LuaTable();
+        LuaTable index = new LuaTable();
+        index.set("getNick", getOpFunction(GET_NICK));
+        index.set("getNameCard", getOpFunction(GET_NAME_CARD));
+        index.set("getMuteRemain", getOpFunction(GET_MUTE_REMAIN));
+        index.set("getSpecialTitle", getOpFunction(GET_SPECIAL_TITLE));
+        index.set("isMuted", getOpFunction(IS_MUTE));
+        index.set("isAdministrator", getOpFunction(IS_ADMINISTRATOR));
+        index.set("isOwner", getOpFunction(IS_OWNER));
+        index.set("mute", getOpFunction(MUTE));
+        index.set("unMute", getOpFunction(UN_MUTE));
+        index.set("kick", getOpFunction(KICK));
+        metaTable.set("__index", index);
+        return metaTable;
     }
-
-    public abstract LuaGroupMember.MemberOpFunction getMemberOpFunction(int type);
 
     @Override
     public int type() {
-        return 0;
-    }
-
-    @Override
-    public String typename() {
-        return "LuaGroupMember";
+        return TYPE_LUA_MEMBER;
     }
 }
