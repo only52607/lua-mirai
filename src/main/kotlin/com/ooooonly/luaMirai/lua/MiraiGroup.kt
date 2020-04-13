@@ -1,9 +1,11 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.lua.LuaGroup.*
+import com.ooooonly.luaMirai.utils.MessageAnalyzer
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.QQ
+import net.mamoe.mirai.message.MessageReceipt
 import net.mamoe.mirai.message.data.PlainText
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaValue
@@ -48,15 +50,23 @@ class MiraiGroup : LuaGroup {
                     TO_FULL_STRING -> LuaValue.valueOf(luaGroup.group.toFullString())
                     SEND_MSG -> {
                         var msg = varargs.arg(2);
+                        var receipt: MessageReceipt<QQ>? = null
                         if (msg is LuaString) {
                             runBlocking {
                                 println("准备发送群消息：" + msg.checkjstring())
-                                (luaGroup as MiraiGroup).group.sendMessage(PlainText(msg.checkjstring()))
+                                receipt = (luaGroup as MiraiGroup).group.sendMessage(
+                                    MessageAnalyzer.toMessageChain(
+                                        msg.checkjstring(),
+                                        luaGroup.group
+                                    )
+                                )
                             }
                         } else if (msg is LuaMsg) {
-                            //TODO
+                            runBlocking {
+                                receipt = luaGroup.group.sendMessage((msg as MiraiMsg).getChain(luaGroup.group))
+                            }
                         }
-                        luaGroup
+                        receipt?.let { MiraiSource(it) } ?: LuaValue.NIL
                     }
                     else -> LuaValue.NIL
                 }

@@ -12,8 +12,9 @@ public abstract class LuaMsg extends LuaObject {
     public static final int APPEND_AT_ALL = 4;
     public static final int APPEND_LONG_TEXT = 5;
     public static final int APPEND_SHARE = 6;
-    public static final int GET_SOURCE = 7;
-    public static final int SET_QUOTE = 8;
+    public static final int GET_QUOTE = 7;
+    public static final int RECALL = 8;
+    public static final int GET_SOURCE = 8;
 
     private static LuaTable metaTable;
 
@@ -34,8 +35,8 @@ public abstract class LuaMsg extends LuaObject {
         index.set("appendAtAll", getOpFunction(APPEND_AT_ALL));
         index.set("appendLongText", getOpFunction(APPEND_LONG_TEXT));
         index.set("appendShare", getOpFunction(APPEND_SHARE));
-        index.set("getSource", getOpFunction(GET_SOURCE));
-        index.set("setQuote", getOpFunction(SET_QUOTE));
+        index.set("getQuote", getOpFunction(GET_QUOTE));
+        index.set("recall", getOpFunction(RECALL));
         index.set("getPlain", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {

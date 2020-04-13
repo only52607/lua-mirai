@@ -9,6 +9,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 public abstract class LuaObject extends LuaTable {
     protected static final int TYPE_MSG = 1000;
+    protected static final int TYPE_SOURCE = 1000;
 
     protected LuaObject() {
         this.setmetatable(getMetaTable());

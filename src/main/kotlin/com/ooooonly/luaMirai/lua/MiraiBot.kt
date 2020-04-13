@@ -28,7 +28,10 @@ class MiraiBot : LuaBot {
                 return when (opcode) {
                     EVENT_MSG_FRIEND -> {
                         (self as MiraiBot).bot.subscribeAlways<FriendMessage> {
-                            listener.call(self, LuaValue.valueOf(it.message.toString()), MiraiQQ(self, it.sender))
+                            //println(self)
+                            //println(MiraiMsg(it.message,self.bot))
+                            //println(MiraiQQ(self, it.sender))
+                            listener.call(self, MiraiMsg(it.message, self.bot), MiraiQQ(self, it.sender))
                         }
                         self
                     }
@@ -37,7 +40,12 @@ class MiraiBot : LuaBot {
                             var luaGroup = MiraiGroup(self, it.group)
                             var luaMember = MiraiGroupMember(self, luaGroup, it.sender)
                             var args =
-                                arrayOf<LuaValue>(self, LuaValue.valueOf(it.message.toString()), luaGroup, luaMember)
+                                arrayOf<LuaValue>(
+                                    self,
+                                    MiraiMsg(it.message, (self as MiraiBot).bot),
+                                    luaGroup,
+                                    luaMember
+                                )
                             listener.invoke(LuaValue.varargsOf(args))
                         }
                         self

@@ -1,9 +1,11 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.lua.LuaQQ.*
+import com.ooooonly.luaMirai.utils.MessageAnalyzer
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.QQ
+import net.mamoe.mirai.message.MessageReceipt
 import net.mamoe.mirai.message.data.PlainText
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
@@ -53,15 +55,23 @@ class MiraiQQ : LuaQQ {
                     }
                     SEND_MESSAGE -> {
                         var msg = varargs.arg(2);
+                        var receipt: MessageReceipt<QQ>? = null
                         if (msg is LuaString) {
                             runBlocking {
-                                println("准备发送消息：" + msg.checkjstring())
-                                luaQQ.qq.sendMessage(PlainText(msg.checkjstring()))
+                                println("准备发送消息LuaString：" + msg.checkjstring())
+                                var chain = MessageAnalyzer.toMessageChain(msg.checkjstring(), luaQQ.qq)
+                                //println("chain:$chain")
+                                receipt = luaQQ.qq.sendMessage(chain)
                             }
                         } else if (msg is LuaMsg) {
-                            //TODO
+                            runBlocking {
+                                println("准备发送消息LuaMsg：$msg")
+                                var chain = (msg as MiraiMsg).getChain(luaQQ.qq)
+                                //println("chain:$chain")
+                                receipt = luaQQ.qq.sendMessage(chain)
+                            }
                         }
-                        luaQQ
+                        receipt?.let { MiraiSource(it) } ?: LuaValue.NIL
                     }
                     else -> LuaValue.NIL
                 }
