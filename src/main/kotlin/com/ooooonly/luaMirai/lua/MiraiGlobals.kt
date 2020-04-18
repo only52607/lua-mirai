@@ -1,8 +1,11 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.lua.lib.LuaJavaExLib
 import com.ooooonly.luaMirai.lua.lib.MiraiBotLib
+import com.ooooonly.luaMirai.lua.lib.NetLib
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
+import org.luaj.vm2.LuaValue
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
@@ -20,7 +23,14 @@ class MiraiGlobals : Globals {
         this.load(JseOsLib())
         this.load(LuajavaLib())
         this.load(MiraiBotLib())
+        this.load(NetLib())
+        this.load(LuaJavaExLib())
         LoadState.install(this)
         LuaC.install(this)
     }
+/*
+    override fun get(key: LuaValue?): LuaValue {
+        //println(key.toString())
+        return super.get(key)
+    }*/
 }

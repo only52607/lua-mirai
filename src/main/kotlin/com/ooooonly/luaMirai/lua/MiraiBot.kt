@@ -1,9 +1,11 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.lua.LuaBot.*
+import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.*
+import net.mamoe.mirai.event.Listener
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessage
 import net.mamoe.mirai.message.GroupMessage
@@ -12,10 +14,18 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
 
 class MiraiBot : LuaBot {
+    companion object {
+        var listeners: HashMap<Int, CompletableJob> = HashMap<Int, CompletableJob>()
+    }
+
     var bot: Bot
 
     constructor(account: Long, password: String) : super(account, password) {
-        this.bot = Bot(account, password)
+        try {
+            this.bot = Bot.getInstance(account)
+        } catch (e: Exception) {
+            this.bot = Bot(account, password)
+        }
     }
 
     constructor(bot: Bot) : super(bot.id, "") {
@@ -25,7 +35,9 @@ class MiraiBot : LuaBot {
     override fun getSubscribeFunction(opcode: Int): SubscribeFunction? {
         return object : SubscribeFunction(opcode) {
             override fun onSubscribe(self: LuaValue, listener: LuaFunction): LuaValue {
-                return when (opcode) {
+                var origin = listeners[opcode]
+                if (origin != null) origin.complete();
+                var newListener = when (opcode) {
                     EVENT_MSG_FRIEND -> {
                         (self as MiraiBot).bot.subscribeAlways<FriendMessage> {
                             //println(self)
@@ -33,7 +45,6 @@ class MiraiBot : LuaBot {
                             //println(MiraiQQ(self, it.sender))
                             listener.call(self, MiraiMsg(it.message, self.bot), MiraiQQ(self, it.sender))
                         }
-                        self
                     }
                     EVENT_MSG_GROUP -> {
                         (self as MiraiBot).bot.subscribeAlways<GroupMessage> {
@@ -48,10 +59,11 @@ class MiraiBot : LuaBot {
                                 )
                             listener.invoke(LuaValue.varargsOf(args))
                         }
-                        self
                     }
-                    else -> LuaValue.NIL
+                    else -> null
                 }
+                if (newListener != null) listeners[opcode] = newListener
+                return self
             }
         }
     }

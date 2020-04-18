@@ -7,15 +7,14 @@ import org.luaj.vm2.LuaValue
 
 
 class MiraiBotLib : BotLib() {
-    override fun getNewBotFunction(): MiraiNewBotFunction {
-        return MiraiNewBotFunction()
+    override fun getNewBotFunction(): BotLib.NewBotFunction {
+        return object : BotLib.NewBotFunction() {
+            override fun newBot(qq: LuaValue?, password: LuaValue?): LuaBot {
+                var qqLong: Long = qq?.checklong() ?: 0
+                var passwordString: String = password?.checkjstring() ?: ""
+                return MiraiBot(qqLong, passwordString)
+            }
+        }
     }
 }
 
-class MiraiNewBotFunction : BotLib.NewBotFunction() {
-    override fun newBot(qq: LuaValue?, password: LuaValue?): LuaBot {
-        var qqLong: Long = qq?.checklong() ?: 0
-        var passwordString: String = password?.checkjstring() ?: ""
-        return MiraiBot(qqLong, passwordString)
-    }
-}

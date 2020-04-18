@@ -50,7 +50,7 @@ class MiraiGroup : LuaGroup {
                     TO_FULL_STRING -> LuaValue.valueOf(luaGroup.group.toFullString())
                     SEND_MSG -> {
                         var msg = varargs.arg(2);
-                        var receipt: MessageReceipt<QQ>? = null
+                        var receipt: MessageReceipt<Group>? = null
                         if (msg is LuaString) {
                             runBlocking {
                                 println("准备发送群消息：" + msg.checkjstring())
