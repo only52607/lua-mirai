@@ -50,7 +50,7 @@ class MiraiGroup : LuaGroup {
                         var receipt: MessageReceipt<Group>? = null
                         if (msg is LuaString) {
                             runBlocking {
-                                println("准备发送群消息：" + msg.checkjstring())
+                                //println("准备发送群消息：" + msg.checkjstring())
                                 receipt = (luaGroup as MiraiGroup).group.sendMessage(
                                     MessageAnalyzer.toMessageChain(
                                         msg.checkjstring(),

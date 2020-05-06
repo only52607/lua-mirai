@@ -59,13 +59,13 @@ class MiraiFriend : LuaFriend {
                         var receipt: MessageReceipt<Friend>? = null
                         if (msg is LuaString) {
                             runBlocking {
-                                println("准备发送消息LuaString：" + msg.checkjstring())
+                                //println("准备发送消息LuaString：" + msg.checkjstring())
                                 var chain = MessageAnalyzer.toMessageChain(msg.checkjstring(), luaFriend.qq)
                                 receipt = luaFriend.qq.sendMessage(chain)
                             }
                         } else if (msg is LuaMsg) {
                             runBlocking {
-                                println("准备发送消息LuaMsg：$msg")
+                                //println("准备发送消息LuaMsg：$msg")
                                 var chain = (msg as MiraiMsg).getChain(luaFriend.qq)
                                 receipt = luaFriend.qq.sendMessage(chain)
                             }

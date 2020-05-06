@@ -27,9 +27,9 @@ class MiraiSource : LuaSource {
         return object : OpFunction(opcode) {
             override fun op(varargs: Varargs?): Varargs {
                 return when (opcode) {
-                    GET_QUOTE -> MiraiMsg(source)
+                    //GET_QUOTE -> MiraiMsg(source)
                     RECALL -> runBlocking { bot.recall(source);LuaValue.NIL }
-                    GET_BOT -> MiraiBot(bot)
+                    //GET_BOT -> MiraiBot(bot)
                     else -> LuaValue.NIL
                 }
             }

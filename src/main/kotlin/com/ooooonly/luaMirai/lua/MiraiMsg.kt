@@ -13,12 +13,14 @@ import java.lang.StringBuilder
 class MiraiMsg : LuaMsg {
     var raw: StringBuilder = StringBuilder()
     var source: MessageSource? = null
+    var quote: MessageSource? = null
     var bot: Bot?
 
     constructor(messageChain: MessageChain, bot: Bot) {
         var builder: StringBuilder = StringBuilder()
-        messageChain.forEachContent {
-            if (it is MessageSource) source = it
+        messageChain.forEach {
+            if (it is QuoteReply) quote = it.source
+            else if (it is MessageSource) source = it
             else builder.append(it.toString())
         }
         this.bot = bot
@@ -49,12 +51,21 @@ class MiraiMsg : LuaMsg {
                         if (member is LuaInteger) luaMsg.raw.append("[mirai:at:${member.checklong()}]")
                     }
                     APPEND_AT_ALL -> luaMsg.raw.append("[mirai:atall]")
+                    APPEND_POKE -> luaMsg.raw.append("[mirai:poke:${varargs.optjstring(2, "")}]")
+                    APPEND_FORWARD -> luaMsg.raw.append("[mirai:forward:${varargs.optjstring(2, "")}]")
                     APPEND_LONG_TEXT -> luaMsg.raw.append("[mirai:long:${varargs.optjstring(2, "")}]")
-                    APPEND_SHARE -> {
+                    //APPEND_SHARE -> {}
+                    SET_QUOTE -> {
+                        val quoteArg = varargs.arg(2)
+                        if (quoteArg is MiraiSource) {
+                            quote = quoteArg.source
+                        } else if (quoteArg is MiraiMsg) {
+                            quote = quoteArg.source
+                        }
                     }
-                    GET_QUOTE -> if (source != null) return MiraiMsg(source!!)
+                    GET_QUOTE -> quote?.let { return MiraiSource(quote!!, bot!!) }
                     RECALL -> runBlocking { if (source != null && bot != null) bot!!.recall(source!!) }
-                    GET_SOURCE -> if (source != null && bot != null) MiraiSource(source = source!!, bot = bot!!)
+                    GET_SOURCE -> if (source != null && bot != null) return MiraiSource(source = source!!, bot = bot!!)
                 }
                 return luaMsg
             }
@@ -65,6 +76,5 @@ class MiraiMsg : LuaMsg {
         return MessageAnalyzer.toMessageChain(raw, contact = contact)
     }
 
-
-    override fun getPlain() = raw.toString()
+    override fun toString() = raw.toString()
 }

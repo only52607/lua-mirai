@@ -4,20 +4,29 @@ import com.ooooonly.luaMirai.lua.lib.LuaJavaExLib
 import com.ooooonly.luaMirai.lua.lib.MiraiBotLib
 import com.ooooonly.luaMirai.lua.lib.NetLib
 import net.mamoe.mirai.Bot
-import org.jetbrains.kotlinx.serialization.compiler.backend.common.findStandardKotlinTypeSerializer
 import org.luaj.vm2.*
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
-import java.lang.StringBuilder
 
 class MiraiGlobals : Globals {
     interface Printable {
         fun print(msg: String?)
     }
 
-    lateinit var onLoadFun: LuaFunction
-    lateinit var onFinishFun: LuaFunction
+    private var eventTable: LuaTable? = null
+        get() = this.get("Event") as LuaTable
+
+    private var onLoadFun: LuaFunction? = null
+        get() = eventTable?.let {
+            it.get("onLoad")
+        } as LuaFunction?
+
+    private var onFinishFun: LuaFunction? = null
+        get() = eventTable?.let {
+            it.get("onFinish")
+        } as LuaFunction?
+
     var standardOut = object : Printable {
         override fun print(msg: String?) = println(msg)
     }
@@ -50,6 +59,7 @@ class MiraiGlobals : Globals {
 
     private fun initEventFun() {
         var eventTable = LuaTable()
+        /*
         eventTable.set("onLoad", object : OneArgFunction() {
             override fun call(arg: LuaValue): LuaValue? {
                 if (!(arg is LuaFunction)) throw LuaError("第一个参数必须为函数！")
@@ -57,13 +67,16 @@ class MiraiGlobals : Globals {
                 return LuaValue.NIL
             }
         })
-        eventTable.set("onLoad", object : OneArgFunction() {
+        eventTable.set("onFinish", object : OneArgFunction() {
             override fun call(arg: LuaValue?): LuaValue {
                 if (!(arg is LuaFunction)) throw LuaError("第一个参数必须为函数！")
                 onFinishFun = arg
                 return LuaValue.NIL
             }
         })
+        */
+
+        this.set("Event", eventTable)
     }
 
     private fun initStandardOut() =
@@ -82,11 +95,16 @@ class MiraiGlobals : Globals {
         })
 
     fun onLoad(bot: Bot) = onLoadFun?.let {
-        onLoadFun.call(MiraiBot(bot))
+        onLoadFun!!.call(MiraiBot(bot))
+    }
+
+
+    fun onLoad() = onLoadFun?.let {
+        onLoadFun!!.call()
     }
 
     fun onFinish() = onFinishFun?.let {
-        onLoadFun.call()
+        onFinishFun!!.call()
     }
 
 }

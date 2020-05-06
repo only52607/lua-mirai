@@ -28,7 +28,7 @@ class MiraiGroupMember : LuaGroupMember {
                     GET_NAME_CARD -> LuaValue.valueOf(miraiMember.member.nameCard)
                     GET_MUTE_REMAIN -> LuaValue.valueOf(miraiMember.member.muteTimeRemaining)
                     GET_SPECIAL_TITLE -> LuaValue.valueOf(miraiMember.member.specialTitle)
-                    IS_MUTE -> LuaValue.valueOf(miraiMember.member.isMuted())
+                    IS_MUTE -> LuaValue.valueOf(miraiMember.member.isMuted)
                     IS_ADMINISTRATOR -> LuaValue.valueOf(miraiMember.member.isAdministrator())
                     IS_OWNER -> LuaValue.valueOf(miraiMember.member.isOwner())
                     MUTE -> runBlocking {
