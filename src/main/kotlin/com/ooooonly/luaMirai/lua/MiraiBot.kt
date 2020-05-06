@@ -5,8 +5,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.*
 import net.mamoe.mirai.event.subscribeAlways
-import net.mamoe.mirai.message.FriendMessage
-import net.mamoe.mirai.message.GroupMessage
+import net.mamoe.mirai.message.FriendMessageEvent
+import net.mamoe.mirai.message.GroupMessageEvent
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
@@ -37,12 +37,12 @@ class MiraiBot : LuaBot {
                 if (origin != null) origin.complete();
                 var newListener = when (opcode) {
                     EVENT_MSG_FRIEND -> {
-                        (self as MiraiBot).bot.subscribeAlways<FriendMessage> {
+                        (self as MiraiBot).bot.subscribeAlways<FriendMessageEvent> {
                             listener.call(self, MiraiMsg(it.message, self.bot), MiraiFriend(self, it.sender))
                         }
                     }
                     EVENT_MSG_GROUP -> {
-                        (self as MiraiBot).bot.subscribeAlways<GroupMessage> {
+                        (self as MiraiBot).bot.subscribeAlways<GroupMessageEvent> {
                             var luaGroup = MiraiGroup(self, it.group)
                             var luaMember = MiraiGroupMember(self, luaGroup, it.sender)
                             var args =
@@ -84,7 +84,8 @@ class MiraiBot : LuaBot {
                     GET_GROUP -> MiraiGroup(bot, varargs.optlong(2, 0))
                     GET_SELF_QQ -> MiraiFriend(bot, bot.bot.selfQQ)
                     GET_ID -> LuaValue.valueOf(bot.bot.id.toString())
-                    ADD_FRIEND -> runBlocking {
+
+                    /*ADD_FRIEND -> runBlocking {
                         LuaValue.valueOf(
                             bot.bot.addFriend(
                                 varargs.optlong(2, 0),
@@ -92,7 +93,7 @@ class MiraiBot : LuaBot {
                                 varargs.optjstring(4, "")
                             ).toString()
                         )
-                    }
+                    }*/
                     CONTAINS_FRIEND -> LuaValue.valueOf(bot.bot.containsFriend(varargs.optlong(2, 0)))
                     CONTAINS_GROUP -> LuaValue.valueOf(bot.bot.containsGroup(varargs.optlong(2, 0)))
                     IS_ACTIVE -> LuaValue.valueOf(bot.bot.isActive)
