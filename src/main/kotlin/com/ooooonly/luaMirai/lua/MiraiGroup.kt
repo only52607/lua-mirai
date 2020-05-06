@@ -1,12 +1,9 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.lua.LuaGroup.*
 import com.ooooonly.luaMirai.utils.MessageAnalyzer
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Group
-import net.mamoe.mirai.contact.QQ
 import net.mamoe.mirai.message.MessageReceipt
-import net.mamoe.mirai.message.data.PlainText
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
@@ -47,7 +44,7 @@ class MiraiGroup : LuaGroup {
                     QUIT -> runBlocking {
                         LuaValue.valueOf(luaGroup.group.quit())
                     }
-                    TO_FULL_STRING -> LuaValue.valueOf(luaGroup.group.toFullString())
+                    /*TO_FULL_STRING -> LuaValue.valueOf(luaGroup.group.to())*/
                     SEND_MSG -> {
                         var msg = varargs.arg(2);
                         var receipt: MessageReceipt<Group>? = null

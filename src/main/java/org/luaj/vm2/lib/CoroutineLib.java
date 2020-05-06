@@ -28,7 +28,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
 /** 
- * Subclass of {@link LibFunction} which implements the lua standard {@code coroutine} 
+ * Subclass of {@link LibFunction} which implements the lua standard {@code coroutine}
  * library. 
  * <p> 
  * The coroutine library in luaj has the same behavior as the
@@ -39,7 +39,7 @@ import org.luaj.vm2.Varargs;
  * may not be collected by the garbage collector. 
  * <p> 
  * Typically, this library is included as part of a call to either 
- * {@link org.luaj.vm2.lib.jse.JsePlatform#standardGlobals()} or {@link org.luaj.vm2.lib.jme.JmePlatform#standardGlobals()}
+ * {@link org.luaj.vm2.lib.jse.JsePlatform#standardGlobals()}
  * <pre> {@code
  * Globals globals = JsePlatform.standardGlobals();
  * System.out.println( globals.get("coroutine").get("running").call() );
@@ -57,7 +57,6 @@ import org.luaj.vm2.Varargs;
  * <p>
  * @see LibFunction
  * @see org.luaj.vm2.lib.jse.JsePlatform
- * @see org.luaj.vm2.lib.jme.JmePlatform
  * @see <a href="http://www.lua.org/manual/5.2/manual.html#6.2">Lua 5.2 Coroutine Lib Reference</a>
  */
 public class CoroutineLib extends TwoArgFunction {
@@ -112,12 +111,7 @@ public class CoroutineLib extends TwoArgFunction {
 			return valueOf( lt.getStatus() );
 		}
 	}
-	
-	final class yield extends VarArgFunction {
-		public Varargs invoke(Varargs args) {
-			return globals.yield( args );
-		}
-	}
+
 
 	final class wrap extends LibFunction {
 		public LuaValue call(LuaValue f) {
@@ -127,14 +121,23 @@ public class CoroutineLib extends TwoArgFunction {
 		}
 	}
 
+	final class yield extends VarArgFunction {
+		public Varargs invoke(Varargs args) {
+			return globals.yield(args);
+		}
+	}
+
+
 	final class wrapper extends VarArgFunction {
 		final LuaThread luathread;
+
 		wrapper(LuaThread luathread) {
 			this.luathread = luathread;
 		}
+
 		public Varargs invoke(Varargs args) {
 			final Varargs result = luathread.resume(args);
-			if ( result.arg1().toboolean() ) {
+			if (result.arg1().toboolean()) {
 				return result.subargs(2);
 			} else {
 				return error( result.arg(2).tojstring() );

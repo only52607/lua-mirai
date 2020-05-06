@@ -17,7 +17,7 @@ class MiraiMsg : LuaMsg {
 
     constructor(messageChain: MessageChain, bot: Bot) {
         var builder: StringBuilder = StringBuilder()
-        messageChain.foreachContent {
+        messageChain.forEachContent {
             if (it is MessageSource) source = it
             else builder.append(it.toString())
         }

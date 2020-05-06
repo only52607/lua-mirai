@@ -43,8 +43,8 @@ public abstract class LuaGroup extends LuaContact {
         index.set("getOwner", getOpFunction(GET_OWNER));
         index.set("contains", getOpFunction(CONTAINS));
         index.set("getMemberOrNull", getOpFunction(GET_MEMBER_OR_NULL));
-        index.set("Quit", getOpFunction(QUIT));
-        index.set("toFullString", getOpFunction(TO_FULL_STRING));
+        index.set("quit", getOpFunction(QUIT));
+        //index.set("toFullString", getOpFunction(TO_FULL_STRING));
         metaTable.set("__index", index);
         return metaTable;
     }

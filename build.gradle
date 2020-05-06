@@ -1,12 +1,22 @@
+buildscript{
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.9.2'
+    }
+}
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.71'
 }
 
 group 'com.ooooonly'
-version '0.1'
+version '0.1.0'
 
 sourceCompatibility = 1.8
+
+
 
 repositories {
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
@@ -16,7 +26,8 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation 'net.mamoe:mirai-core-qqandroid-jvm:0.35.0'
+    implementation "net.mamoe:mirai-core-qqandroid:0.40.0"
+   // implementation 'com.ooooonly:luaMirai:0.1.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -25,4 +36,37 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+//tasks.getByPath(":luaMirai:javadocRelease").enabled = false
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet') //忽略javadoc错误
+    options.addStringOption('encoding', 'UTF-8')
+    options{
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        links "https://docs.oracle.com/javase/7/docs/api"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType(Javadoc).all { enabled = false }
+
+
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'ooooonly'
+    groupId = 'com.ooooonly'
+    artifactId = 'luaMirai'
+    publishVersion = '0.1.0'
+    desc = 'lua support for mirai'
+    website = 'https://github.com/only52607/lua-mirai'
 }

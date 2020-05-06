@@ -69,9 +69,9 @@ object MessageAnalyzer {
                 "atall" -> AtAll
                 "face" -> Face(arg.toInt())
                 "image" -> Image(arg)
-                "xml" -> XmlMessage(arg)
+                "xml" -> ServiceMessage(1, arg)
                 "app" -> LightApp(arg)
-                "json" -> JsonMessage(arg)
+                "json" -> ServiceMessage(1, arg)
                 //"forward" -> ForwardMessage(arg)
                 else -> PlainText(this)
             }

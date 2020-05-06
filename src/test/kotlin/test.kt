@@ -8,6 +8,15 @@ import java.io.InputStreamReader
 
 
 fun main() {
+/*
+    var classSet =  getClasses("javax.swing.*");
+    for (class1 in  classSet) {
+        println(class1.name);
+    }
+    println(classSet.size);
+    */
+
+
     var globals: Globals = MiraiGlobals()
     var func: LuaValue = globals.load(
         BufferedReader(
@@ -18,4 +27,6 @@ fun main() {
         ""
     )
     func.call()
+
+
 }

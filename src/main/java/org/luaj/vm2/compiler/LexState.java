@@ -737,16 +737,15 @@ public class LexState extends Constants {
 						/* identifier or reserved word */
 						LuaString ts;
 						do {
-							//支持中文
-							if (isChineseCode(current)) {
-								save_and_next();
-								save_and_next();
-								save_and_next(); // 处理了一个中文字符
-							} else {
-								save_and_next(); // 处理英文字符或者下划线
-							}
-						} while (isalnum(current) || current == '_' || isChineseCode(current));
-						//中文转换
+                            //support chinese
+                            if (isChineseCode(current)) {
+                                save_and_next();
+                                save_and_next();
+                                save_and_next();
+                            } else {
+                                save_and_next();
+                            }
+                        } while (isalnum(current) || current == '_' || isChineseCode(current));
 						String str_s = charToByteToString();
 						ts = L.newTString(str_s);
 						if (RESERVED.containsKey(ts))

@@ -1,11 +1,9 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.lua.LuaBot.*
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.*
-import net.mamoe.mirai.event.Listener
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessage
 import net.mamoe.mirai.message.GroupMessage
@@ -40,10 +38,7 @@ class MiraiBot : LuaBot {
                 var newListener = when (opcode) {
                     EVENT_MSG_FRIEND -> {
                         (self as MiraiBot).bot.subscribeAlways<FriendMessage> {
-                            //println(self)
-                            //println(MiraiMsg(it.message,self.bot))
-                            //println(MiraiQQ(self, it.sender))
-                            listener.call(self, MiraiMsg(it.message, self.bot), MiraiQQ(self, it.sender))
+                            listener.call(self, MiraiMsg(it.message, self.bot), MiraiFriend(self, it.sender))
                         }
                     }
                     EVENT_MSG_GROUP -> {
@@ -85,9 +80,9 @@ class MiraiBot : LuaBot {
                         bot.bot.closeAndJoin()
                         bot
                     }
-                    GET_FRIEND -> MiraiQQ(bot, varargs.optlong(2, 0))
+                    GET_FRIEND -> MiraiFriend(bot, varargs.optlong(2, 0))
                     GET_GROUP -> MiraiGroup(bot, varargs.optlong(2, 0))
-                    GET_SELF_QQ -> MiraiQQ(bot, bot.bot.selfQQ)
+                    GET_SELF_QQ -> MiraiFriend(bot, bot.bot.selfQQ)
                     GET_ID -> LuaValue.valueOf(bot.bot.id.toString())
                     ADD_FRIEND -> runBlocking {
                         LuaValue.valueOf(
