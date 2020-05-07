@@ -102,4 +102,10 @@ class MiraiBot : LuaBot {
             }
         }
     }
+
+    fun unSubsribeAll() {
+        for (listener in listeners) {
+            listener.value.complete()
+        }
+    }
 }

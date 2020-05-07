@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Friend
 
 import net.mamoe.mirai.message.MessageReceipt
+import net.mamoe.mirai.message.data.PlainText
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
@@ -59,15 +60,12 @@ class MiraiFriend : LuaFriend {
                         var receipt: MessageReceipt<Friend>? = null
                         if (msg is LuaString) {
                             runBlocking {
-                                //println("准备发送消息LuaString：" + msg.checkjstring())
-                                var chain = MessageAnalyzer.toMessageChain(msg.checkjstring(), luaFriend.qq)
-                                receipt = luaFriend.qq.sendMessage(chain)
+                                //var chain = MessageAnalyzer.toMessageChain(msg.checkjstring(), luaFriend.qq)
+                                receipt = luaFriend.qq.sendMessage(PlainText(msg.checkjstring()))
                             }
                         } else if (msg is LuaMsg) {
                             runBlocking {
-                                //println("准备发送消息LuaMsg：$msg")
-                                var chain = (msg as MiraiMsg).getChain(luaFriend.qq)
-                                receipt = luaFriend.qq.sendMessage(chain)
+                                receipt = luaFriend.qq.sendMessage((msg as MiraiMsg).chain)
                             }
                         }
                         receipt?.let { MiraiSource(it) } ?: LuaValue.NIL

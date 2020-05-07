@@ -10,29 +10,37 @@ import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
 
 class MiraiGlobals : Globals {
+    var mBot: MiraiBot? = null
     interface Printable {
         fun print(msg: String?)
     }
 
     private var eventTable: LuaTable? = null
-        get() = this.get("Event") as LuaTable
+        get() {
+            val t = this.get("Event")
+            if (t is LuaTable) return t
+            else return null
+        }
 
     private var onLoadFun: LuaFunction? = null
         get() = eventTable?.let {
-            it.get("onLoad")
-        } as LuaFunction?
+            val t = it.get("onLoad")
+            if (t is LuaFunction) t
+            else null
+        }
 
     private var onFinishFun: LuaFunction? = null
         get() = eventTable?.let {
-            it.get("onFinish")
-        } as LuaFunction?
+            val t = it.get("onFinish")
+            if (t is LuaFunction) t
+            else null
+        }
 
-    var standardOut = object : Printable {
+    var standardOut: Printable = object : Printable {
         override fun print(msg: String?) = println(msg)
     }
 
-    constructor(printable: Printable) {
-        this()
+    constructor(printable: Printable) : this() {
         standardOut = printable
     }
 
@@ -59,23 +67,6 @@ class MiraiGlobals : Globals {
 
     private fun initEventFun() {
         var eventTable = LuaTable()
-        /*
-        eventTable.set("onLoad", object : OneArgFunction() {
-            override fun call(arg: LuaValue): LuaValue? {
-                if (!(arg is LuaFunction)) throw LuaError("第一个参数必须为函数！")
-                onLoadFun = arg
-                return LuaValue.NIL
-            }
-        })
-        eventTable.set("onFinish", object : OneArgFunction() {
-            override fun call(arg: LuaValue?): LuaValue {
-                if (!(arg is LuaFunction)) throw LuaError("第一个参数必须为函数！")
-                onFinishFun = arg
-                return LuaValue.NIL
-            }
-        })
-        */
-
         this.set("Event", eventTable)
     }
 
@@ -95,7 +86,8 @@ class MiraiGlobals : Globals {
         })
 
     fun onLoad(bot: Bot) = onLoadFun?.let {
-        onLoadFun!!.call(MiraiBot(bot))
+        mBot = MiraiBot(bot)
+        onLoadFun!!.call(mBot)
     }
 
 
@@ -107,4 +99,9 @@ class MiraiGlobals : Globals {
         onFinishFun!!.call()
     }
 
+    fun unSubsribeAll() {
+        mBot?.let {
+            it.unSubsribeAll()
+        }
+    }
 }

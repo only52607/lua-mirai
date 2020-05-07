@@ -4,6 +4,7 @@ import com.ooooonly.luaMirai.utils.MessageAnalyzer
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.message.MessageReceipt
+import net.mamoe.mirai.message.data.PlainText
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
@@ -50,17 +51,14 @@ class MiraiGroup : LuaGroup {
                         var receipt: MessageReceipt<Group>? = null
                         if (msg is LuaString) {
                             runBlocking {
-                                //println("准备发送群消息：" + msg.checkjstring())
                                 receipt = (luaGroup as MiraiGroup).group.sendMessage(
-                                    MessageAnalyzer.toMessageChain(
-                                        msg.checkjstring(),
-                                        luaGroup.group
-                                    )
+                                    //MessageAnalyzer.toMessageChain( msg.checkjstring(),luaGroup.group)
+                                    PlainText(msg.optjstring(""))
                                 )
                             }
                         } else if (msg is LuaMsg) {
                             runBlocking {
-                                receipt = luaGroup.group.sendMessage((msg as MiraiMsg).getChain(luaGroup.group))
+                                receipt = luaGroup.group.sendMessage((msg as MiraiMsg).chain)
                             }
                         }
                         receipt?.let { MiraiSource(it) } ?: LuaValue.NIL

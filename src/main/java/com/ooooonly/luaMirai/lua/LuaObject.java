@@ -32,10 +32,7 @@ public abstract class LuaObject extends LuaTable {
 
         @Override
         public Varargs onInvoke(Varargs varargs) {
-            if (varargs.arg1() instanceof LuaContact) {
-                return op(varargs);
-            }
-            return LuaValue.NIL;
+            return op(varargs);
         }
 
         public abstract Varargs op(Varargs varargs);

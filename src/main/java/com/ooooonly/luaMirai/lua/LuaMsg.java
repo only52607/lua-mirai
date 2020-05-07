@@ -22,6 +22,7 @@ public abstract class LuaMsg extends LuaObject {
     public static final int RECALL = 13;
     public static final int GET_SOURCE = 14;
     public static final int GET_QUOTE = 15;
+    public static final int TO_TABLE = 16;
 
     private static LuaTable metaTable;
 
@@ -34,6 +35,11 @@ public abstract class LuaMsg extends LuaObject {
         if (metaTable != null) return metaTable;
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
+
+        //将String类的metatable复制到msg
+        LuaTable stringMetaTable = (LuaTable) LuaString.s_metatable.get(INDEX);
+        LuaValue[] keys = stringMetaTable.keys();
+        for (int i = 0; i < keys.length; i++) index.set(keys[i], stringMetaTable.get(keys[i]));
 
         index.set("appendText", getOpFunction(APPEND_TEXT));
         index.set("appendFace", getOpFunction(APPEND_FACE));
@@ -49,13 +55,24 @@ public abstract class LuaMsg extends LuaObject {
         index.set("appendForward", getOpFunction(APPEND_FORWARD));
 
         index.set("setQuote", getOpFunction(SET_QUOTE));
+        index.set("getQuote", getOpFunction(GET_QUOTE));
         index.set("recall", getOpFunction(RECALL));
-        index.set("getSource", getOpFunction(GET_SOURCE));
+        index.set("getSource", getOpFunction(GET_SOURCE)); //获得消息的一个引用，可用于撤回，引用回复
+        index.set("toTable", getOpFunction(TO_TABLE)); //获得消息的一个引用，可用于撤回，引用回复
 
-        metaTable.set("__index", index);
+        metaTable.set(INDEX, index);
         return metaTable;
     }
 
+    @Override
+    public String checkjstring() {
+        return toString();
+    }
+
+    @Override
+    public LuaString checkstring() {
+        return LuaString.valueOf(toString());
+    }
 
     @Override
     public LuaValue tostring() {
