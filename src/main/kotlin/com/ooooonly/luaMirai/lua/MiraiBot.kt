@@ -12,12 +12,8 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
 
 class MiraiBot : LuaBot {
-    companion object {
-        var listeners: HashMap<Int, CompletableJob> = HashMap<Int, CompletableJob>()
-    }
-
     var bot: Bot
-
+    var listeners: HashMap<Int, CompletableJob> = HashMap<Int, CompletableJob>()
     constructor(account: Long, password: String) : super(account, password) {
         try {
             this.bot = Bot.getInstance(account)
@@ -33,7 +29,7 @@ class MiraiBot : LuaBot {
     override fun getSubscribeFunction(opcode: Int): SubscribeFunction? {
         return object : SubscribeFunction(opcode) {
             override fun onSubscribe(self: LuaValue, listener: LuaFunction): LuaValue {
-                var origin = listeners[opcode]
+                var origin = (self as MiraiBot).listeners[opcode]
                 if (origin != null) origin.complete();
                 var newListener = when (opcode) {
                     EVENT_MSG_FRIEND -> {
@@ -57,7 +53,7 @@ class MiraiBot : LuaBot {
                     }
                     else -> null
                 }
-                if (newListener != null) listeners[opcode] = newListener
+                if (newListener != null) (self as MiraiBot).listeners[opcode] = newListener
                 return self
             }
         }
