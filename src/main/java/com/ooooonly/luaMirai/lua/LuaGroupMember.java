@@ -7,7 +7,6 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 
 abstract public class LuaGroupMember extends LuaContact {
-
     public static final int GET_NICK = 0;
     public static final int GET_NAME_CARD = 1;
     public static final int GET_MUTE_REMAIN = 2;
@@ -18,13 +17,17 @@ abstract public class LuaGroupMember extends LuaContact {
     public static final int MUTE = 7;
     public static final int UN_MUTE = 8;
     public static final int KICK = 9;
+    public static final int IS_FRIEND = 10;
+    public static final int AS_FRIEND = 11;
+    public static final int GET_PERMISSION = 12;
+    public static final int SEND_MEG = 13;
 
     private static LuaTable metaTable;
 
     public LuaGroupMember(LuaBot luaBot, LuaGroup luaGroup, long id) {
         super(id);
-        this.set("bot", luaBot);
-        this.set("group", luaGroup);
+        this.rawset("bot", luaBot);
+        this.rawset("group", luaGroup);
     }
 
     @Override
@@ -32,17 +35,21 @@ abstract public class LuaGroupMember extends LuaContact {
         if (metaTable != null) return metaTable;
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
-        index.set("getNick", getOpFunction(GET_NICK));
-        index.set("getNameCard", getOpFunction(GET_NAME_CARD));
-        index.set("getMuteRemain", getOpFunction(GET_MUTE_REMAIN));
-        index.set("getSpecialTitle", getOpFunction(GET_SPECIAL_TITLE));
-        index.set("isMuted", getOpFunction(IS_MUTE));
-        index.set("isAdministrator", getOpFunction(IS_ADMINISTRATOR));
-        index.set("isOwner", getOpFunction(IS_OWNER));
-        index.set("mute", getOpFunction(MUTE));
-        index.set("unMute", getOpFunction(UN_MUTE));
-        index.set("kick", getOpFunction(KICK));
-        metaTable.set("__index", index);
+        index.rawset("getNick", getOpFunction(GET_NICK));
+        index.rawset("getNameCard", getOpFunction(GET_NAME_CARD));
+        index.rawset("getMuteRemain", getOpFunction(GET_MUTE_REMAIN));
+        index.rawset("getSpecialTitle", getOpFunction(GET_SPECIAL_TITLE));
+        index.rawset("isMuted", getOpFunction(IS_MUTE));
+        index.rawset("isAdministrator", getOpFunction(IS_ADMINISTRATOR));
+        index.rawset("isOwner", getOpFunction(IS_OWNER));
+        index.rawset("mute", getOpFunction(MUTE));
+        index.rawset("unMute", getOpFunction(UN_MUTE));
+        index.rawset("kick", getOpFunction(KICK));
+        index.rawset("isFriend", getOpFunction(IS_FRIEND));
+        index.rawset("asFriend", getOpFunction(AS_FRIEND));
+        index.rawset("getPermission", getOpFunction(GET_PERMISSION));
+        index.rawset("sendMsg", getOpFunction(SEND_MEG));
+        metaTable.rawset(INDEX, index);
         return metaTable;
     }
 

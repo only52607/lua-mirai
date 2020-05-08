@@ -7,71 +7,59 @@ import net.mamoe.mirai.contact.Friend
 
 import net.mamoe.mirai.message.MessageReceipt
 import net.mamoe.mirai.message.data.PlainText
-import org.luaj.vm2.LuaString
-import org.luaj.vm2.LuaTable
-import org.luaj.vm2.LuaValue
-import org.luaj.vm2.Varargs
+import org.luaj.vm2.*
 
-class MiraiFriend : LuaFriend {
-    var qq: Friend
+class MiraiFriend(var bot: MiraiBot, var friend: Friend) : LuaFriend(bot, friend.id) {
+    constructor(bot: MiraiBot, id: Long) : this(bot, bot.bot.getFriend(id))
 
-    constructor(bot: LuaBot, id: Long) : super(bot, id) {
-        qq = (bot as MiraiBot).bot.getFriend(id);
+    init {
+        this.rawset("nick", LuaValue.valueOf(this.friend.nick))
+        this.rawset("avatarUrl", LuaValue.valueOf(this.friend.avatarUrl))
+        this.rawset("isActive", LuaValue.valueOf(this.friend.isActive))
     }
 
-    constructor(bot: LuaBot, qq: Friend) : super(bot, qq.id) {
-        this.qq = qq
-    }
-
-    override fun getOpFunction(opcode: Int): OpFunction {
-        return object : OpFunction(opcode) {
-            override fun op(varargs: Varargs): Varargs {
-                var luaFriend: MiraiFriend = varargs.arg1() as MiraiFriend
-                return when (opcode) {
-                    GET_NICK -> LuaValue.valueOf(luaFriend.qq.nick)
-                    GET_AVATAR_URL -> LuaValue.valueOf(luaFriend.qq.avatarUrl)
-                    IS_ACTIVE -> LuaValue.valueOf(luaFriend.qq.isActive)
-                    /*
-                    QUERY_REMARK -> runBlocking {
-                        LuaValue.valueOf(luaFriend.qq.queryRemark().value)
-                    }*/
-                    /*
-                    QUERY_PROFILE -> runBlocking {
-                        var profile = luaFriend.qq.
-                        var profileTable = LuaTable()
-                        profileTable.set("chineseName", LuaValue.valueOf(profile.chineseName))
-                        profileTable.set("company", LuaValue.valueOf(profile.company))
-                        profileTable.set("email", LuaValue.valueOf(profile.email))
-                        profileTable.set("englishName", LuaValue.valueOf(profile.englishName))
-                        profileTable.set("homepage", LuaValue.valueOf(profile.homepage))
-                        profileTable.set("nickname", LuaValue.valueOf(profile.nickname))
-                        profileTable.set("personalStatement", LuaValue.valueOf(profile.personalStatement))
-                        profileTable.set("phone", LuaValue.valueOf(profile.phone))
-                        profileTable.set("school", LuaValue.valueOf(profile.school))
-                        profileTable.set("zipCode", LuaValue.valueOf(profile.zipCode))
-                        profileTable.set("qAge", profile.qAge?.let { LuaValue.valueOf(it) })
-                        profileTable.set("birthday", LuaValue.valueOf(profile.birthday.toString()))
-                        profileTable.set("gender", LuaValue.valueOf(profile.gender.name))
-                        profileTable.set("qq", LuaValue.valueOf(profile.qq.toString()))
-                        profileTable
-                    }*/
-                    SEND_MESSAGE -> {
-                        var msg = varargs.arg(2);
-                        var receipt: MessageReceipt<Friend>? = null
-                        if (msg is LuaString) {
-                            runBlocking {
-                                //var chain = MessageAnalyzer.toMessageChain(msg.checkjstring(), luaFriend.qq)
-                                receipt = luaFriend.qq.sendMessage(PlainText(msg.checkjstring()))
-                            }
-                        } else if (msg is LuaMsg) {
-                            runBlocking {
-                                receipt = luaFriend.qq.sendMessage((msg as MiraiMsg).chain)
-                            }
-                        }
-                        receipt?.let { MiraiSource(it) } ?: LuaValue.NIL
+    override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
+        override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
+            if (!(it is MiraiFriend)) throw LuaError("The reference object must be MiraiFriend")
+            when (opcode) {
+                GET_NICK -> LuaValue.valueOf(it.friend.nick)
+                GET_AVATAR_URL -> LuaValue.valueOf(it.friend.avatarUrl)
+                IS_ACTIVE -> LuaValue.valueOf(it.friend.isActive)
+                SEND_MESSAGE -> varargs.arg(2).let { msg ->
+                    runBlocking {
+                        when (msg) {
+                            is LuaString -> it.friend.sendMessage(PlainText(msg.checkjstring()))
+                            is MiraiMsg -> it.friend.sendMessage(msg.chain)
+                            else -> null
+                        }?.let {
+                            MiraiSource(it)
+                        } ?: throw LuaError("Unsupported message type,please use String or MiraiMsg!")
                     }
-                    else -> LuaValue.NIL
                 }
+                else -> LuaValue.NIL
+                /*
+                QUERY_REMARK -> runBlocking {
+                    LuaValue.valueOf(luaFriend.qq.queryRemark().value)
+                }
+                QUERY_PROFILE -> runBlocking {
+                    var profile = luaFriend.qq.
+                    var profileTable = LuaTable()
+                    profileTable.set("chineseName", LuaValue.valueOf(profile.chineseName))
+                    profileTable.set("company", LuaValue.valueOf(profile.company))
+                    profileTable.set("email", LuaValue.valueOf(profile.email))
+                    profileTable.set("englishName", LuaValue.valueOf(profile.englishName))
+                    profileTable.set("homepage", LuaValue.valueOf(profile.homepage))
+                    profileTable.set("nickname", LuaValue.valueOf(profile.nickname))
+                    profileTable.set("personalStatement", LuaValue.valueOf(profile.personalStatement))
+                    profileTable.set("phone", LuaValue.valueOf(profile.phone))
+                    profileTable.set("school", LuaValue.valueOf(profile.school))
+                    profileTable.set("zipCode", LuaValue.valueOf(profile.zipCode))
+                    profileTable.set("qAge", profile.qAge?.let { LuaValue.valueOf(it) })
+                    profileTable.set("birthday", LuaValue.valueOf(profile.birthday.toString()))
+                    profileTable.set("gender", LuaValue.valueOf(profile.gender.name))
+                    profileTable.set("qq", LuaValue.valueOf(profile.qq.toString()))
+                    profileTable
+                }*/
             }
         }
     }

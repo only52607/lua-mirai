@@ -60,13 +60,6 @@ public abstract class LuaBot extends LuaContact {
         super(account);
         this.set("account", LuaValue.valueOf(account));
         this.set("password", LuaValue.valueOf(password));
-        /*
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }).start();*/
     }
 
     @Override
@@ -74,26 +67,26 @@ public abstract class LuaBot extends LuaContact {
         if (metaTable != null) return metaTable;
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
-        index.set("login", getOpFunction(LOGIN));
-        index.set("join", getOpFunction(JOIN));
-        index.set("closeAndJoin", getOpFunction(CLOSE_AND_JOIN));
-        index.set("getFriend", getOpFunction(GET_FRIEND));
-        index.set("getGroup", getOpFunction(GET_GROUP));
-        index.set("getSelfQQ", getOpFunction(GET_SELF_QQ));
-        index.set("getId", getOpFunction(GET_ID));
-        index.set("addFriend", getOpFunction(ADD_FRIEND));
-        index.set("containsFriend", getOpFunction(CONTAINS_FRIEND));
-        index.set("containsGroup", getOpFunction(CONTAINS_GROUP));
-        index.set("isActive", getOpFunction(IS_ACTIVE));
+        index.rawset("login", getOpFunction(LOGIN));
+        index.rawset("join", getOpFunction(JOIN));
+        index.rawset("closeAndJoin", getOpFunction(CLOSE_AND_JOIN));
+        index.rawset("getFriend", getOpFunction(GET_FRIEND));
+        index.rawset("getGroup", getOpFunction(GET_GROUP));
+        index.rawset("getSelfQQ", getOpFunction(GET_SELF_QQ));
+        index.rawset("getId", getOpFunction(GET_ID));
+        index.rawset("addFriend", getOpFunction(ADD_FRIEND));
+        index.rawset("containsFriend", getOpFunction(CONTAINS_FRIEND));
+        index.rawset("containsGroup", getOpFunction(CONTAINS_GROUP));
+        index.rawset("isActive", getOpFunction(IS_ACTIVE));
 
-        index.set("subscribeFriendMsg", getSubscribeFunction(EVENT_MSG_FRIEND));
-        index.set("subscribeGroupMsg", getSubscribeFunction(EVENT_MSG_GROUP));
-        metaTable.set("__index", index);
+        index.rawset("subscribeFriendMsg", getSubscribeFunction(EVENT_MSG_FRIEND));
+        index.rawset("subscribeGroupMsg", getSubscribeFunction(EVENT_MSG_GROUP));
+        metaTable.set(INDEX, index);
         return metaTable;
     }
 
     @Override
     public int type() {
-        return TYPE_LUA_GROUP;
+        return TYPE_LUA_BOT;
     }
 }

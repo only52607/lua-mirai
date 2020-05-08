@@ -33,19 +33,19 @@ public abstract class LuaGroup extends LuaContact {
         if (metaTable != null) return metaTable;
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
-        index.set("sendMsg", getOpFunction(SEND_MSG));
-        index.set("getMember", getOpFunction(GET_MEMBER));
-        index.set("getAvatarUrl", getOpFunction(GET_AVATAR_URL));
-        index.set("getBotMuteRemain", getOpFunction(GET_BOT_MUTE_REMAIN));
-        index.set("getBotAsMember", getOpFunction(GET_BOT_AS_MEMBER));
-        index.set("getBotPermission", getOpFunction(GET_BOT_PERMISSION));
-        index.set("getName", getOpFunction(GET_NAME));
-        index.set("getOwner", getOpFunction(GET_OWNER));
-        index.set("contains", getOpFunction(CONTAINS));
-        index.set("getMemberOrNull", getOpFunction(GET_MEMBER_OR_NULL));
-        index.set("quit", getOpFunction(QUIT));
+        index.rawset("sendMsg", getOpFunction(SEND_MSG));
+        index.rawset("getMember", getOpFunction(GET_MEMBER));
+        index.rawset("getAvatarUrl", getOpFunction(GET_AVATAR_URL));
+        index.rawset("getBotMuteRemain", getOpFunction(GET_BOT_MUTE_REMAIN));
+        index.rawset("getBotAsMember", getOpFunction(GET_BOT_AS_MEMBER));
+        index.rawset("getBotPermission", getOpFunction(GET_BOT_PERMISSION));
+        index.rawset("getName", getOpFunction(GET_NAME));
+        index.rawset("getOwner", getOpFunction(GET_OWNER));
+        index.rawset("contains", getOpFunction(CONTAINS));
+        index.rawset("getMemberOrNull", getOpFunction(GET_MEMBER_OR_NULL));
+        index.rawset("quit", getOpFunction(QUIT));
         //index.set("toFullString", getOpFunction(TO_FULL_STRING));
-        metaTable.set("__index", index);
+        metaTable.rawset(INDEX, index);
         return metaTable;
     }
 

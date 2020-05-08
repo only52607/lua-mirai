@@ -7,7 +7,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 
 public abstract class LuaSource extends LuaObject {
-    public static final int RECALL = 0;
+    public static final int RECALL = -1;
 
     private static LuaTable metaTable;
 
@@ -21,9 +21,9 @@ public abstract class LuaSource extends LuaObject {
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
 
-        index.set("recall", getOpFunction(RECALL));
+        index.rawset("recall", getOpFunction(RECALL));
 
-        metaTable.set("__index", index);
+        metaTable.set(INDEX, index);
         return metaTable;
     }
 

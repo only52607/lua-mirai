@@ -4,7 +4,7 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 
-public abstract class LuaMsg extends LuaObject {
+public abstract class LuaMsg extends LuaSource {
     public static final int APPEND_TEXT = 0;
     public static final int APPEND_FACE = 1;
     public static final int APPEND_IMAGE = 2;
@@ -19,10 +19,9 @@ public abstract class LuaMsg extends LuaObject {
     public static final int APPEND_XML = 10;
     public static final int APPEND_JSON = 11;
     public static final int SET_QUOTE = 12;
-    public static final int RECALL = 13;
-    public static final int GET_SOURCE = 14;
-    public static final int GET_QUOTE = 15;
-    public static final int TO_TABLE = 16;
+    public static final int GET_SOURCE = 13;
+    public static final int GET_QUOTE = 14;
+    public static final int TO_TABLE = 15;
 
     private static LuaTable metaTable;
 
@@ -58,7 +57,7 @@ public abstract class LuaMsg extends LuaObject {
         index.set("getQuote", getOpFunction(GET_QUOTE));
         index.set("recall", getOpFunction(RECALL));
         index.set("getSource", getOpFunction(GET_SOURCE)); //获得消息的一个引用，可用于撤回，引用回复
-        index.set("toTable", getOpFunction(TO_TABLE)); //获得消息的一个引用，可用于撤回，引用回复
+        index.set("toTable", getOpFunction(TO_TABLE)); //消息转为表
 
         metaTable.set(INDEX, index);
         return metaTable;

@@ -9,10 +9,10 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 public abstract class LuaContact extends LuaObject {
     protected long id;
-    protected static final int TYPE_LUA_BOT = 100;
-    protected static final int TYPE_LUA_QQ = 101;
-    protected static final int TYPE_LUA_GROUP = 102;
-    protected static final int TYPE_LUA_MEMBER = 103;
+    protected static final int TYPE_LUA_BOT = 1000;
+    protected static final int TYPE_LUA_FRIEND = 1001;
+    protected static final int TYPE_LUA_GROUP = 1002;
+    protected static final int TYPE_LUA_MEMBER = 1003;
 
     protected LuaContact(long id) {
         super();

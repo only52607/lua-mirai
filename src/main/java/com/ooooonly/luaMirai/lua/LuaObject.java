@@ -8,8 +8,9 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 
 public abstract class LuaObject extends LuaTable {
-    protected static final int TYPE_MSG = 1000;
-    protected static final int TYPE_SOURCE = 1000;
+    protected static final int TYPE_CONTACT = 100;
+    protected static final int TYPE_MSG = 101;
+    protected static final int TYPE_SOURCE = 102;
 
     protected LuaObject() {
         this.setmetatable(getMetaTable());

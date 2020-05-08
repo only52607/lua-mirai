@@ -34,13 +34,13 @@ public abstract class LuaFriend extends LuaContact {
         index.rawset("isActive", getOpFunction(IS_ACTIVE));
         //index.rawset("queryRemark", getOpFunction(QUERY_REMARK));
         //index.rawset("queryProfile", getOpFunction(QUERY_PROFILE));
-        metaTable.set("__index", index);
+        metaTable.set(INDEX, index);
         return metaTable;
     }
 
     @Override
     public int type() {
-        return TYPE_LUA_QQ;
+        return TYPE_LUA_FRIEND;
     }
 
 }
