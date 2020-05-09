@@ -21,36 +21,11 @@ bot:join() --挂起机器人
 ```
 
 
-## 运行第一个lua-mirai脚本
+## 使用lua-mirai脚本
+### 安卓端
+请参阅 [`MiraiAndroid`](https://github.com/mzdluo123/MiraiAndroid)
 
-1. 安装java运行环境(jdk/jre)
-    - 请参阅 [`RUNOOB:Java 开发环境配置`](https://www.runoob.com/java/java-environment-setup.html)
-2. 获取jar
-    - [`下载最新版jar包`](https://github.com/only52607/lua-mirai/releases)
-    - 手动编译
-        1. 打开idea，导入lua-mirai项目
-        2. 点击上方工具栏 Build->Build Artifacts
-        3. 稍等片刻，执行完毕后将会在工程目录out文件夹中找到jar包
-        4. 使用压缩软件打开jar包,进入META-INF目录,并删除**当前目录下除了maven文件夹和MANIFEST.MF以外的所有文件**,并保存。
-3. 开始使用
-    - 使用控制台界面
-        1. 在jar包所在目录创建main.lua文件，填入以下内容并更改账号密码
-            ```LUA
-            --来自示例复读机源码
-            local bot = Bot(qq账号, "QQ密码"):login() --创建机器人并登录
-            bot:subscribeFriendMsg(function(bot, msg, sender) --监听好友消息
-               sender:sendMsg(msg) --回复相同消息
-            end) 
-            bot:join() --挂起机器人
-            ```
-        2. 进入jar包所在目录，运行以下命令(假设jar包名称为lua-mirai.jar)
-            ```
-            java -jar lua-mirai.jar main.lua
-            ```
-        3. 等待机器人登录完毕，并向机器人发送任意消息，机器人将会回复相同内容。
-    - 启动可视化界面
-        - 待完成，敬请期待。
-
+API文档[`lua-mirai android api`](https://github.com/only52607/lua-mirai/blob/master/docs/miraiandroid.md)
 
 ## 开发lua-mirai脚本
 
