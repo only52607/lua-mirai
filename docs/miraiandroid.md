@@ -3,7 +3,7 @@
 # 下载示例脚本
 你可以在这里找到示例脚本： [`下载示例脚本`](https://github.com/only52607/lua-mirai/tree/master/demos)
 
-#开始
+# 开始
 ## Event.onLoad
 当脚本被载入后，Event.onLoad函数被调用并传入MiraiBot对象，你可以在此函数内进行一些初始化操作，如监听消息事件。
 ``` lua
