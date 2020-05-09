@@ -13,6 +13,10 @@ import org.luaj.vm2.lib.jse.*
 class MiraiGlobals() : Globals() {
     var mBot: MiraiBot? = null
 
+    companion object {
+        var idCounter = 0
+    }
+
     interface Printable {
         fun print(msg: String?)
     }
@@ -109,7 +113,7 @@ class MiraiGlobals() : Globals() {
     }
 
     fun onLoad(bot: Bot) = onLoadFun?.let {
-        mBot = MiraiBot(bot)
+        mBot = MiraiBot(bot, idCounter++)
         it.call(mBot)
     }
 

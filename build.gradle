@@ -12,11 +12,9 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '0.1.1'
+version '0.1.5'
 
 sourceCompatibility = 1.8
-
-
 
 repositories {
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
@@ -65,7 +63,7 @@ publish {
     userOrg = 'ooooonly'
     groupId = 'com.ooooonly'
     artifactId = 'luaMirai'
-    publishVersion = '0.1.1'
+    publishVersion = '0.1.5'
     desc = 'lua support for mirai'
     website = 'https://github.com/only52607/lua-mirai'
 }
