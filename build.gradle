@@ -12,7 +12,7 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '0.1.5'
+version '0.1.6'
 
 sourceCompatibility = 1.8
 
@@ -63,7 +63,7 @@ publish {
     userOrg = 'ooooonly'
     groupId = 'com.ooooonly'
     artifactId = 'luaMirai'
-    publishVersion = '0.1.5'
+    publishVersion = '0.1.6'
     desc = 'lua support for mirai'
     website = 'https://github.com/only52607/lua-mirai'
 }
