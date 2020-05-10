@@ -69,6 +69,8 @@ group:发送信息的群对象
 
 sender:发送信息的群成员对象
 
+## 其他事件
+见 [`事件类型`](/docs/events.md)
 
 
 # 消息对象（MiraiMsg）
@@ -89,6 +91,8 @@ Image( 图片URL ,群或好友 ) : 构造一个图片
 
 Face(表情代码) : 构造一个表情
 
+所有消息类型见 [`消息类型`](/docs/msgtypes.md)
+
 ## 消息拼接
 使用appendXXX 或 + 或 .. 进行拼接，下面是一个简单的示例
 
@@ -101,9 +105,15 @@ msg对象支持使用lua的所有标准字符串处理函数
 
 如寻找消息中的文本可以使用以下方式：
 
+``` lua
 msg:find("pattern")
+```
 
-或 string.find(msg,"pattern")
+以上代码等同于 
+
+``` lua
+string.find(msg,"pattern")
+```
 
 所有字符串处理函数见 [`lua字符串处理`](https://www.runoob.com/lua/lua-strings.html)
 
@@ -111,6 +121,17 @@ msg:find("pattern")
 ``` lua
 msg:recall()
 --或 bot:recall(msg)
+```
+
+# 消息源对象（MiraiSource）
+消息源对象是由消息对象创建的一个引用，可用于撤回，引用回复。
+可通过sendMsg方法或msg:getSource()获取。
+
+示例：
+``` lua
+--发送消息后立即撤回
+local source = sender.sendMsg("看不见我")
+source:recall() 
 ```
 
 # 机器人对象 (MiraiBot)
