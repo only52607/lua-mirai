@@ -1,17 +1,15 @@
 package com.ooooonly.luaMirai.lua
 
-import io.ktor.util.Hash
-import javafx.scene.Group
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.*
+import net.mamoe.mirai.data.MemberInfo
 import net.mamoe.mirai.event.Event
-import net.mamoe.mirai.event.events.BotEvent
+import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessageEvent
 import net.mamoe.mirai.message.GroupMessageEvent
-import net.mamoe.mirai.message.data.Face.IdList.e
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaValue
@@ -60,33 +58,191 @@ class MiraiBot : LuaBot {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(self, MiraiMsg(it.message, self.bot), g, MiraiGroupMember(self, g, it.sender))
                 }
-                else -> null
-            }?.let { listeners[self.scriptId]?.set(opcode, it) }
-            /*
-            when (opcode) {
-                EVENT_MSG_FRIEND -> self.bot.subscribeAlways<FriendMessageEvent> {
-                    listener.call(self, MiraiMsg(it.message, it.bot), MiraiFriend(self, it.sender)).let { args ->
-                        if (args.narg() != 0 && args.arg1() != LuaValue.NIL) it.intercept()
-                    }
+                EVENT_MSG_SEND_FRIEND -> self.bot.subscribeLuaFunction<MessageSendEvent.FriendMessageSendEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, MiraiMsg(it.message, it.bot), MiraiFriend(self, it.target))
                 }
-                EVENT_MSG_GROUP -> self.bot.subscribeAlways<GroupMessageEvent> {
+                EVENT_MSG_SEND_GROUP -> self.bot.subscribeLuaFunction<MessageSendEvent.GroupMessageSendEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, MiraiMsg(it.message, self.bot), MiraiGroup(self, it.target))
+                }
+
+                EVENT_BOT_ONLINE -> self.bot.subscribeLuaFunction<BotOnlineEvent>(listener, process) {
+                    arrayOf(self)
+                }
+                EVENT_BOT_OFFLINE -> self.bot.subscribeLuaFunction<BotOfflineEvent>(listener, process) {
+                    arrayOf(self)
+                }
+                EVENT_BOT_RE_LOGIN -> self.bot.subscribeLuaFunction<BotReloginEvent>(listener, process) {
+                    arrayOf(self)
+                }
+                EVENT_BOT_CHANGE_GROUP_PERMISSION -> self.bot.subscribeLuaFunction<BotGroupPermissionChangeEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(
+                        self,
+                        MiraiGroup(self, it.group),
+                        LuaValue.valueOf(it.new.name),
+                        LuaValue.valueOf(it.origin.name)
+                    )
+                }
+                EVENT_BOT_MUTED -> self.bot.subscribeLuaFunction<BotMuteEvent>(listener, process) {
+                    arrayOf(self, MiraiGroup(self, it.group))
+                }
+                EVENT_BOT_JOIN_GROUP -> self.bot.subscribeLuaFunction<BotJoinGroupEvent>(listener, process) {
+                    arrayOf(self, MiraiGroup(self, it.group))
+                }
+                /*EVENT_BOT_KICKED -> self.bot.subscribeLuaFunction<>(listener, process) {
+                    arrayOf(self, MiraiGroup(self,it.group),it.)
+                }*/
+                EVENT_BOT_LEAVE -> self.bot.subscribeLuaFunction<BotLeaveEvent>(listener, process) {
+                    arrayOf(self, MiraiGroup(self, it.group))
+                }
+
+                EVENT_GROUP_CHANGE_NAME -> self.bot.subscribeLuaFunction<GroupNameChangeEvent>(listener, process) {
                     var g = MiraiGroup(self, it.group)
-                    listener.invoke(
-                        LuaValue.varargsOf(
-                            arrayOf<LuaValue>(
-                                self,
-                                MiraiMsg(it.message, (self as MiraiBot).bot),
-                                g,
-                                MiraiGroupMember(self, g, it.sender)
-                            )
-                        )
-                    ).let { args ->
-                        if (args.narg() != 0 && args.arg1() != LuaValue.NIL) it.intercept()
-                    }
+                    arrayOf(
+                        self,
+                        g,
+                        MiraiGroupMember(self, g, it.operatorOrBot),
+                        LuaValue.valueOf(it.new),
+                        LuaValue.valueOf(it.origin)
+                    )
                 }
+                /*EVENT_GROUP_CHANGE_SETTING -> self.bot.subscribeLuaFunction<GroupSettingChangeEvent>(listener, process) {
+                    arrayOf(self, MiraiGroup(self,it.group))
+                }*/
+                EVENT_GROUP_CHANGE_ENTRANCE_ANNOUNCEMENT -> self.bot.subscribeLuaFunction<GroupEntranceAnnouncementChangeEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, MiraiGroup(self, it.group))
+                }
+                EVENT_GROUP_CHANGE_ALLOW_CONFESS_TALK -> self.bot.subscribeLuaFunction<GroupAllowConfessTalkEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, MiraiGroup(self, it.group))
+                }
+                EVENT_GROUP_CHANGE_ALLOW_MEMBER_INVITE -> self.bot.subscribeLuaFunction<GroupAllowConfessTalkEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, MiraiGroup(self, it.group))
+                }
+                EVENT_GROUP_REQUEST -> self.bot.subscribeLuaFunction<BotInvitedJoinGroupRequestEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, LuaValue.valueOf(it.groupId.toInt()))
+                }
+
+                EVENT_GROUP_MEMBER_JOIN -> self.bot.subscribeLuaFunction<MemberJoinEvent>(listener, process) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(self, g, MiraiGroupMember(self, g, it.member))
+                }
+                EVENT_GROUP_MEMBER_INVITED -> self.bot.subscribeLuaFunction<MemberJoinRequestEvent>(listener, process) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(
+                        self,
+                        g,
+                        LuaValue.valueOf(it.eventId.toString()),
+                        LuaValue.valueOf(it.fromId.toString()),
+                        LuaValue.valueOf(it.message)
+                    )
+                }
+                EVENT_GROUP_MEMBER_KICKED -> self.bot.subscribeLuaFunction<MemberLeaveEvent>(listener, process) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(self, g, MiraiGroupMember(self, g, it.member))
+                }
+                EVENT_GROUP_MEMBER_CHANGE_CARD -> self.bot.subscribeLuaFunction<MemberCardChangeEvent>(
+                    listener,
+                    process
+                ) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(
+                        self,
+                        g,
+                        MiraiGroupMember(self, g, it.member),
+                        LuaValue.valueOf(it.new),
+                        LuaValue.valueOf(it.origin)
+                    )
+                }
+                EVENT_GROUP_MEMBER_CHANGE_SPECIAL_TITLE -> self.bot.subscribeLuaFunction<MemberSpecialTitleChangeEvent>(
+                    listener,
+                    process
+                ) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(
+                        self,
+                        g,
+                        MiraiGroupMember(self, g, it.member),
+                        LuaValue.valueOf(it.new),
+                        LuaValue.valueOf(it.origin)
+                    )
+                }
+                EVENT_GROUP_MEMBER_CHANGE_PERMISSION -> self.bot.subscribeLuaFunction<MemberPermissionChangeEvent>(
+                    listener,
+                    process
+                ) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(
+                        self,
+                        g,
+                        MiraiGroupMember(self, g, it.member),
+                        LuaValue.valueOf(it.new.name),
+                        LuaValue.valueOf(it.origin.name)
+                    )
+                }
+                EVENT_GROUP_MEMBER_MUTED -> self.bot.subscribeLuaFunction<MemberMuteEvent>(listener, process) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(self, g, MiraiGroupMember(self, g, it.member), LuaValue.valueOf(it.durationSeconds))
+                }
+                EVENT_GROUP_MEMBER_UN_MUTED -> self.bot.subscribeLuaFunction<MemberUnmuteEvent>(listener, process) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(self, g, MiraiGroupMember(self, g, it.member))
+                }
+
+                EVENT_FRIEND_CHANGE_REMARK -> self.bot.subscribeLuaFunction<FriendRemarkChangeEvent>(
+                    listener,
+                    process
+                ) {
+                    arrayOf(self, MiraiFriend(self, it.friend), LuaValue.valueOf(it.newName))
+                }
+                EVENT_FRIEND_ADDED -> self.bot.subscribeLuaFunction<FriendAddEvent>(listener, process) {
+                    arrayOf(self, MiraiFriend(self, it.friend))
+                }
+                EVENT_FRIEND_DELETE -> self.bot.subscribeLuaFunction<FriendDeleteEvent>(listener, process) {
+                    arrayOf(self, MiraiFriend(self, it.friend))
+                }
+                EVENT_FRIEND_REQUEST -> self.bot.subscribeLuaFunction<NewFriendRequestEvent>(listener, process) {
+                    it.fromGroup?.let { g ->
+                        arrayOf(
+                            self,
+                            LuaValue.valueOf(it.eventId.toInt()),
+                            MiraiGroup(self, g),
+                            LuaValue.valueOf(it.message),
+                            LuaValue.valueOf(it.fromId.toInt()),
+                            LuaValue.valueOf(it.fromNick)
+                        )
+                    } ?: arrayOf(
+                        self,
+                        LuaValue.valueOf(it.eventId.toInt()),
+                        LuaValue.NIL,
+                        LuaValue.valueOf(it.message),
+                        LuaValue.valueOf(it.fromId.toInt()),
+                        LuaValue.valueOf(it.fromNick)
+                    )
+                }
+
                 else -> null
             }?.let { listeners[self.scriptId]?.set(opcode, it) }
-            */
+
         }
     }
 

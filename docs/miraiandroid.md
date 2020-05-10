@@ -312,7 +312,7 @@ Thread(
 
 其他用法请参阅 [`CSDN:在Lua中操作Java对象`](https://blog.csdn.net/lgj123xj/article/details/81677036)
 
-## 增加的Lua语法特性(基于lua5.2x)
+## 增加的Lua语法特性(基于lua5.2.x)
 
 ### 中文命名支持，示例：
 ``` lua
