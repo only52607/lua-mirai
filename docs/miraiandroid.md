@@ -94,7 +94,7 @@ Face(表情代码) : 构造一个表情
 所有消息类型见 [`消息类型`](/docs/msgtypes.md)
 
 ## 消息拼接
-使用appendXXX 或 + 或 .. 进行拼接，下面是一个简单的示例
+使用appendXXX 或 + 或 .. 进行拼接，下面是一个简单的示例：
 
 ``` lua
 Msg("hello"):appendText("world") + "lua" .. Msg():appendImage("http://xxxxx",sender) .. Face(1)
