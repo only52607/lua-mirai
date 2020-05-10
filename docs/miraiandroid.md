@@ -221,6 +221,7 @@ group
 ## 方法
 
 getNick
+
 getNameCard
 
 getMuteRemain
@@ -310,3 +311,16 @@ Thread(
 ```
 
 其他用法请参阅 [`CSDN:在Lua中操作Java对象`](https://blog.csdn.net/lgj123xj/article/details/81677036)
+
+## 增加的Lua语法特性
+
+### 中文命名支持，示例：
+``` lua
+    function 相加(a,b)
+        return a+b
+    end
+    function 输出(...)
+        print(...)
+    end
+    输出(相加(1,1))
+```
