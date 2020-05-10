@@ -20,7 +20,7 @@ class MiraiGroupMember(var bot: MiraiBot, var group: MiraiGroup, var member: Mem
 
     override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
         override fun op(varargs: Varargs): LuaValue = varargs.arg1().let {
-            if (!(it is MiraiGroupMember)) throw LuaError("The reference object must be MiraiGroupMember")
+            if (it !is MiraiGroupMember) throw LuaError("The reference object must be MiraiGroupMember")
             when (opcode) {
                 GET_NICK -> LuaValue.valueOf(it.member.nick)
                 GET_NAME_CARD -> LuaValue.valueOf(it.member.nameCard)

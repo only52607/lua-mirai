@@ -22,7 +22,7 @@ class MiraiGroup(var bot: MiraiBot, var group: Group) : LuaGroup(bot, group.id) 
 
     override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
         override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
-            if (!(it is MiraiGroup)) throw LuaError("The reference object must be MiraiGroup")
+            if (it !is MiraiGroup) throw LuaError("The reference object must be MiraiGroup")
             when (opcode) {
                 GET_MEMBER -> MiraiGroupMember(it.get("bot") as MiraiBot, it, varargs.optlong(2, 0))
                 GET_AVATAR_URL -> LuaValue.valueOf(it.group.avatarUrl)

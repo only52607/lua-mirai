@@ -20,7 +20,7 @@ class MiraiFriend(var bot: MiraiBot, var friend: Friend) : LuaFriend(bot, friend
 
     override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
         override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
-            if (!(it is MiraiFriend)) throw LuaError("The reference object must be MiraiFriend")
+            if (it !is MiraiFriend) throw LuaError("The reference object must be MiraiFriend")
             when (opcode) {
                 GET_NICK -> LuaValue.valueOf(it.friend.nick)
                 GET_AVATAR_URL -> LuaValue.valueOf(it.friend.avatarUrl)

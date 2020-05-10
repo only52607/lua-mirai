@@ -1,13 +1,7 @@
 package com.ooooonly.luaMirai.lua;
 
-import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
-
 
 public abstract class LuaBot extends LuaContact {
     public static final int LOGIN = 0;
@@ -81,6 +75,41 @@ public abstract class LuaBot extends LuaContact {
 
         index.rawset("subscribeFriendMsg", getSubscribeFunction(EVENT_MSG_FRIEND));
         index.rawset("subscribeGroupMsg", getSubscribeFunction(EVENT_MSG_GROUP));
+        index.rawset("subscribeFriendMsgSend", getSubscribeFunction(EVENT_MSG_SEND_FRIEND));
+        index.rawset("subscribeGroupMsgSend", getSubscribeFunction(EVENT_MSG_SEND_GROUP));
+
+        index.rawset("subscribeBotOnlineEvent", getSubscribeFunction(EVENT_BOT_ONLINE));
+        index.rawset("subscribeBotOfflineEvent", getSubscribeFunction(EVENT_BOT_OFFLINE));
+        index.rawset("subscribeBotReloginEvent", getSubscribeFunction(EVENT_BOT_RE_LOGIN));
+
+        index.rawset("subscribeBotGroupPermissionChangeEvent", getSubscribeFunction(EVENT_BOT_CHANGE_GROUP_PERMISSION));
+        index.rawset("subscribeBoMutedEvent", getSubscribeFunction(EVENT_BOT_MUTED));
+        index.rawset("subscribeBotJoinGroupEvent", getSubscribeFunction(EVENT_BOT_JOIN_GROUP));
+        index.rawset("subscribeBotKickedEvent", getSubscribeFunction(EVENT_BOT_KICKED));
+        index.rawset("subscribeBotLeaveEvent", getSubscribeFunction(EVENT_BOT_LEAVE));
+
+        index.rawset("subscribeGroupRequestEvent", getSubscribeFunction(EVENT_GROUP_REQUEST));
+        index.rawset("subscribeGroupNameChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_NAME));
+        index.rawset("subscribeGroupSettingChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_SETTING));
+        index.rawset("subscribeGroupEntranceAnnouncementChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_ENTRANCE_ANNOUNCEMENT));
+        index.rawset("subscribeAllowAnonymousChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_ALLOW_ANONYMOUS));
+        index.rawset("subscribeAllowConfessTalkChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_ALLOW_CONFESS_TALK));
+        index.rawset("subscribeAllowMemberInviteChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_ALLOW_MEMBER_INVITE));
+
+        index.rawset("subscribeMemberJoinEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_JOIN));
+        index.rawset("subscribeMemberInvitedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_INVITED));
+        index.rawset("subscribeMemberKickEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_KICKED));
+        index.rawset("subscribeMemberCardChangedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_CARD));
+        index.rawset("subscribeMemberSpecialTitleChangeEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_SPECIAL_TITLE));
+        index.rawset("subscribeMemberPermissionChangedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_PERMISSION));
+        index.rawset("subscribeMemberMutedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_MUTED));
+        index.rawset("subscribeMemberUnmutedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_UN_MUTED));
+
+        index.rawset("subscribeFriendRemarkChangedEvent", getSubscribeFunction(EVENT_FRIEND_CHANGE_REMARK));
+        index.rawset("subscribeFriendAddEvent", getSubscribeFunction(EVENT_FRIEND_ADDED));
+        index.rawset("subscribeFriendDeleteEvent", getSubscribeFunction(EVENT_FRIEND_DELETE));
+        index.rawset("subscribeFriendRequestEvent", getSubscribeFunction(EVENT_FRIEND_REQUEST));
+
         metaTable.set(INDEX, index);
         return metaTable;
     }

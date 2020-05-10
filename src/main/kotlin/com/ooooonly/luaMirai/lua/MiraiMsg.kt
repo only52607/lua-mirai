@@ -56,7 +56,7 @@ class MiraiMsg : LuaMsg {
 
     override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
         override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
-            if (!(it is MiraiMsg)) throw LuaError("The reference object must be MiraiMsg")
+            if (it !is MiraiMsg) throw LuaError("The reference object must be MiraiMsg")
             it.also {
                 when (opcode) {
                     APPEND_TEXT -> it.append(varargs.optjstring(2, ""))
@@ -77,9 +77,9 @@ class MiraiMsg : LuaMsg {
                             else -> throw LuaError("Quote must be MiraiSource or MiraiMsg")
                         }
                     }
-                    RECALL -> runBlocking { it.chain[MessageSource]?.let { bot!!.recall(it) } }
-                    GET_QUOTE -> return it.chain[QuoteReply]?.source?.let { MiraiSource(it, bot!!) } ?: LuaValue.NIL
-                    GET_SOURCE -> return it.chain[MessageSource]?.let { MiraiSource(it, bot = bot!!) } ?: LuaValue.NIL
+                    RECALL -> runBlocking { it.chain[MessageSource]?.let { it.bot.recall(it) } }
+                    GET_QUOTE -> return it.chain[QuoteReply]?.source?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
+                    GET_SOURCE -> return it.chain[MessageSource]?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
                     TO_TABLE -> LuaTable().also { t ->
                         var i = 0
                         it.chain.forEachContent { t.insert(i++, MiraiMsg(it, bot)) }

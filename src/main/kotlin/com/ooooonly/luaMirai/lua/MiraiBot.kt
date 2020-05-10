@@ -1,13 +1,17 @@
 package com.ooooonly.luaMirai.lua
 
 import io.ktor.util.Hash
+import javafx.scene.Group
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.*
+import net.mamoe.mirai.event.Event
+import net.mamoe.mirai.event.events.BotEvent
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessageEvent
 import net.mamoe.mirai.message.GroupMessageEvent
+import net.mamoe.mirai.message.data.Face.IdList.e
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaValue
@@ -35,11 +39,30 @@ class MiraiBot : LuaBot {
         this.bot = bot
     }
 
+    private inline fun <reified E : BotEvent> Bot.subscribeLuaFunction(
+        luaFun: LuaFunction,
+        crossinline process: (LuaValue, Event) -> Unit,
+        crossinline block: E.(E) -> Array<LuaValue>
+    ) = subscribeAlways<E> {
+        process(luaFun.invoke(LuaValue.varargsOf(it.block(it))).arg1(), it)
+    }
+
     override fun getSubscribeFunction(opcode: Int): SubscribeFunction = object : SubscribeFunction(opcode) {
         override fun onSubscribe(self: LuaValue, listener: LuaFunction): LuaValue = self.also {
-            if (!(self is MiraiBot)) throw LuaError("The reference object must be MiraiBot")
-            listeners[self.scriptId]?.let { it[opcode]?.complete() }
-            if (listeners[self.scriptId] == null) listeners[self.scriptId] = HashMap()
+            if (self !is MiraiBot) throw LuaError("The reference object must be MiraiBot")
+            listeners[self.scriptId]?.let { it[opcode]?.complete() } ?: run { listeners[self.scriptId] = HashMap() }
+            var process = { lv: LuaValue, e: Event -> if (lv != LuaValue.NIL) e.intercept() }
+            when (opcode) {
+                EVENT_MSG_FRIEND -> self.bot.subscribeLuaFunction<FriendMessageEvent>(listener, process) {
+                    arrayOf(self, MiraiMsg(it.message, it.bot), MiraiFriend(self, it.sender))
+                }
+                EVENT_MSG_GROUP -> self.bot.subscribeLuaFunction<GroupMessageEvent>(listener, process) {
+                    var g = MiraiGroup(self, it.group)
+                    arrayOf(self, MiraiMsg(it.message, self.bot), g, MiraiGroupMember(self, g, it.sender))
+                }
+                else -> null
+            }?.let { listeners[self.scriptId]?.set(opcode, it) }
+            /*
             when (opcode) {
                 EVENT_MSG_FRIEND -> self.bot.subscribeAlways<FriendMessageEvent> {
                     listener.call(self, MiraiMsg(it.message, it.bot), MiraiFriend(self, it.sender)).let { args ->
@@ -63,6 +86,7 @@ class MiraiBot : LuaBot {
                 }
                 else -> null
             }?.let { listeners[self.scriptId]?.set(opcode, it) }
+            */
         }
     }
 
