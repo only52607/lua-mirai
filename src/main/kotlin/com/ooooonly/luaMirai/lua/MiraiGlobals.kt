@@ -23,23 +23,22 @@ class MiraiGlobals() : Globals() {
     }
 
     private var eventTable: LuaTable? = null
-        get() =
-            get("Event").also {
-                if (!(it is LuaTable)) return null
-            } as LuaTable
+        get() = get("Event").takeIf {
+            it is LuaTable
+        } as LuaTable?
 
     private var onLoadFun: LuaFunction? = null
         get() = eventTable?.let {
-            it.get("onLoad").also {
-                if (!(it is LuaFunction)) return null
-            } as LuaFunction
+            it.get("onLoad").takeIf {
+                it is LuaFunction
+            } as LuaFunction?
         }
 
     private var onFinishFun: LuaFunction? = null
         get() = eventTable?.let {
-            it.get("onFinish").also {
-                if (!(it is LuaFunction)) return null
-            } as LuaFunction
+            it.get("onFinish").takeIf {
+                it is LuaFunction
+            } as LuaFunction?
         }
 
     constructor(printable: Printable) : this() {
