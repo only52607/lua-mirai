@@ -1,5 +1,8 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.utils.checkArg
+import com.ooooonly.luaMirai.utils.checkMessageSource
+import com.ooooonly.luaMirai.utils.generateOpFunction
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.*
@@ -54,10 +57,13 @@ class MiraiMsg : LuaMsg {
         }
     }
 
-    override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
-        override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
-            if (it !is MiraiMsg) throw LuaError("The reference object must be MiraiMsg")
-            it.also {
+    override fun getOpFunction(opcode: Int): OpFunction = generateOpFunction(opcode) { op, varargs ->
+        varargs.checkArg<MiraiMsg>(1).let {
+            when (opcode) {
+                GET_QUOTE -> it.chain[QuoteReply]?.source?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
+                GET_SOURCE -> it.chain[MessageSource]?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
+                else -> null
+            } ?: it.also {
                 when (opcode) {
                     APPEND_TEXT -> it.append(varargs.optjstring(2, ""))
                     APPEND_FACE -> it.append(Face(varargs.optint(2, 0)))
@@ -70,16 +76,8 @@ class MiraiMsg : LuaMsg {
                     //APPEND_POKE -> append( PokeMessage(varargs.optjstring(2,""),varargs.optint(3,0),varargs.optint(4,-1) ) )
                     APPEND_POKE -> it.append(PokeMessage.Poke)
                     APPEND_IMAGE_FLASH -> getImage(varargs.arg(2), varargs.arg(3))?.let { image -> it.append(image) }
-                    SET_QUOTE -> varargs.arg(2).let { source ->
-                        when (source) {
-                            is MiraiSource -> it.append(QuoteReply(source.source))
-                            is MiraiMsg -> source.chain[MessageSource]?.let { s -> it.append(QuoteReply(s)) }
-                            else -> throw LuaError("Quote must be MiraiSource or MiraiMsg")
-                        }
-                    }
-                    RECALL -> runBlocking { it.chain[MessageSource]?.let { it.bot.recall(it) } }
-                    GET_QUOTE -> return it.chain[QuoteReply]?.source?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
-                    GET_SOURCE -> return it.chain[MessageSource]?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
+                    SET_QUOTE -> it.append(QuoteReply(varargs.arg(2).checkMessageSource()))
+                    RECALL -> it.chain[MessageSource]?.let { it.bot.recall(it) }
                     TO_TABLE -> LuaTable().also { t ->
                         var i = 0
                         it.chain.forEachContent { t.insert(i++, MiraiMsg(it, bot)) }

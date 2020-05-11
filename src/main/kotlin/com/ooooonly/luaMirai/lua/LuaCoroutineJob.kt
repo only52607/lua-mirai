@@ -1,9 +1,9 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.utils.applyIndex
-import com.ooooonly.luaMirai.utils.asIndex
-import com.ooooonly.luaMirai.utils.setFunction1ArgNoReturn
+import com.ooooonly.luaMirai.utils.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.runBlocking
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaTable
@@ -15,21 +15,13 @@ class LuaCoroutineJob(var job: Job) : LuaValue() {
 
     override fun getmetatable(): LuaValue = LuaTable().applyIndex {
         setFunction1ArgNoReturn("join") {
-            when (it) {
-                is LuaCoroutineJob -> runBlocking {
-                    it.job.join()
-                }
-                else -> throw LuaError("Object must be LuaCoroutineJob")
+            runBlocking {
+                it.checkIfType<LuaCoroutineJob>().job.join()
             }
         }
 
         setFunction1ArgNoReturn("cancel") {
-            when (it) {
-                is LuaCoroutineJob -> runBlocking {
-                    it.job.cancel()
-                }
-                else -> throw LuaError("Object must be LuaCoroutineJob")
-            }
+            it.checkIfType<LuaCoroutineJob>().job.cancel()
         }
     }
 

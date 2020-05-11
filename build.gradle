@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "net.mamoe:mirai-core-qqandroid:1.0-RC2"
+    implementation "net.mamoe:mirai-core-qqandroid:1.0-RC2-1"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 

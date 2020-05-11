@@ -19,10 +19,15 @@ fun LuaTable.asIndex(): LuaTable {
 }
 
 fun LuaTable.applyIndex(block: LuaTable.() -> Unit): LuaTable {
-    set(LuaValue.INDEX, LuaTable().apply {
-        block()
-    }.asIndex())
+    set(LuaValue.INDEX, LuaTable().apply { block() })
     return this
+}
+
+fun LuaTable.copyFrom(table: LuaTable) {
+    var keys: Array<LuaValue> = table.keys()
+    keys.forEach {
+        set(it, table.get(it))
+    }
 }
 
 fun LuaTable.setFunction(key: String, luaFun: (Varargs) -> Varargs) {

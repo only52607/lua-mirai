@@ -1,5 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.utils.*
 import javafx.application.Application.launch
 import kotlinx.coroutines.*
 import net.mamoe.mirai.*
@@ -245,28 +246,20 @@ class MiraiBot : LuaBot {
         }
     }
 
-    override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
-        override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
-            if (it !is MiraiBot) throw LuaError("The reference object must be MiraiBot")
+    override fun getOpFunction(opcode: Int): OpFunction = generateOpFunction(opcode) { op, varargs ->
+        varargs.checkArg<MiraiBot>(1).let {
             when (opcode) {
-                LOGIN -> runBlocking { it.also { it.bot.alsoLogin() } }
-                JOIN -> runBlocking { it.also { it.bot.join() } }
-                CLOSE_AND_JOIN -> runBlocking { it.also { it.bot.closeAndJoin() } }
+                LOGIN -> it.also { it.bot.alsoLogin() }
+                JOIN -> it.also { it.bot.join() }
+                CLOSE_AND_JOIN -> it.also { it.bot.closeAndJoin() }
                 GET_FRIEND -> MiraiFriend(it, varargs.optlong(2, 0))
                 GET_GROUP -> MiraiGroup(it, varargs.optlong(2, 0))
                 GET_SELF_QQ -> MiraiFriend(it, it.bot.selfQQ)
-                GET_ID -> LuaValue.valueOf(it.bot.id.toString())
-                CONTAINS_FRIEND -> LuaValue.valueOf(it.bot.containsFriend(varargs.optlong(2, 0)))
-                CONTAINS_GROUP -> LuaValue.valueOf(it.bot.containsGroup(varargs.optlong(2, 0)))
-                IS_ACTIVE -> LuaValue.valueOf(it.bot.isActive)
-                LAUNCH -> arg(2).let { task ->
-                    when (task) {
-                        is LuaFunction -> LuaCoroutineJob(it.bot.launch {
-                            task.call()
-                        })
-                        else -> LuaValue.NIL
-                    }
-                }
+                GET_ID -> it.bot.id.toLuaValue()
+                CONTAINS_FRIEND -> it.bot.containsFriend(varargs.optlong(2, 0)).toLuaValue()
+                CONTAINS_GROUP -> it.bot.containsGroup(varargs.optlong(2, 0)).toLuaValue()
+                IS_ACTIVE -> it.bot.isActive.toLuaValue()
+                LAUNCH -> LuaCoroutineJob(it.bot.launch { varargs.arg(2).checkIfType<LuaFunction>().call() })
                 else -> LuaValue.NIL
             }
         }

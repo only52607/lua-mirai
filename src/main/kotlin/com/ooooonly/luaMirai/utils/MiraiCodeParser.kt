@@ -6,7 +6,7 @@ import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.message.data.*
 import org.luaj.vm2.LuaValue
 
-object MessageAnalyzer {
+object MiraiCodeParser {
     fun toMessageChain(raw: java.lang.StringBuilder, contact: Contact?): MessageChain =
         toMessageChain(raw.toString(), contact)
 

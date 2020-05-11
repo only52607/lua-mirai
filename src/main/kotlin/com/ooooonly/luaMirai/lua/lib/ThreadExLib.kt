@@ -13,8 +13,8 @@ import org.luaj.vm2.lib.TwoArgFunction
 class ThreadExLib : TwoArgFunction() {
     override fun call(modName: LuaValue?, env: LuaValue?): LuaValue {
         var globals: Globals? = env?.checkglobals()
-        globals?.let { g ->
-            g.setFunction1ArgNoReturn("sleep") {
+        globals?.run {
+            setFunction1ArgNoReturn("sleep") {
                 runBlocking {
                     delay(it.optlong(0))
                 }
