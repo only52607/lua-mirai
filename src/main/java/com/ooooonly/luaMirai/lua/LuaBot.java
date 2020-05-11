@@ -15,6 +15,7 @@ public abstract class LuaBot extends LuaContact {
     public static final int CONTAINS_FRIEND = 8;
     public static final int CONTAINS_GROUP = 9;
     public static final int IS_ACTIVE = 10;
+    public static final int LAUNCH = 11;
 
     public static final int EVENT_MSG_FRIEND = 100;
     public static final int EVENT_MSG_GROUP = 101;
@@ -72,6 +73,7 @@ public abstract class LuaBot extends LuaContact {
         index.rawset("containsFriend", getOpFunction(CONTAINS_FRIEND));
         index.rawset("containsGroup", getOpFunction(CONTAINS_GROUP));
         index.rawset("isActive", getOpFunction(IS_ACTIVE));
+        index.rawset("launch", getOpFunction(LAUNCH));
 
         index.rawset("subscribeFriendMsg", getSubscribeFunction(EVENT_MSG_FRIEND));
         index.rawset("subscribeGroupMsg", getSubscribeFunction(EVENT_MSG_GROUP));

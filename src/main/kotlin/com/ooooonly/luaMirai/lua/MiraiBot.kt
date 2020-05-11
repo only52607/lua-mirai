@@ -1,8 +1,7 @@
 package com.ooooonly.luaMirai.lua
 
-import kotlinx.coroutines.CompletableJob
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.runBlocking
+import javafx.application.Application.launch
+import kotlinx.coroutines.*
 import net.mamoe.mirai.*
 import net.mamoe.mirai.data.MemberInfo
 import net.mamoe.mirai.event.Event
@@ -248,7 +247,7 @@ class MiraiBot : LuaBot {
 
     override fun getOpFunction(opcode: Int): OpFunction = object : OpFunction(opcode) {
         override fun op(varargs: Varargs): Varargs = varargs.arg1().let {
-            if (!(it is MiraiBot)) throw LuaError("The reference object must be MiraiBot")
+            if (it !is MiraiBot) throw LuaError("The reference object must be MiraiBot")
             when (opcode) {
                 LOGIN -> runBlocking { it.also { it.bot.alsoLogin() } }
                 JOIN -> runBlocking { it.also { it.bot.join() } }
@@ -260,16 +259,15 @@ class MiraiBot : LuaBot {
                 CONTAINS_FRIEND -> LuaValue.valueOf(it.bot.containsFriend(varargs.optlong(2, 0)))
                 CONTAINS_GROUP -> LuaValue.valueOf(it.bot.containsGroup(varargs.optlong(2, 0)))
                 IS_ACTIVE -> LuaValue.valueOf(it.bot.isActive)
+                LAUNCH -> arg(2).let { task ->
+                    when (task) {
+                        is LuaFunction -> LuaCoroutineJob(it.bot.launch {
+                            task.call()
+                        })
+                        else -> LuaValue.NIL
+                    }
+                }
                 else -> LuaValue.NIL
-                /*ADD_FRIEND -> runBlocking {
-                    LuaValue.valueOf(
-                        bot.bot.addFriend(
-                            varargs.optlong(2, 0),
-                            varargs.optjstring(3, ""),
-                            varargs.optjstring(4, "")
-                        ).toString()
-                    )
-                }*/
             }
         }
     }
