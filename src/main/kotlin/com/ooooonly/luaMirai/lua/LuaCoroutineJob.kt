@@ -1,5 +1,8 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.utils.applyIndex
+import com.ooooonly.luaMirai.utils.asIndex
+import com.ooooonly.luaMirai.utils.setFunction1ArgNoReturn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import org.luaj.vm2.LuaError
@@ -10,32 +13,24 @@ import org.luaj.vm2.lib.ZeroArgFunction
 
 class LuaCoroutineJob(var job: Job) : LuaValue() {
 
-    override fun getmetatable(): LuaValue {
-        var metatable = LuaTable()
-        var index = LuaTable()
-        index.set("join", object : OneArgFunction() {
-            override fun call(self: LuaValue): LuaValue = LuaValue.NIL.also {
-                when (self) {
-                    is LuaCoroutineJob -> runBlocking {
-                        self.job.join()
-                    }
-                    else -> throw LuaError("Object must be LuaCoroutineJob")
+    override fun getmetatable(): LuaValue = LuaTable().applyIndex {
+        setFunction1ArgNoReturn("join") {
+            when (it) {
+                is LuaCoroutineJob -> runBlocking {
+                    it.job.join()
                 }
+                else -> throw LuaError("Object must be LuaCoroutineJob")
             }
-        })
-        index.set("cancel", object : OneArgFunction() {
-            override fun call(self: LuaValue): LuaValue = LuaValue.NIL.also {
-                when (self) {
-                    is LuaCoroutineJob -> runBlocking {
-                        self.job.cancel()
-                    }
-                    else -> throw LuaError("Object must be LuaCoroutineJob")
-                }
-            }
-        })
+        }
 
-        metatable.set(INDEX, index)
-        return metatable
+        setFunction1ArgNoReturn("cancel") {
+            when (it) {
+                is LuaCoroutineJob -> runBlocking {
+                    it.job.cancel()
+                }
+                else -> throw LuaError("Object must be LuaCoroutineJob")
+            }
+        }
     }
 
     override fun typename(): String = "CoroutineJob"

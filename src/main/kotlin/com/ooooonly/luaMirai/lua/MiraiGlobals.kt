@@ -4,6 +4,7 @@ import com.ooooonly.luaMirai.lua.lib.LuaJavaExLib
 import com.ooooonly.luaMirai.lua.lib.MiraiBotLib
 import com.ooooonly.luaMirai.lua.lib.NetLib
 import com.ooooonly.luaMirai.lua.lib.ThreadExLib
+import com.ooooonly.luaMirai.utils.*
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.*
 import org.luaj.vm2.*
@@ -42,20 +43,29 @@ class MiraiGlobals() : Globals() {
         }
 
     constructor(printable: Printable) : this() {
-        set("print", object : VarArgFunction() {
-            override fun onInvoke(args: Varargs?): Varargs = LuaValue.NIL.also {
-                args?.let { args ->
-                    StringBuffer().let { sb ->
-                        val narg = args.narg()
-                        for (i in 1..narg) {
-                            sb.append(args.arg(i).toString())
-                            if (i != narg) sb.append(" ")
-                        }
-                        printable.print(sb.toString())
-                    }
+        setFunctionNoReturn("print") {
+            StringBuffer().let { sb ->
+                val narg = it.narg()
+                for (i in 1..narg) {
+                    sb.append(it.arg(i).toString())
+                    if (i != narg) sb.append(" ")
                 }
+                printable.print(sb.toString())
             }
-        })
+        }
+    }
+
+    constructor(printable: (String) -> Unit) : this() {
+        setFunctionNoReturn("print") {
+            StringBuffer().let { sb ->
+                val narg = it.narg()
+                for (i in 1..narg) {
+                    sb.append(it.arg(i).toString())
+                    if (i != narg) sb.append(" ")
+                }
+                printable(sb.toString())
+            }
+        }
     }
 
     init {
@@ -80,37 +90,36 @@ class MiraiGlobals() : Globals() {
         initMsgConstructor()
     }
 
-    private fun initEventTable() = LuaTable().let { set("Event", it) }
+    private fun initEventTable() = set("Event", LuaTable())
     private fun initMsgConstructor() {
-        set("At", object : OneArgFunction() {
-            override fun call(arg: LuaValue?): LuaValue = arg?.let {
-                when (it) {
-                    is MiraiGroupMember -> MiraiMsg(At(it.member))
-                    else -> MiraiMsg()
-                }
+        setFunction1Arg("At") {
+            it.takeIfType<MiraiGroupMember>()?.let {
+                MiraiMsg(At(it.member))
             } ?: MiraiMsg()
-        })
-        set("Quote", object : OneArgFunction() {
-            override fun call(arg: LuaValue?): LuaValue = arg?.let {
-                when (it) {
-                    is MiraiMsg -> it.chain[MessageSource]?.let { MiraiMsg(QuoteReply(it)) } ?: MiraiMsg()
-                    else -> MiraiMsg()
-                }
-            } ?: MiraiMsg()
-        })
-        set("Image", object : TwoArgFunction() {
-            override fun call(arg1: LuaValue?, arg2: LuaValue?): LuaValue = arg1?.let {
-                MiraiMsg.getImage(arg1, arg2)?.let { MiraiMsg(it) }
-            } ?: MiraiMsg()
-        })
-        set("AtAll", object : ZeroArgFunction() {
-            override fun call(): LuaValue? = MiraiMsg(AtAll)
-        })
-        set("Face", object : OneArgFunction() {
-            override fun call(arg: LuaValue?): LuaValue = arg?.let {
-                MiraiMsg(Face(it.checkint()))
-            } ?: MiraiMsg()
-        })
+        }
+
+        setFunction1Arg("Quote") {
+            when (it) {
+                is MiraiMsg -> it.chain[MessageSource]?.let { MiraiMsg(QuoteReply(it)) } ?: MiraiMsg()
+                is MiraiSource -> it.source?.let { MiraiMsg(QuoteReply(it)) }
+                else -> MiraiMsg()
+            }
+        }
+
+        setFunction2Arg("Image") { arg1, arg2 ->
+            MiraiMsg.getImage(
+                arg1,
+                arg2.takeIf { it != LuaValue.NIL }
+            )?.let { MiraiMsg(it) } ?: MiraiMsg()
+        }
+
+        setFunction0Arg("AtAll") {
+            MiraiMsg(AtAll)
+        }
+
+        setFunction1Arg("Face") {
+            MiraiMsg(Face(it.checkint()))
+        }
     }
 
     fun onLoad(bot: Bot) = onLoadFun?.let {
