@@ -4,7 +4,7 @@
 你可以在这里找到示例脚本： [`下载示例脚本`](https://github.com/only52607/lua-mirai/tree/master/demos)
 
 # 开始
-## Event.onLoad
+## 【MiraiAndroid内使用】 Event.onLoad 
 当脚本被载入后，Event.onLoad函数被调用并传入MiraiBot对象，你可以在此函数内进行一些初始化操作，如监听消息事件。
 ``` lua
 Event.onLoad = function (bot)
@@ -12,13 +12,27 @@ Event.onLoad = function (bot)
 end
 ```
 
-## Event.onFinish
+## 【MiraiAndroid内使用】 Event.onFinish
 当脚本被卸载前，Event.onFinish将被调用，你可以在此函数内保存数据。
 ``` lua
 Event.onFinish = function ()
     print("脚本被卸载")
 end
 ```
+
+## 【单独运行】 Bot对象创建
+
+``` lua
+local bot = Bot(qq账号,"qq密码") --获得bot对象
+bot.login() --登录
+
+--在这里对bot进行事件订阅操作
+--如 bot.subsribeXXX()
+
+bot.join() --挂起，防止进程结束
+
+```
+
 # 事件
 ## 事件监听
 
@@ -136,118 +150,413 @@ source:recall()
 
 # 机器人对象 (MiraiBot)
 ## 属性
-id
+|  属性名   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 机器人的qq号码  |
+
 ## 方法
-getFriend
 
-getGroup
+### getFriend (获取好友)
 
-getSelfQQ
+#### 参数列表：
 
-getId
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 好友qq号  |
 
-addFriend
+#### 返回值：
 
-containsFriend
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiFriend | 获取到的好友对象  |
 
-containsGroup
 
-isActive
+### getGroup (获取群)
 
-subscribeFriendMsg
+#### 参数列表：
 
-subscribeGroupMsg
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiGroup | 获取到的群对象  |
+
+### getSelfQQ (将MiraiBot对象转为MiraiFriend对象)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiFriend | 转换后的对象  |
+
+### getId (获取机器人的qq号码)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Integer | qq号  |
+
+### addFriend (将MiraiBot对象转为MiraiFriend对象)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 好友qq号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiFriend | 获取到的好友对象  |
+
+### containsFriend (判断好友是否存在)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 好友qq号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否存在  |
+
+### containsGroup (判断群是否存在)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否存在  |
+
+### isActive (是否在线)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 好友qq号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiFriend | 获取到的好友对象  |
+
+### subscribeFriendMsg (订阅好友消息)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| callback  | Function | 回调函数  |
+
+
+### subscribeGroupMsg (订阅群消息)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| callback  | Function | 回调函数  |
+
 
 # 好友对象 (MiraiFriend)
 
 ## 属性
 
-id
-
-bot
+|  属性名   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 好友的qq号码  |
+| bot  | MiraiBot | bot对象  |
 
 ## 方法
-sendMsg
 
-getNick
+### getNick (获取昵称)
 
-getAvatarUrl
+#### 返回值：
 
-isActive
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 昵称  |
+
+
+### sendMsg (发送消息)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| msg  | MiraiMsg | 消息对象  |
+
+
+### getAvatarUrl (获取头像地址)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 获取到的头像地址  |
+
+
+### isActive (是否在线)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否在线  |
 
 
 # 群对象 (MiraiGroup)
 
 ## 属性
 
-id
-
-bot
+|  属性名   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群号码  |
+| bot  | MiraiBot | bot对象  |
 
 ## 方法
 
-sendMsg
+### sendMsg (发送消息)
 
-getMember
+#### 参数列表：
 
-getAvatarUrl
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| msg  | MiraiMsg | 消息对象  |
 
-getBotMuteRemain
 
-getBotAsMember
+### getMember (获取群成员)
 
-getBotPermission
+#### 参数列表：
 
-getName
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群成员qq号  |
 
-getOwner
+#### 返回值：
 
-contains
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiGroupMember | 获取到的群成员对象  |
 
-getMemberOrNull
+### getAvatarUrl (获取群头像地址)
 
-quit
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 群头像地址  |
+
+### getBotMuteRemain (获取机器人被禁言剩余时间)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Integer | 剩余时间  |
+
+
+### getBotAsMember (将当前机器人转换为群成员对象)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiGroupMember | 转换后的群成员对象  |
+
+
+### getBotPermission (获取当前机器人在本群的权限)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 权限名  |
+
+
+### getName (获取群名)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 群名  |
+
+
+### getOwner (获取群主)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiGroupMember | 群主对象  |
+
+### contains (判断是否包含群成员)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群成员qq号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiGroupMember | 群主对象  |
+
+### getMemberOrNull (获取群成员对象，失败返回Nil)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群成员qq号  |
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiGroupMember | 群成员对象  |
+
+
+### quit (退出群)
+
 
 # 群成员对象 (MiraiGroupMember)
 
 ## 属性
 
-id
-
-bot
-
-group
+|  属性名   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 群员的qq号码  |
+| bot  | MiraiBot | bot对象  |
+| group  | MiraiGroup | 群员所在群  |
 
 ## 方法
 
-getNick
+### getNick (获取昵称)
 
-getNameCard
+#### 返回值：
 
-getMuteRemain
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 昵称  |
 
-getSpecialTitle
+### getNameCard (获取群名片)
 
-isMuted
+#### 返回值：
 
-isAdministrator
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 群名片  |
 
-isOwner
 
-mute
+### getMuteRemain (获取被禁言剩余时间)
 
-unMute
+#### 返回值：
 
-kick
+| 类型 | 描述  |
+| ----  | ----  |
+| Integer | 剩余时间  |
 
-isFriend
 
-asFriend
+### getSpecialTitle (获取群头衔)
 
-getPermission
+#### 返回值：
 
-sendMsg
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 群头衔  |
 
+### isMuted (判断是否被禁言)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否被禁言  |
+
+
+### isAdministrator (判断是否为管理员)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否为管理员  |
+
+
+### isOwner (判断是否为群主)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否为群主  |
+
+### mute (禁言)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| id  | Integer | 禁言时间  |
+
+### unMute (解除禁言)
+
+### kick (移除群聊)
+
+### isFriend (判断是否为好友)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| Boolean | 是否为好友  |
+
+
+### asFriend (转为MiraiFriend对象)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| MiraiFriend | 转换后的MiraiFriend对象  |
+
+
+### getPermission (获取群员权限)
+
+#### 返回值：
+
+| 类型 | 描述  |
+| ----  | ----  |
+| String | 权限名  |
+
+### sendMsg (发送私聊消息)
+
+#### 参数列表：
+
+|  参数   | 类型  | 描述  |
+|  ----  | ----  | ----  |
+| msg  | MiraiMsg | 消息对象  |
 
 # 网络请求
 
