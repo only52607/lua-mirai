@@ -7,6 +7,10 @@
 
 请参阅 [`MiraiAndroid`](https://github.com/mzdluo123/MiraiAndroid)
 
+### PC端(JVM)
+
+请参阅 [`lua-mirai jvm`](/docs/jvm.md)
+
 ## 开发lua-mirai脚本
 
 ### lua语言开发基础
