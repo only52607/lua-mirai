@@ -6,7 +6,7 @@
 
 
 
-## 2.编译或下载最新版本[lua-mirai.jar](" https://github.com/only52607/lua-mirai/releases ")
+## 2.编译或下载最新版本[lua-mirai.jar](https://github.com/only52607/lua-mirai/releases)
 
 
 
