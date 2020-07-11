@@ -85,7 +85,7 @@ public abstract class LuaBot extends LuaContact {
         index.rawset("subscribeBotReloginEvent", getSubscribeFunction(EVENT_BOT_RE_LOGIN));
 
         index.rawset("subscribeBotGroupPermissionChangeEvent", getSubscribeFunction(EVENT_BOT_CHANGE_GROUP_PERMISSION));
-        index.rawset("subscribeBoMutedEvent", getSubscribeFunction(EVENT_BOT_MUTED));
+        index.rawset("subscribeBotMutedEvent", getSubscribeFunction(EVENT_BOT_MUTED));
         index.rawset("subscribeBotJoinGroupEvent", getSubscribeFunction(EVENT_BOT_JOIN_GROUP));
         index.rawset("subscribeBotKickedEvent", getSubscribeFunction(EVENT_BOT_KICKED));
         index.rawset("subscribeBotLeaveEvent", getSubscribeFunction(EVENT_BOT_LEAVE));
