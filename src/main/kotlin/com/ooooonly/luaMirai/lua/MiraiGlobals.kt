@@ -88,6 +88,7 @@ class MiraiGlobals() : Globals() {
 
         initEventTable()
         initMsgConstructor()
+        initBotFactory()
     }
 
     private fun initEventTable() = set("Event", LuaTable())
@@ -119,6 +120,12 @@ class MiraiGlobals() : Globals() {
 
         setFunction1Arg("Face") {
             MiraiMsg(Face(it.checkint()))
+        }
+    }
+
+    private fun initBotFactory() {
+        setFunction2Arg("Bot") { user, password ->
+            return@setFunction2Arg MiraiBot(user.checklong(), password.checkjstring(), 0)
         }
     }
 
