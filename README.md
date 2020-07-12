@@ -11,6 +11,26 @@
 
 请参阅 [`lua-mirai jvm`](/docs/jvm.md)
 
+### 作为依赖引入第三方项目
+
+#### Gradle
+
+``` groovy
+buildscript{
+    repositories {
+        jcenter() //添加jcenter仓库
+    }
+}
+```
+
+
+``` groovy
+dependencies {
+    implementation "net.mamoe:mirai-core-qqandroid:$MIRAI_VERSION" //Mirai Core
+    implementation "com.ooooonly:luaMirai:$LUAMIRAI_VERSION" //lua-mirai
+}
+```
+
 ## 开发lua-mirai脚本
 
 ### lua语言开发基础

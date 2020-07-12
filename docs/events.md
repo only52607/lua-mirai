@@ -2,7 +2,7 @@
 
 ## 基本格式
 
-```lua
+``` lua
 bot:subscribeXXX(
 	function(xxx,xxx,xxx) --参数列表
         --处理事件
@@ -10,7 +10,7 @@ bot:subscribeXXX(
 )
 ```
 
-
+<br/>
 
 ## 好友消息 
 
@@ -24,7 +24,7 @@ bot:subscribeXXX(
 | MiraiMsg    | 接收到的消息   |
 | MiraiFriend | 发送消息的好友 |
 
-
+<br/>
 
 ## 群消息 
 
@@ -39,7 +39,7 @@ bot:subscribeXXX(
 | MiraiGroup  | 发送消息的群     |
 | MiraiMember | 发送消息的群成员 |
 
-
+<br/>
 
 ## 发出好友消息 
 
@@ -53,7 +53,7 @@ bot:subscribeXXX(
 | MiraiMsg    | 发送的消息       |
 | MiraiFriend | 接收到消息的好友 |
 
-
+<br/>
 
 ## 发出群消息 
 
@@ -67,7 +67,7 @@ bot:subscribeXXX(
 | MiraiMsg   | 发送的消息   |
 | MiraiGroup | 接收消息的群 |
 
-
+<br/>
 
 ## bot在线
 
@@ -79,7 +79,7 @@ bot:subscribeXXX(
 | -------- | ------- |
 | MiraiBot | bot对象 |
 
-
+<br/>
 
 ## bot离线
 
@@ -91,7 +91,7 @@ bot:subscribeXXX(
 | -------- | ------- |
 | MiraiBot | bot对象 |
 
-
+<br/>
 
 ## bot重新登录
 
@@ -103,7 +103,7 @@ bot:subscribeXXX(
 | -------- | ------- |
 | MiraiBot | bot对象 |
 
-
+<br/>
 
 ## bot在群里的权限被更改
 
@@ -118,7 +118,7 @@ bot:subscribeXXX(
 | String     | bot的新权限名 |
 | String     | bot的旧权限名 |
 
-
+<br/>
 
 ## bot被禁言
 
@@ -131,7 +131,7 @@ bot:subscribeXXX(
 | MiraiBot   | bot对象    |
 | MiraiGroup | 被禁言的群 |
 
-
+<br/>
 
 ## bot加入群
 
@@ -144,7 +144,7 @@ bot:subscribeXXX(
 | MiraiBot   | bot对象  |
 | MiraiGroup | 加入的群 |
 
-
+<br/>
 
 ## bot被踢出群聊
 
@@ -157,7 +157,7 @@ bot:subscribeXXX(
 | MiraiBot   | bot对象    |
 | MiraiGroup | 被踢出的群 |
 
-
+<br/>
 
 ## bot退出群聊
 
@@ -170,7 +170,7 @@ bot:subscribeXXX(
 | MiraiBot   | bot对象  |
 | MiraiGroup | 退出的群 |
 
-
+<br/>
 
 ## 群名被更改
 
@@ -186,7 +186,7 @@ bot:subscribeXXX(
 | String      | 新的群名         |
 | String      | 旧的群名         |
 
-
+<br/>
 
 ## 新成员加入群聊
 
@@ -200,7 +200,7 @@ bot:subscribeXXX(
 | MiraiGroup  | 加入的群聊 |
 | MiraiMember | 新成员     |
 
-
+<br/>
 
 ## 新成员被邀请加入群聊
 
@@ -214,7 +214,7 @@ bot:subscribeXXX(
 | MiraiGroup  | 加入的群聊 |
 | MiraiMember | 新成员     |
 
-
+<br/>
 
 ## 群员被移出群聊
 
@@ -228,7 +228,7 @@ bot:subscribeXXX(
 | MiraiGroup  | 群对象       |
 | MiraiMember | 被移出的成员 |
 
-
+<br/>
 
 ## 群员名片被改变
 
@@ -244,7 +244,7 @@ bot:subscribeXXX(
 | String      | 新名片         |
 | String      | 旧名片         |
 
-
+<br/>
 
 ## 群员头衔被改变
 
@@ -260,7 +260,7 @@ bot:subscribeXXX(
 | String      | 新头衔         |
 | String      | 旧头衔         |
 
-
+<br/>
 
 ## 群员权限被改变
 
@@ -276,7 +276,7 @@ bot:subscribeXXX(
 | String      | 新权限名       |
 | String      | 旧权限名       |
 
-
+<br/>
 
 ## 群员被禁言
 
@@ -291,7 +291,7 @@ bot:subscribeXXX(
 | MiraiMember | 被禁言的成员     |
 | Integer     | 禁言时间，单位秒 |
 
-
+<br/>
 
 ## 群员被解除禁言
 
