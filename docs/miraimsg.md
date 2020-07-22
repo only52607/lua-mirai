@@ -26,9 +26,9 @@ AtAll()
 
 #### 构造图片消息
 
-**通过ID构建：** Image( 图片ID )
+**通过ID构建：**  Image( 图片ID )
 
-**通过本地路径或url构建：**Image( 图片URL ,群或好友 )
+**通过本地路径或url构建：** UploadImage( 图片URL ,群或好友 )
 
 #### 构造表情
 

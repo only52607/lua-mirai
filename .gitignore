@@ -1,4 +1,11 @@
 build
 out
 src/test
-.idea/workspace.xml
+.idea
+.gradle
+.settings
+
+
+/.gradle/
+/.idea/
+/src/test/
