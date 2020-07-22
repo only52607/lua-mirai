@@ -4,6 +4,7 @@ import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.utils.*
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.utils.BotConfiguration
 import org.luaj.vm2.*
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
@@ -131,6 +132,13 @@ class MiraiGlobals() : Globals() {
     private fun initBotFactory() {
         setFunction2Arg("Bot") { user, password ->
             return@setFunction2Arg MiraiBot(user.checklong(), password.checkjstring(), 0)
+        }
+        setFunction("Bot") {
+            val user = it.checklong(1)
+            val pwd = it.checkjstring(2)
+            val config =
+                if (it.narg() >= 3) BotConfiguration.Default.apply { fileBasedDeviceInfo(it.checkjstring(3)) } else BotConfiguration.Default
+            return@setFunction MiraiBot(user, pwd, 0, config)
         }
     }
 

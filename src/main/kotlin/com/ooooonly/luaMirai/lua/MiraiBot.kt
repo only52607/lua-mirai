@@ -12,6 +12,7 @@ import net.mamoe.mirai.message.FriendMessageEvent
 import net.mamoe.mirai.message.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.queryUrl
+import net.mamoe.mirai.utils.BotConfiguration
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaValue
@@ -25,12 +26,17 @@ class MiraiBot : LuaBot {
         var listeners: HashMap<Int, HashMap<Int, CompletableJob>> = HashMap()
     }
 
-    constructor(account: Long, password: String, scriptId: Int) : super(account, password) {
+    constructor(
+        account: Long,
+        password: String,
+        scriptId: Int,
+        config: BotConfiguration = BotConfiguration.Default
+    ) : super(account, password) {
         this.scriptId = scriptId;
         try {
             this.bot = Bot.getInstance(account)
         } catch (e: Exception) {
-            this.bot = Bot(account, password)
+            this.bot = Bot(account, password, config)
         }
     }
 
