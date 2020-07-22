@@ -1,9 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.lua.lib.LuaJavaExLib
-import com.ooooonly.luaMirai.lua.lib.MiraiBotLib
-import com.ooooonly.luaMirai.lua.lib.NetLib
-import com.ooooonly.luaMirai.lua.lib.ThreadExLib
+import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.utils.*
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.*
@@ -83,6 +80,7 @@ class MiraiGlobals() : Globals() {
         load(NetLib())
         load(LuaJavaExLib())
         load(ThreadExLib())
+        load(HttpLib())
         LoadState.install(this)
         LuaC.install(this)
 
