@@ -31,7 +31,7 @@ end
 ##### 示例：
 
 ``` lua
-local bot = Bot(qq账号,"qq密码","C:\device.json")
+local bot = Bot(qq账号,"qq密码","C:\\device.json")
 bot.login() --登录
 
 --在这里对bot进行事件订阅操作
