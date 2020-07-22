@@ -24,8 +24,8 @@ end
 
 | 参数       | 类型    | 描述                               | 可空  |
 | ---------- | ------- | ---------------------------------- | ----- |
-| account    | Integer | 请求地址                           | False |
-| password   | String  | 配置参数                           | False |
+| account    | Integer | 账号                               | False |
+| password   | String  | 密码                               | False |
 | deviceInfo | String  | 设备信息路径，不填则使用随机信息。 | True  |
 
 ##### 示例：
