@@ -4,23 +4,35 @@
 
 ## 消息构造
 
-"任意内容" : 构造一个纯文本消息
+#### 构造一个空消息
 
-Msg() : 构造一个空消息
+Msg()
 
-Msg("任意内容") : 构造一个纯文本消息
+#### 构造纯文本消息
 
-Quote(消息对象) : 构造一个引用回复
+"任意内容"  或 Msg("任意内容")
 
-At(群成员) : 构造一个At消息
+#### **构造引用回复**
 
-AtAll() : 构造一个At全体消息
+Quote(消息对象) 
 
-Image( 图片URL ,群或好友 ) : 构造一个图片
+#### 构造At消息
 
-Face(表情代码) : 构造一个表情
+At(群成员) 
 
-所有消息类型见 [`消息类型`](/docs/miraimsg.md)
+#### 构造At全体消息
+
+AtAll()
+
+#### 构造图片消息
+
+**通过ID构建：** Image( 图片ID )
+
+**通过本地路径或url构建：**Image( 图片URL ,群或好友 )
+
+#### 构造表情
+
+Face(表情代码)
 
 ## 消息拼接
 
@@ -30,29 +42,41 @@ Face(表情代码) : 构造一个表情
 Msg("hello"):appendText("world") + "lua" .. Msg():appendImage("http://xxxxx",sender) .. Face(1)
 ```
 
-## 消息处理
+## 消息解析
 
-msg对象支持使用lua的所有标准字符串处理函数
+### 使用字符串函数处理
+
+MiraiMsg对象支持使用 [`lua字符串处理函数`](https://www.runoob.com/lua/lua-strings.html)。
 
 如寻找消息中的文本可以使用以下方式：
 
 ``` lua
-msg:find("pattern")
+msg:find("pattern") --等同于 msg:find("pattern")
 ```
 
-以上代码等同于 
+
+
+### 消息遍历示例：
+
+事件中接收到的消息往往是由多个消息类型组成的消息串，如需处理其中的单个消息，则需要调用toTable方法将消息拆分为多个消息对象，并进行遍历。
+
+下面这个示例演示了如何查找消息中的图片并下载到本地。
 
 ``` lua
-string.find(msg,"pattern")
+for m in ipairs(msg:toTable()) do
+	if (m:find("mirai:image")) then
+        m:downloadImage("C:\1.jpg")
+    end
+end
 ```
 
-所有字符串处理函数见 [`lua字符串处理`](https://www.runoob.com/lua/lua-strings.html)
+## 消息方法
 
-## 消息撤回
+| 方法名        | 参数   | 返回值      | 描述                                               |
+| ------------- | ------ | ----------- | -------------------------------------------------- |
+| recall        | 无     | 无          | 撤回此消息，仅适用于接收到的MiraiMsg对象。         |
+| toTable       | 无     | Table       | 将消息拆分为多个子消息，并转化为列表。             |
+| downloadImage | String | 无          | 将消息中含有的图片下载到本地，参数为本地文件路径。 |
+| getImageUrl   | 无     | String      | 获取消息中图片的url地址                            |
+| getSource     | 无     | MiraiSource | 获得消息的引用对象。                               |
 
-``` lua
-msg:recall()
---或 bot:recall(msg)
-```
-
-# 

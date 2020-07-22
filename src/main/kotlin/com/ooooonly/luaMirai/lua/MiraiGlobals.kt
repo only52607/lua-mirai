@@ -112,6 +112,13 @@ class MiraiGlobals() : Globals() {
             )?.let { MiraiMsg(it) } ?: MiraiMsg()
         }
 
+        setFunction2Arg("UploadImage") { arg1, arg2 ->
+            MiraiMsg.uploadImage(
+                arg1,
+                arg2.takeIf { it != LuaValue.NIL }
+            )?.let { MiraiMsg(it) } ?: MiraiMsg()
+        }
+
         setFunction0Arg("AtAll") {
             MiraiMsg(AtAll)
         }

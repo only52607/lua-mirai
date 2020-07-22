@@ -3,12 +3,23 @@ package com.ooooonly.luaMirai.lua
 import com.ooooonly.luaMirai.utils.checkArg
 import com.ooooonly.luaMirai.utils.checkMessageSource
 import com.ooooonly.luaMirai.utils.generateOpFunction
+import com.ooooonly.luaMirai.utils.toLuaValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.uploadImage
-import org.luaj.vm2.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.luaj.vm2.LuaError
+import org.luaj.vm2.LuaString
+import org.luaj.vm2.LuaTable
+import org.luaj.vm2.LuaValue
+import java.io.FileOutputStream
 import java.net.URL
+import kotlin.coroutines.CoroutineContext
 
 
 class MiraiMsg : LuaMsg {
@@ -55,6 +66,19 @@ class MiraiMsg : LuaMsg {
             }
             else -> null
         }
+
+        fun uploadImage(arg: LuaValue, contact: LuaValue?): Image? = when (arg) {
+            is LuaString -> arg.toString().let {
+                runBlocking {
+                    when (contact) {
+                        is MiraiFriend -> contact.friend.uploadImage(URL(it))
+                        is MiraiGroup -> contact.group.uploadImage(URL(it))
+                        else -> throw LuaError("Second parameter must be a contact!")
+                    }
+                }
+            }
+            else -> null
+        }
     }
 
     override fun getOpFunction(opcode: Int): OpFunction = generateOpFunction(opcode) { op, varargs ->
@@ -62,6 +86,7 @@ class MiraiMsg : LuaMsg {
             when (opcode) {
                 GET_QUOTE -> it.chain[QuoteReply]?.source?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
                 GET_SOURCE -> it.chain[MessageSource]?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
+                GET_IMAGE_URL -> it.chain[Image]?.queryUrl()?.toLuaValue() ?: LuaValue.NIL
                 else -> null
             } ?: it.also {
                 when (opcode) {
@@ -81,6 +106,16 @@ class MiraiMsg : LuaMsg {
                     TO_TABLE -> LuaTable().also { t ->
                         var i = 0
                         it.chain.forEachContent { t.insert(i++, MiraiMsg(it, bot)) }
+                    }
+                    DOWNLOAD_IMAGE -> {
+                        val imageUrl = it.chain[Image]?.queryUrl() ?: return@also
+                        val path = varargs.checkjstring(1)
+                        GlobalScope.launch {
+                            val client = OkHttpClient()
+                            val request = Request.Builder().url(imageUrl).build()
+                            val data = client.newCall(request).execute().body().byteStream().readAllBytes()
+                            FileOutputStream(path).apply { write(data) }.close()
+                        }
                     }
                 }
             }

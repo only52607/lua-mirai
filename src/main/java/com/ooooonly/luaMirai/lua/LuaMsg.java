@@ -22,6 +22,8 @@ public abstract class LuaMsg extends LuaSource {
     public static final int GET_SOURCE = 13;
     public static final int GET_QUOTE = 14;
     public static final int TO_TABLE = 15;
+    public static final int DOWNLOAD_IMAGE = 16;
+    public static final int GET_IMAGE_URL = 17;
 
     private static LuaTable metaTable;
 
@@ -57,6 +59,8 @@ public abstract class LuaMsg extends LuaSource {
         index.set("getQuote", getOpFunction(GET_QUOTE));
         index.set("recall", getOpFunction(RECALL));
         index.set("getSource", getOpFunction(GET_SOURCE)); //获得消息的一个引用，可用于撤回，引用回复
+        index.set("downloadImage", getOpFunction(DOWNLOAD_IMAGE)); //获得消息的一个引用，可用于撤回，引用回复
+        index.set("getImageUrl", getOpFunction(GET_IMAGE_URL)); //获得消息的一个引用，可用于撤回，引用回复
         index.set("toTable", getOpFunction(TO_TABLE)); //消息转为表
 
         metaTable.set(INDEX, index);
