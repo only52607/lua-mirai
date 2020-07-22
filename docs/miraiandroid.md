@@ -84,7 +84,7 @@ group:发送信息的群对象
 sender:发送信息的群成员对象
 
 ## 其他事件
-见 [`事件类型`](/docs/events.md)
+见 [`事件列表`](/docs/events.md)
 
 
 # 消息对象（MiraiMsg）
@@ -257,7 +257,9 @@ source:recall()
 | ----  | ----  |
 | MiraiFriend | 获取到的好友对象  |
 
-### subscribeFriendMsg (订阅好友消息)
+### subscribeXXXXX (订阅事件)
+
+详细用法见[`事件列表`](/docs/events.md)
 
 #### 参数列表：
 
@@ -265,14 +267,13 @@ source:recall()
 |  ----  | ----  | ----  |
 | callback  | Function | 回调函数  |
 
-
-### subscribeGroupMsg (订阅群消息)
+### launch(立即启动一个线程)
 
 #### 参数列表：
 
-|  参数   | 类型  | 描述  |
-|  ----  | ----  | ----  |
-| callback  | Function | 回调函数  |
+| 参数  | 类型     | 描述       |
+| ----- | -------- | ---------- |
+| block | Function | 线程主函数 |
 
 
 # 好友对象 (MiraiFriend)
@@ -558,13 +559,111 @@ source:recall()
 |  ----  | ----  | ----  |
 | msg  | MiraiMsg | 消息对象  |
 
+
+
+# ~~网络请求~~
+
+## ~~get请求~~
+~~Net.get(请求url, 附加参数)~~
+
+## ~~post请求~~
+~~Net.get(请求url, 提交参数 , 附加参数)~~
+
+
+
 # 网络请求
 
 ## get请求
-Net.get(请求url, 附加参数)
+
+#### 函数名：Http.get
+
+#### 参数列表：
+
+| 参数    | 类型   | 描述       | 可空  |
+| ------- | ------ | ---------- | ----- |
+| url     | String | 请求地址   | False |
+| config  | Table  | 配置参数   | True  |
+| headers | Table  | 请求头信息 | True  |
+
+#### 返回值：
+
+| 类型    | 描述     |
+| ------- | -------- |
+| String  | 响应主体 |
+| Boolean | 是否成功 |
+| Integer | 状态码   |
+| String  | 消息     |
+
+### 调用示例：
+
+```lua
+local body,isSuccessful,code,message = Http.get(
+    "https://github.com/",
+
+    {
+        connectTimeout = 5000,
+        readTimeout = 5000,
+        followRedirects = true,
+        writeTimeout = 5000
+    },
+
+    {   --请求头
+        token = "xxxx"
+    }
+)
+print(body)
+```
+
+
 
 ## post请求
-Net.get(请求url, 提交参数 , 附加参数)
+
+#### 函数名：Http.post
+
+#### 参数列表：
+
+| 参数    | 类型         | 描述       | 可空  |
+| ------- | ------------ | ---------- | ----- |
+| url     | String       | 请求地址   | False |
+| params  | String/Table | 请求参数   | False |
+| config  | Table        | 配置参数   | True  |
+| headers | Table        | 请求头信息 | True  |
+
+#### 返回值：
+
+| 类型    | 描述     |
+| ------- | -------- |
+| String  | 响应主体 |
+| Boolean | 是否成功 |
+| Integer | 状态码   |
+| String  | 消息     |
+
+### 调用示例：
+
+```lua
+local body,isSuccessful,code,message = Http.post(
+    "https://xxxxxx/login",
+    
+	"user=xxx&pwd=xxx", 
+    -- 也可以使用 { type = "text/plain;chaset=utf-8" ,data = "user=xxx&pwd=xxx" }
+    
+    {  
+        connectTimeout = 5000,
+        readTimeout = 5000,
+        followRedirects = true,
+        writeTimeout = 5000
+    }, 
+
+    {   --请求头
+        token = "xxxx"
+    }
+)
+print(body)
+```
+
+
+
+
 
 # 与Java类交互
 
@@ -591,7 +690,7 @@ Net.get(请求url, 提交参数 , 附加参数)
     对象=类名(构造参数)
     对象:方法名(参数)
 ```
-    
+
 #### 示例：
 ``` lua
     import "java.lang.String"
@@ -606,7 +705,7 @@ Net.get(请求url, 提交参数 , 附加参数)
     end
 }
 ```
-    
+
 #### 示例：
 ``` lua
 --实现Runnable接口并创建线程
