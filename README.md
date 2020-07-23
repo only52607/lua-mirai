@@ -45,9 +45,9 @@ dependencies {
 
 ## 开发lua-mirai脚本
 
-### lua语言开发基础
+### lua语言基础
 
-请参阅 [`RUNOOB:Lua教程`](https://www.runoob.com/lua/lua-tutorial.html)
+请参阅 [`30分钟快速入门lua语言`](https://www.runoob.com/lua/lua-tutorial.html)
 
 ### lua-mirai开发指南
 
