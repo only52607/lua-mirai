@@ -10,6 +10,8 @@
 
 请参阅 [`MiraiAndroid`](https://github.com/mzdluo123/MiraiAndroid)
 
+[`MiraiAndroid lua脚本开发指南`](/docs/miraiandroid.md)
+
 ### PC端(JVM)
 
 请参阅 [`lua-mirai jvm`](/docs/jvm.md)
@@ -49,7 +51,9 @@ dependencies {
 
 ### lua-mirai开发指南
 
-请参阅 [`lua-mirai 指南`](/docs/guide.md)
+请参阅 [`lua-mirai api`](/docs/guide.md)
+
+[`MiraiAndroid lua api`](/docs/miraiandroid.md)
 
 ### 第三方库
 
