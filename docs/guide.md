@@ -8,7 +8,7 @@
 
 #### 1.MiraiAndroid内
 
-##### 通过Event.onLoad事件传入MiraiBot对象，示例：
+##### 通过Event.onLoad事件传入[`MiraiBot`](/docs/miraibot.md)对象，示例：
 
 ``` lua
 Event.onLoad = function (bot)
@@ -18,7 +18,7 @@ end
 
 #### 2.JVM内
 
-##### 使用Bot方法构造MiraiBot对象，
+##### 使用Bot方法构造[`MiraiBot`](/docs/miraibot.md)对象，
 
 ##### 参数列表：
 
@@ -46,7 +46,7 @@ lua-mirai基于事件驱动机制构建，lua-mirai中的事件包括好友、�
 
 ## 事件监听
 
-一个事件监听是由MiraiBot对象创建的，基本格式为bot:subscribeXXXXX(function () end)
+一个事件监听是由[`MiraiBot`](/docs/miraibot.md)对象创建的，基本格式为bot:subscribeXXXXX(function () end)
 
 示例：
 
