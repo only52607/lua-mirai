@@ -202,9 +202,9 @@ bot:subscribeXXX(
 
 <br/>
 
-## 新成员被邀请加入群聊
+## 新成员申请加入群聊
 
-### 函数名: subscribeMemberInvitedEvent
+### 函数名: subscribeMemberJoinRequestEvent
 
 ### 传入的回调函数的参数列表:
 
@@ -212,7 +212,9 @@ bot:subscribeXXX(
 | ----------------------------------------------- | ---------- |
 | [`MiraiBot`](/docs/miraibot.md)                 | bot对象    |
 | [`MiraiGroup`](/docs/miraigroup.md)             | 加入的群聊 |
-| [`MiraiGroupMember`](/docs/miraigroupmember.md) | 新成员     |
+| Integer | 事件ID（暂不支持处理）     |
+| Integer | 申请者的qq号码     |
+| String | 申请消息     |
 
 <br/>
 

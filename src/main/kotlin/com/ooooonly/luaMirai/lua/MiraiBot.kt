@@ -154,7 +154,10 @@ class MiraiBot : LuaBot {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(self, g, MiraiGroupMember(self, g, it.member))
                 }
-                EVENT_GROUP_MEMBER_INVITED -> self.bot.subscribeLuaFunction<MemberJoinRequestEvent>(listener, process) {
+                EVENT_GROUP_MEMBER_JOIN_REQUEST -> self.bot.subscribeLuaFunction<MemberJoinRequestEvent>(
+                    listener,
+                    process
+                ) {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(
                         self,

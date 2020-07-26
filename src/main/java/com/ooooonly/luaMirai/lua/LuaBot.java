@@ -37,7 +37,7 @@ public abstract class LuaBot extends LuaContact {
     public static final int EVENT_GROUP_CHANGE_ALLOW_MEMBER_INVITE = 117;
     public static final int EVENT_GROUP_REQUEST = 118;
     public static final int EVENT_GROUP_MEMBER_JOIN = 119;
-    public static final int EVENT_GROUP_MEMBER_INVITED = 120;
+    public static final int EVENT_GROUP_MEMBER_JOIN_REQUEST = 120;
     public static final int EVENT_GROUP_MEMBER_KICKED = 121;
     public static final int EVENT_GROUP_MEMBER_CHANGE_CARD = 122;
     public static final int EVENT_GROUP_MEMBER_CHANGE_SPECIAL_TITLE = 123;
@@ -99,7 +99,7 @@ public abstract class LuaBot extends LuaContact {
         index.rawset("subscribeAllowMemberInviteChangedEvent", getSubscribeFunction(EVENT_GROUP_CHANGE_ALLOW_MEMBER_INVITE));
 
         index.rawset("subscribeMemberJoinEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_JOIN));
-        index.rawset("subscribeMemberInvitedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_INVITED));
+        index.rawset("subscribeMemberJoinRequestEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_JOIN_REQUEST));
         index.rawset("subscribeMemberKickEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_KICKED));
         index.rawset("subscribeMemberCardChangedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_CARD));
         index.rawset("subscribeMemberSpecialTitleChangeEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_SPECIAL_TITLE));
