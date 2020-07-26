@@ -51,7 +51,7 @@ MiraiMsg对象支持使用 [`lua字符串处理函数`](https://www.runoob.com/l
 如寻找消息中的文本可以使用以下方式：
 
 ``` lua
-msg:find("pattern") --等同于 msg:find("pattern")
+msg:find("pattern") --等同于 string.find (msg, "pattern")
 ```
 
 
