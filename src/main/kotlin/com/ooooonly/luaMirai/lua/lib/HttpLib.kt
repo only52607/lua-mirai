@@ -2,11 +2,13 @@ package com.ooooonly.luaMirai.lua.lib
 
 import com.ooooonly.luaMirai.utils.setFunction
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
 import java.util.concurrent.TimeUnit
 
-class HttpLib() : TwoArgFunction() {
+open class HttpLib() : TwoArgFunction() {
     val defaultClient: OkHttpClient by lazy {
         OkHttpClient()
     }
@@ -44,18 +46,18 @@ class HttpLib() : TwoArgFunction() {
     }
 
     private fun Response.toLuaTable(): LuaTable = LuaTable().also { table ->
-        table.set("body", this.body().string())
-        table.set("code", this.code())
-        table.set("message", this.message())
+        table.set("body", this.body?.string())
+        table.set("code", this.code)
+        table.set("message", this.message)
         table.set("isSuccessful", LuaValue.valueOf(this.isSuccessful))
     }
 
     private fun Response.toVarargs(): Varargs = LuaValue.varargsOf(
         arrayOf(
-            LuaValue.valueOf(this.body().string()),
+            LuaValue.valueOf(this.body?.string()),
             LuaValue.valueOf(this.isSuccessful),
-            LuaValue.valueOf(this.code()),
-            LuaValue.valueOf(this.message())
+            LuaValue.valueOf(this.code),
+            LuaValue.valueOf(this.message)
         )
     )
 
@@ -92,8 +94,8 @@ class HttpLib() : TwoArgFunction() {
 
     private fun LuaValue.toRequestBody(): RequestBody = when (this::class) {
         LuaTable::class -> RequestBody.create(
-            MediaType.parse(this.get("type").optjstring("text/plain;chaset=utf-8")), this.get("data").optjstring("")
+            this.get("type").optjstring("text/plain;chaset=utf-8").toMediaTypeOrNull(), this.get("data").optjstring("")
         )
-        else -> RequestBody.create(MediaType.parse("text/plain;chaset=utf-8"), this.optjstring(""))
+        else -> this.optjstring("").toRequestBody("text/plain;chaset=utf-8".toMediaTypeOrNull())
     }
 }
