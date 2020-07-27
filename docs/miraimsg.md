@@ -63,7 +63,7 @@ msg:find("pattern") --等同于 string.find (msg, "pattern")
 下面这个示例演示了如何查找消息中的图片并下载到本地。
 
 ``` lua
-for m in ipairs(msg:toTable()) do
+for i,m in ipairs(msg:toTable()) do
 	if (m:find("mirai:image")) then
         m:downloadImage("C:\1.jpg")
     end
