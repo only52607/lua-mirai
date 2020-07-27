@@ -87,6 +87,10 @@ class MiraiMsg : LuaMsg {
                 GET_QUOTE -> it.chain[QuoteReply]?.source?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
                 GET_SOURCE -> it.chain[MessageSource]?.let { MiraiSource(it, it.bot) } ?: LuaValue.NIL
                 GET_IMAGE_URL -> it.chain[Image]?.queryUrl()?.toLuaValue() ?: LuaValue.NIL
+                TO_TABLE -> LuaTable().also { t ->
+                    var i = 0
+                    it.chain.forEachContent { t.insert(i++, MiraiMsg(it, bot)) }
+                }
                 else -> null
             } ?: it.also {
                 when (opcode) {
@@ -103,17 +107,13 @@ class MiraiMsg : LuaMsg {
                     APPEND_IMAGE_FLASH -> getImage(varargs.arg(2), varargs.arg(3))?.let { image -> it.append(image) }
                     SET_QUOTE -> it.append(QuoteReply(varargs.arg(2).checkMessageSource()))
                     RECALL -> it.chain[MessageSource]?.let { it.bot.recall(it) }
-                    TO_TABLE -> LuaTable().also { t ->
-                        var i = 0
-                        it.chain.forEachContent { t.insert(i++, MiraiMsg(it, bot)) }
-                    }
                     DOWNLOAD_IMAGE -> {
                         val imageUrl = it.chain[Image]?.queryUrl() ?: return@also
-                        val path = varargs.checkjstring(1)
+                        val path = varargs.checkjstring(2)
                         GlobalScope.launch {
                             val client = OkHttpClient()
                             val request = Request.Builder().url(imageUrl).build()
-                            val data = client.newCall(request).execute().body().byteStream().readAllBytes()
+                            val data = client.newCall(request).execute().body?.byteStream()?.readAllBytes()
                             FileOutputStream(path).apply { write(data) }.close()
                         }
                     }
