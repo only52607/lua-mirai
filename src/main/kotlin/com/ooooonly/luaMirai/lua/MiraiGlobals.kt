@@ -2,6 +2,7 @@ package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.utils.*
+import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.BotConfiguration
@@ -83,6 +84,7 @@ open class MiraiGlobals() : Globals() {
         load(LuaJavaExLib())
         load(ThreadExLib())
         load(HttpLib())
+        load(JsonLib())
         LoadState.install(this)
         LuaC.install(this)
 
