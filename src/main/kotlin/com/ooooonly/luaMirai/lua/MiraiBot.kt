@@ -1,22 +1,23 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.utils.*
-import javafx.application.Application.launch
-import kotlinx.coroutines.*
+import com.ooooonly.luaMirai.utils.checkArg
+import com.ooooonly.luaMirai.utils.checkIfType
+import com.ooooonly.luaMirai.utils.generateOpFunction
+import com.ooooonly.luaMirai.utils.toLuaValue
+import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.*
-import net.mamoe.mirai.data.MemberInfo
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessageEvent
 import net.mamoe.mirai.message.GroupMessageEvent
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.queryUrl
 import net.mamoe.mirai.utils.BotConfiguration
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
+import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
-import org.luaj.vm2.Varargs
 
 class MiraiBot : LuaBot {
     var bot: Bot
@@ -66,7 +67,8 @@ class MiraiBot : LuaBot {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(self, MiraiMsg(it.message, self.bot), g, MiraiGroupMember(self, g, it.sender))
                 }
-                EVENT_MSG_SEND_FRIEND -> self.bot.subscribeLuaFunction<MessageSendEvent.FriendMessageSendEvent>(
+                /*
+                EVENT_MSG_SEND_FRIEND -> self.bot.subscribeLuaFunction<MessagePreSendEvent>(
                     listener,
                     process
                 ) {
@@ -78,7 +80,7 @@ class MiraiBot : LuaBot {
                 ) {
                     arrayOf(self, MiraiMsg(it.message, self.bot), MiraiGroup(self, it.target))
                 }
-
+                */
                 EVENT_BOT_ONLINE -> self.bot.subscribeLuaFunction<BotOnlineEvent>(listener, process) {
                     arrayOf(self)
                 }
@@ -265,11 +267,24 @@ class MiraiBot : LuaBot {
                 CLOSE_AND_JOIN -> it.also { it.bot.closeAndJoin() }
                 GET_FRIEND -> MiraiFriend(it, varargs.optlong(2, 0))
                 GET_GROUP -> MiraiGroup(it, varargs.optlong(2, 0))
+                GET_FRIENDS -> LuaTable().apply {
+                    var i: Int = 0
+                    it.bot.friends.forEach { friend ->
+                        this.insert(i++, MiraiFriend(it, friend))
+                    }
+                }
+                GET_GROUPS -> LuaTable().apply {
+                    var i: Int = 0
+                    it.bot.groups.forEach { group ->
+                        this.insert(i++, MiraiGroup(it, group))
+                    }
+                }
                 GET_SELF_QQ -> MiraiFriend(it, it.bot.selfQQ)
                 GET_ID -> it.bot.id.toLuaValue()
                 CONTAINS_FRIEND -> it.bot.containsFriend(varargs.optlong(2, 0)).toLuaValue()
                 CONTAINS_GROUP -> it.bot.containsGroup(varargs.optlong(2, 0)).toLuaValue()
                 IS_ACTIVE -> it.bot.isActive.toLuaValue()
+                //ADD_FRIEND ->it.bot.
                 LAUNCH -> LuaCoroutineJob(it.bot.launch { varargs.arg(2).checkIfType<LuaFunction>().call() })
                 else -> LuaValue.NIL
             }

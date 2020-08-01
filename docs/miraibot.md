@@ -22,7 +22,7 @@
 | ------------------------------------- | ---------------- |
 | [`MiraiFriend`](/docs/miraifriend.md) | 获取到的好友对象 |
 
-### getFriends (获取好友列表)
+### getFriends (获取好友列表) 耗时操作，慎用
 
 #### 参数列表：无
 
@@ -33,7 +33,7 @@
 | Table of [`MiraiFriend`](/docs/miraifriend.md) | 获取到的好友对象列表 |
 
 
-### getGroup (获取群)
+### getGroup (获取群) 
 
 #### 参数列表：
 
@@ -47,7 +47,7 @@
 | ----------------------------------- | -------------- |
 | [`MiraiGroup`](/docs/miraigroup.md) | 获取到的群对象 |
 
-### getGroups (获取群列表)
+### getGroups (获取群列表) 耗时操作，慎用
 
 #### 参数列表：无
 
