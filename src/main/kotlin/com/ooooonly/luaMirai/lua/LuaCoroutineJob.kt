@@ -11,7 +11,7 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.OneArgFunction
 import org.luaj.vm2.lib.ZeroArgFunction
 
-class LuaCoroutineJob(var job: Job) : LuaValue() {
+open class LuaCoroutineJob(var job: Job) : LuaValue() {
 
     override fun getmetatable(): LuaValue = LuaTable().applyIndex {
         setFunction1ArgNoReturn("join") {
