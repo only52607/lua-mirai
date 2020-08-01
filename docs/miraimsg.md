@@ -1,7 +1,5 @@
 # 消息对象（MiraiMsg）
 
-详情见 [`消息对象`](/docs/miraimsg.md)
-
 ## 消息构造
 
 #### 构造一个空消息
@@ -18,7 +16,7 @@ Quote(消息对象)
 
 #### 构造At消息
 
-At(群成员) 
+At(群成员)
 
 #### 构造At全体消息
 
@@ -28,7 +26,9 @@ AtAll()
 
 **通过ID构建：**  Image( 图片ID )
 
-**通过本地路径或url构建：** UploadImage( 图片URL ,群或好友 )
+**通过url构建：** UploadImage( 图片URL ,群或好友 )
+
+**通过本地路径构建：** ImageFile( 图片路径 ,群或好友 )
 
 #### 构造表情
 
