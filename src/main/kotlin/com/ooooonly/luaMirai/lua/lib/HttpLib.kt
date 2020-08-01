@@ -1,14 +1,36 @@
 package com.ooooonly.luaMirai.lua.lib
 
 import com.ooooonly.luaMirai.utils.setFunction
-import okhttp3.*
+import com.ooooonly.luaMirai.utils.toLuaValue
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 open class HttpLib() : TwoArgFunction() {
+    companion object {
+        fun getRedirectUrl(path: String, referer: String?): String? {
+            val url = URL(path)
+            val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+            conn.setInstanceFollowRedirects(false)
+            conn.setConnectTimeout(5000)
+            referer?.takeIf { !it.isBlank() }.let {
+                conn.addRequestProperty("Referer", it)
+            }
+            return conn.getHeaderField("Location").toByteArray(Charset.forName("ISO-8859-1")).let {
+                "${url.protocol}://${url.host}${String(it)}"
+            }
+        }
+    }
+
     val defaultClient: OkHttpClient by lazy {
         OkHttpClient()
     }
@@ -40,10 +62,14 @@ open class HttpLib() : TwoArgFunction() {
                 else Request.Builder().post(requestBody).url(requestUrl).build()
                 client.newCall(request).execute().toVarargs()
             }
+            setFunction("getRedirectUrl") {
+                getRedirectUrl(it.arg1().optjstring(""), it.arg(2).optjstring(""))?.toLuaValue() ?: "".toLuaValue()
+            }
         }
         globals.set("Http", httpTable)
         return LuaValue.NIL
     }
+
 
     private fun Response.toLuaTable(): LuaTable = LuaTable().also { table ->
         table.set("body", this.body?.string())
