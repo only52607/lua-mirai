@@ -9,8 +9,9 @@ import org.luaj.vm2.*
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
+import java.io.File
 
-class MiraiGlobals() : Globals() {
+open class MiraiGlobals() : Globals() {
     var mBot: MiraiBot? = null
 
     companion object {
@@ -92,6 +93,14 @@ class MiraiGlobals() : Globals() {
 
     private fun initEventTable() = set("Event", LuaTable())
     private fun initMsgConstructor() {
+        set("Msg", object : VarArgFunction() {
+            override fun onInvoke(args: Varargs): Varargs {
+                val arg1 = args.arg1()
+                if (arg1 is LuaTable) return MiraiMsg(arg1)
+                else if (arg1 is LuaString) return MiraiMsg(arg1.toString())
+                return MiraiMsg()
+            }
+        })
         setFunction1Arg("At") {
             it.takeIfType<MiraiGroupMember>()?.let {
                 MiraiMsg(At(it.member))
@@ -116,6 +125,13 @@ class MiraiGlobals() : Globals() {
         setFunction2Arg("UploadImage") { arg1, arg2 ->
             MiraiMsg.uploadImage(
                 arg1,
+                arg2.takeIf { it != LuaValue.NIL }
+            )?.let { MiraiMsg(it) } ?: MiraiMsg()
+        }
+
+        setFunction2Arg("ImageFile") { arg1, arg2 ->
+            MiraiMsg.uploadImage(
+                File(arg1.checkjstring()).toURI().toURL().toString().toLuaValue(),
                 arg2.takeIf { it != LuaValue.NIL }
             )?.let { MiraiMsg(it) } ?: MiraiMsg()
         }
