@@ -1,3 +1,9 @@
+Info={}
+Info.name="整点报时"
+Info.author="ooooonly"
+Info.version="1.0"
+Info.description="整点报时"
+
 function Event.onLoad(bot)
     local isReport
     bot:subscribeGroupMsg(function(bot, msg, group, sender)

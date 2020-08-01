@@ -1,3 +1,9 @@
+Info={}
+Info.name="关键词回复pro"
+Info.author="ooooonly"
+Info.version="1.0"
+Info.description="可自定义回复内容"
+
 --支持使用lua模式匹配
 local responses = {
     ["夸我"] = function(msg)
