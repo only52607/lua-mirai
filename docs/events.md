@@ -188,7 +188,7 @@ bot:subscribeXXX(
 
 <br/>
 
-## 新成员加入群聊
+## 新成员已加入群聊
 
 ### 函数名: subscribeMemberJoinEvent
 
@@ -212,25 +212,74 @@ bot:subscribeXXX(
 | ----------------------------------------------- | ---------- |
 | [`MiraiBot`](/docs/miraibot.md)                 | bot对象    |
 | [`MiraiGroup`](/docs/miraigroup.md)             | 加入的群聊 |
-| Integer | 事件ID（暂不支持处理）     |
-| Integer | 申请者的qq号码     |
+| String | 事件ID     |
+| String | 申请者的qq号码     |
 | String | 申请消息     |
+| Table | 包含处理函数的表     |
+
+### 最后一个Table参数的函数列表:
+
+| 函数名 | 参数           | 说明                                               |
+| ------ | -------------- | -------------------------------------------------- |
+| accept | 无             | 同意申请                                           |
+| ignore | Boolean        | 忽略申请，参数为“是否加入黑名单”                   |
+| reject | Boolean,String | 拒绝申请，参数1为“是否加入黑名单”，参数2为拒绝消息 |
+
+
+
+#### 订阅示例：
+
+```lua
+bot:subscribeMemberJoinRequestEvent(
+	function(bot,eventId,fromId,msg,process)
+        if xxxx then -- 进行一些判断
+        	process.accept() -- 同意入群申请
+        else
+            process.reject(true,"你不符合本群入群要求！") -- 拒绝入群申请，并加入黑名单
+        end
+    end
+)
+```
+
+
 
 <br/>
 
-## 群员被移出群聊
 
-### 函数名: subscribeMemberKickEvent
+
+
+
+## ~~群员被移出群聊~~
+
+### ~~函数名: subscribeMemberKickEvent~~
+
+### ~~传入的回调函数的参数列表:~~
+
+| ~~参数类型~~                                        | ~~描述~~         |
+| :-------------------------------------------------- | ---------------- |
+| ~~[`MiraiBot`](/docs/miraibot.md)~~                 | ~~bot对象~~      |
+| ~~[`MiraiGroup`](/docs/miraigroup.md)~~             | ~~群对象~~       |
+| ~~[`MiraiGroupMember`](/docs/miraigroupmember.md)~~ | ~~被移出的成员~~ |
+
+<br/>
+
+
+
+## 群员退出群聊
+
+### 函数名: subscribeMemberLeaveEvent
 
 ### 传入的回调函数的参数列表:
 
-| 参数类型                                        | 描述         |
-| :---------------------------------------------- | ------------ |
-| [`MiraiBot`](/docs/miraibot.md)                 | bot对象      |
-| [`MiraiGroup`](/docs/miraigroup.md)             | 群对象       |
-| [`MiraiGroupMember`](/docs/miraigroupmember.md) | 被移出的成员 |
+| 参数类型                                        | 描述       |
+| :---------------------------------------------- | ---------- |
+| [`MiraiBot`](/docs/miraibot.md)                 | bot对象    |
+| [`MiraiGroup`](/docs/miraigroup.md)             | 群对象     |
+| [`MiraiGroupMember`](/docs/miraigroupmember.md) | 退出的成员 |
 
 <br/>
+
+
 
 ## 群员名片被改变
 
@@ -306,4 +355,27 @@ bot:subscribeXXX(
 | [`MiraiBot`](/docs/miraibot.md)                 | bot对象          |
 | [`MiraiGroup`](/docs/miraigroup.md)             | 群对象           |
 | [`MiraiGroupMember`](/docs/miraigroupmember.md) | 被解除禁言的成员 |
+
+<br/>
+
+## 好友添加申请
+
+### 函数名: subscribeFriendRequestEvent
+
+### 传入的回调函数的参数列表:
+
+| 参数类型                        | 描述             |
+| ------------------------------- | ---------------- |
+| [`MiraiBot`](/docs/miraibot.md) | bot对象          |
+| String                          | 申请消息         |
+| String                          | 申请者的qq号码   |
+| String                          | 申请者的昵称     |
+| Table                           | 包含处理函数的表 |
+
+### 最后一个Table参数的函数列表:
+
+| 函数名 | 参数    | 说明                             |
+| ------ | ------- | -------------------------------- |
+| accept | 无      | 同意申请                         |
+| reject | Boolean | 拒绝申请，参数为“是否加入黑名单” |
 

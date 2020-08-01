@@ -11,11 +11,13 @@ public abstract class LuaBot extends LuaContact {
     public static final int GET_GROUP = 4;
     public static final int GET_SELF_QQ = 5;
     public static final int GET_ID = 6;
-    public static final int ADD_FRIEND = 7;
+    public static final int SELF_QQ = 7;
     public static final int CONTAINS_FRIEND = 8;
     public static final int CONTAINS_GROUP = 9;
     public static final int IS_ACTIVE = 10;
     public static final int LAUNCH = 11;
+    public static final int GET_FRIENDS = 12;
+    public static final int GET_GROUPS = 13;
 
     public static final int EVENT_MSG_FRIEND = 100;
     public static final int EVENT_MSG_GROUP = 101;
@@ -38,7 +40,7 @@ public abstract class LuaBot extends LuaContact {
     public static final int EVENT_GROUP_REQUEST = 118;
     public static final int EVENT_GROUP_MEMBER_JOIN = 119;
     public static final int EVENT_GROUP_MEMBER_JOIN_REQUEST = 120;
-    public static final int EVENT_GROUP_MEMBER_KICKED = 121;
+    public static final int EVENT_GROUP_MEMBER_LEAVE = 121;
     public static final int EVENT_GROUP_MEMBER_CHANGE_CARD = 122;
     public static final int EVENT_GROUP_MEMBER_CHANGE_SPECIAL_TITLE = 123;
     public static final int EVENT_GROUP_MEMBER_CHANGE_PERMISSION = 124;
@@ -67,9 +69,11 @@ public abstract class LuaBot extends LuaContact {
         index.rawset("closeAndJoin", getOpFunction(CLOSE_AND_JOIN));
         index.rawset("getFriend", getOpFunction(GET_FRIEND));
         index.rawset("getGroup", getOpFunction(GET_GROUP));
+        index.rawset("getFriends", getOpFunction(GET_FRIENDS));
+        index.rawset("getGroups", getOpFunction(GET_GROUPS));
         index.rawset("getSelfQQ", getOpFunction(GET_SELF_QQ));
         index.rawset("getId", getOpFunction(GET_ID));
-        index.rawset("addFriend", getOpFunction(ADD_FRIEND));
+        //index.rawset("selfQQ", getOpFunction(SELF_QQ));
         index.rawset("containsFriend", getOpFunction(CONTAINS_FRIEND));
         index.rawset("containsGroup", getOpFunction(CONTAINS_GROUP));
         index.rawset("isActive", getOpFunction(IS_ACTIVE));
@@ -100,7 +104,8 @@ public abstract class LuaBot extends LuaContact {
 
         index.rawset("subscribeMemberJoinEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_JOIN));
         index.rawset("subscribeMemberJoinRequestEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_JOIN_REQUEST));
-        index.rawset("subscribeMemberKickEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_KICKED));
+        index.rawset("subscribeMemberKickEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_LEAVE));//
+        index.rawset("subscribeMemberLeaveEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_LEAVE));
         index.rawset("subscribeMemberCardChangedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_CARD));
         index.rawset("subscribeMemberSpecialTitleChangeEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_SPECIAL_TITLE));
         index.rawset("subscribeMemberPermissionChangedEvent", getSubscribeFunction(EVENT_GROUP_MEMBER_CHANGE_PERMISSION));

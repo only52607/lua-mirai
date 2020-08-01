@@ -1,9 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.utils.checkArg
-import com.ooooonly.luaMirai.utils.checkIfType
-import com.ooooonly.luaMirai.utils.generateOpFunction
-import com.ooooonly.luaMirai.utils.toLuaValue
+import com.ooooonly.luaMirai.utils.*
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -58,7 +55,7 @@ class MiraiBot : LuaBot {
         override fun onSubscribe(self: LuaValue, listener: LuaFunction): LuaValue = self.also {
             if (self !is MiraiBot) throw LuaError("The reference object must be MiraiBot")
             listeners[self.scriptId]?.let { it[opcode]?.complete() } ?: run { listeners[self.scriptId] = HashMap() }
-            var process = { lv: LuaValue, e: Event -> if (lv != LuaValue.NIL) e.intercept() }
+            val process = { lv: LuaValue, e: Event -> if (lv != LuaValue.NIL) e.intercept() }
             when (opcode) {
                 EVENT_MSG_FRIEND -> self.bot.subscribeLuaFunction<FriendMessageEvent>(listener, process) {
                     arrayOf(self, MiraiMsg(it.message, it.bot), MiraiFriend(self, it.sender))
@@ -149,9 +146,9 @@ class MiraiBot : LuaBot {
                     listener,
                     process
                 ) {
+
                     arrayOf(self, LuaValue.valueOf(it.groupId.toInt()))
                 }
-
                 EVENT_GROUP_MEMBER_JOIN -> self.bot.subscribeLuaFunction<MemberJoinEvent>(listener, process) {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(self, g, MiraiGroupMember(self, g, it.member))
@@ -166,13 +163,31 @@ class MiraiBot : LuaBot {
                         g,
                         LuaValue.valueOf(it.eventId.toString()),
                         LuaValue.valueOf(it.fromId.toString()),
-                        LuaValue.valueOf(it.message)
+                        LuaValue.valueOf(it.message),
+                        LuaTable().apply {
+                            setFunction0Arg0Return("accept") {
+                                kotlinx.coroutines.runBlocking { accept() }
+                            }
+                            setFunction1ArgNoReturn("ignore") { blackList ->
+                                kotlinx.coroutines.runBlocking { ignore(blackList.optboolean(false)) }
+                            }
+                            setFunction2ArgNoReturn("reject") { blackList, msg ->
+                                kotlinx.coroutines.runBlocking {
+                                    reject(
+                                        blackList.optboolean(false),
+                                        msg.optjstring("")
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
-                EVENT_GROUP_MEMBER_KICKED -> self.bot.subscribeLuaFunction<MemberLeaveEvent>(listener, process) {
+                EVENT_GROUP_MEMBER_LEAVE -> self.bot.subscribeLuaFunction<MemberLeaveEvent>(listener, process) {
                     var g = MiraiGroup(self, it.group)
+
                     arrayOf(self, g, MiraiGroupMember(self, g, it.member))
                 }
+
                 EVENT_GROUP_MEMBER_CHANGE_CARD -> self.bot.subscribeLuaFunction<MemberCardChangeEvent>(
                     listener,
                     process
@@ -246,10 +261,17 @@ class MiraiBot : LuaBot {
                     } ?: arrayOf(
                         self,
                         LuaValue.valueOf(it.eventId.toInt()),
-                        LuaValue.NIL,
                         LuaValue.valueOf(it.message),
-                        LuaValue.valueOf(it.fromId.toInt()),
-                        LuaValue.valueOf(it.fromNick)
+                        LuaValue.valueOf(it.fromId.toString()),
+                        LuaValue.valueOf(it.fromNick),
+                        LuaTable().apply {
+                            setFunction0Arg0Return("accept") {
+                                kotlinx.coroutines.runBlocking { accept() }
+                            }
+                            setFunction2ArgNoReturn("reject") { blackList, msg ->
+                                kotlinx.coroutines.runBlocking { reject(blackList.optboolean(false)) }
+                            }
+                        }
                     )
                 }
 
