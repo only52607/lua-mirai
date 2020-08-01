@@ -1,19 +1,12 @@
 package com.ooooonly.luaMirai.lua.lib
 
-
-import com.ooooonly.luaMirai.lua.LuaBot
-import com.ooooonly.luaMirai.lua.MiraiBot
-import com.ooooonly.luaMirai.lua.MiraiMsg
-import org.luaj.vm2.LuaString
-import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
-import org.luaj.vm2.Varargs
-import org.luaj.vm2.lib.VarArgFunction
 
 
-class MiraiBotLib : BotLib() {
+open class MiraiBotLib : BotLib() {
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()
+        /*
         globals.set("Msg", object : VarArgFunction() {
             override fun onInvoke(args: Varargs): Varargs {
                 val arg1 = args.arg1()
@@ -22,6 +15,8 @@ class MiraiBotLib : BotLib() {
                 return MiraiMsg()
             }
         })
+
+         */
         return LuaValue.NIL
     }
 }

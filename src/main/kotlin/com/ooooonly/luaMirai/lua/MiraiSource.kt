@@ -11,7 +11,7 @@ import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
 
-class MiraiSource(var receipt: MessageReceipt<Contact>?, var source: MessageSource, var bot: Bot) : LuaSource() {
+open class MiraiSource(var receipt: MessageReceipt<Contact>?, var source: MessageSource, var bot: Bot) : LuaSource() {
     constructor(receipt: MessageReceipt<Contact>) : this(receipt, receipt.source, receipt.target.bot)
     constructor(source: MessageSource, bot: Bot) : this(null, source, bot)
 
