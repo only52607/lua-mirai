@@ -38,6 +38,9 @@ class MiraiGroupMember(var bot: MiraiBot, var group: MiraiGroup, var member: Mem
                 IS_FRIEND -> it.member.isFriend.toLuaValue()
                 AS_FRIEND -> it.member.asFriendOrNull()?.let { friend -> MiraiFriend(it.bot, friend) } ?: LuaValue.NIL
                 SEND_MEG -> MiraiSource(it.member.sendMessage(varargs.arg(2).checkMessageChain()))
+                SEND_IMG -> MiraiMsg.uploadImage(varargs.arg(2), it)?.let { img ->
+                    MiraiSource(it.member.sendMessage(img))
+                } ?: LuaValue.NIL
                 else -> LuaValue.NIL
             }
         }

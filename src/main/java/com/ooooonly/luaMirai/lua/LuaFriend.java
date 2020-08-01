@@ -15,6 +15,7 @@ public abstract class LuaFriend extends LuaContact {
     public static final int QUERY_REMARK = 3;
     public static final int QUERY_PROFILE = 4;
     public static final int SEND_MESSAGE = 5;
+    public static final int SEND_IMG = 6;
 
     private static LuaTable metaTable;
 
@@ -29,6 +30,7 @@ public abstract class LuaFriend extends LuaContact {
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
         index.rawset("sendMsg", getOpFunction(SEND_MESSAGE));
+        index.rawset("sendImg", getOpFunction(SEND_IMG));
         index.rawset("getNick", getOpFunction(GET_NICK));
         index.rawset("getAvatarUrl", getOpFunction(GET_AVATAR_URL));
         index.rawset("isActive", getOpFunction(IS_ACTIVE));

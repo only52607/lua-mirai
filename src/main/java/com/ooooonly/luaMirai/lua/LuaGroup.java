@@ -20,6 +20,7 @@ public abstract class LuaGroup extends LuaContact {
     public static final int QUIT = 10;
     public static final int TO_FULL_STRING = 11;
     public static final int SEND_MSG = 12;
+    public static final int SEND_IMG = 13;
 
     private static LuaTable metaTable;
 
@@ -34,6 +35,7 @@ public abstract class LuaGroup extends LuaContact {
         metaTable = new LuaTable();
         LuaTable index = new LuaTable();
         index.rawset("sendMsg", getOpFunction(SEND_MSG));
+        index.rawset("sendImg", getOpFunction(SEND_IMG));
         index.rawset("getMember", getOpFunction(GET_MEMBER));
         index.rawset("getAvatarUrl", getOpFunction(GET_AVATAR_URL));
         index.rawset("getBotMuteRemain", getOpFunction(GET_BOT_MUTE_REMAIN));
