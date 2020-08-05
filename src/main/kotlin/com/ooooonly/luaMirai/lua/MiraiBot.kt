@@ -30,31 +30,36 @@ class MiraiBot : LuaBot {
         scriptId: Int,
         config: BotConfiguration = BotConfiguration.Default
     ) : super(account, password) {
-        this.scriptId = scriptId;
-        try {
-            this.bot = Bot.getInstance(account)
+        this.scriptId = scriptId
+        this.bot = try {
+            Bot.getInstance(account)
         } catch (e: Exception) {
-            this.bot = Bot(account, password, config)
+            Bot(account, password, config)
         }
     }
 
     constructor(bot: Bot, scriptId: Int) : super(bot.id, "") {
-        this.scriptId = scriptId;
+        this.scriptId = scriptId
         this.bot = bot
     }
 
     private inline fun <reified E : BotEvent> Bot.subscribeLuaFunction(
         luaFun: LuaFunction,
-        crossinline process: (LuaValue, Event) -> Unit,
-        crossinline block: E.(E) -> Array<LuaValue>
-    ) = subscribeAlways<E> {
-        process(luaFun.invoke(LuaValue.varargsOf(it.block(it))).arg1(), it)
+        crossinline callback: (LuaValue, Event) -> Unit, // （返回值，Event对象） 处理返回结果
+        crossinline map: E.(E) -> Array<LuaValue> //转换器，将Event对象参数转换成LuaValue数组，以便传入LuaFunction
+    ): CompletableJob = subscribeAlways<E> {
+        val varargs = LuaValue.varargsOf(it.map(it))
+        val exeResult = luaFun.invoke(varargs)
+        callback(exeResult.arg1(), it)
     }
 
     override fun getSubscribeFunction(opcode: Int): SubscribeFunction = object : SubscribeFunction(opcode) {
         override fun onSubscribe(self: LuaValue, listener: LuaFunction): LuaValue = self.also {
             if (self !is MiraiBot) throw LuaError("The reference object must be MiraiBot")
-            listeners[self.scriptId]?.let { it[opcode]?.complete() } ?: run { listeners[self.scriptId] = HashMap() }
+
+            listeners[self.scriptId]?.get(opcode)?.complete() ?: run { listeners[self.scriptId] = HashMap() }
+
+
             val process = { lv: LuaValue, e: Event -> if (lv != LuaValue.NIL) e.intercept() }
             when (opcode) {
                 EVENT_MSG_FRIEND -> self.bot.subscribeLuaFunction<FriendMessageEvent>(listener, process) {
@@ -313,5 +318,5 @@ class MiraiBot : LuaBot {
         }
     }
 
-    fun unSubsribeAll() = listeners[scriptId]?.let { it.forEach { it.value.complete() } }
+    fun unSubsribeAll() = listeners[scriptId]?.forEach { it.value.complete() }
 }

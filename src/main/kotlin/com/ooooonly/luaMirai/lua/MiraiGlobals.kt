@@ -23,37 +23,28 @@ open class MiraiGlobals() : Globals() {
         fun print(msg: String?)
     }
 
-    private var eventTable: LuaTable? = null
+    private val eventTable: LuaTable?
         get() = get("Event").takeIf {
             it is LuaTable
         } as LuaTable?
 
-    private var onLoadFun: LuaFunction? = null
+    private val onLoadFun: LuaFunction?
         get() = eventTable?.let {
             it.get("onLoad").takeIf {
                 it is LuaFunction
             } as LuaFunction?
         }
 
-    private var onFinishFun: LuaFunction? = null
+    private val onFinishFun: LuaFunction?
         get() = eventTable?.let {
             it.get("onFinish").takeIf {
                 it is LuaFunction
             } as LuaFunction?
         }
 
-    constructor(printable: Printable) : this() {
-        setFunctionNoReturn("print") {
-            StringBuffer().let { sb ->
-                val narg = it.narg()
-                for (i in 1..narg) {
-                    sb.append(it.arg(i).toString())
-                    if (i != narg) sb.append(" ")
-                }
-                printable.print(sb.toString())
-            }
-        }
-    }
+    constructor(printable: Printable) : this({ content ->
+        printable.print(content)
+    })
 
     constructor(printable: (String) -> Unit) : this() {
         setFunctionNoReturn("print") {
@@ -79,6 +70,8 @@ open class MiraiGlobals() : Globals() {
         load(JseIoLib())
         load(JseOsLib())
         load(LuajavaLib())
+
+
         load(MiraiBotLib())
         load(NetLib())
         load(LuaJavaExLib())
@@ -88,13 +81,8 @@ open class MiraiGlobals() : Globals() {
         LoadState.install(this)
         LuaC.install(this)
 
-        initEventTable()
+        set("Event", LuaTable())
     }
-
-    private fun initEventTable() = set("Event", LuaTable())
-
-
-
 
     fun onLoad(bot: Bot) = onLoadFun?.let {
         mBot = MiraiBot(bot, idCounter++)
