@@ -28,6 +28,9 @@ class MiraiFriend(var bot: MiraiBot, var friend: Friend) : LuaFriend(bot, friend
                 GET_AVATAR_URL -> it.friend.avatarUrl.toLuaValue()
                 IS_ACTIVE -> it.friend.isActive.toLuaValue()
                 SEND_MESSAGE -> MiraiSource(it.friend.sendMessage(varargs.arg(2).checkMessageChain()))
+                SEND_IMG -> MiraiMsg.uploadImage(varargs.arg(2), it)?.let { img ->
+                    MiraiSource(it.friend.sendMessage(img))
+                } ?: LuaValue.NIL
                 else -> LuaValue.NIL
             }
         }

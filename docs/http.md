@@ -88,3 +88,19 @@ local body,isSuccessful,code,message = Http.post(
 print(body)
 ```
 
+## 快速获取重定向地址
+
+#### 函数名：Http.getRedirectUrl
+
+#### 参数列表：
+
+| 参数    | 类型         | 描述       | 可空  |
+| ------- | ------------ | ---------- | ----- |
+| url     | String       | 欲被重定向的地址   | False |
+| referer  | String | referer头   | True |
+
+#### 返回值：
+
+| 类型    | 描述     |
+| ------- | -------- |
+| String  | 重定向后的地址 |

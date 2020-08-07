@@ -1,22 +1,20 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.utils.*
-import javafx.application.Application.launch
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.*
-import net.mamoe.mirai.data.MemberInfo
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.FriendMessageEvent
 import net.mamoe.mirai.message.GroupMessageEvent
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.queryUrl
 import net.mamoe.mirai.utils.BotConfiguration
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
+import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
-import org.luaj.vm2.Varargs
 
 class MiraiBot : LuaBot {
     var bot: Bot
@@ -32,32 +30,37 @@ class MiraiBot : LuaBot {
         scriptId: Int,
         config: BotConfiguration = BotConfiguration.Default
     ) : super(account, password) {
-        this.scriptId = scriptId;
-        try {
-            this.bot = Bot.getInstance(account)
+        this.scriptId = scriptId
+        this.bot = try {
+            Bot.getInstance(account)
         } catch (e: Exception) {
-            this.bot = Bot(account, password, config)
+            Bot(account, password, config)
         }
     }
 
     constructor(bot: Bot, scriptId: Int) : super(bot.id, "") {
-        this.scriptId = scriptId;
+        this.scriptId = scriptId
         this.bot = bot
     }
 
     private inline fun <reified E : BotEvent> Bot.subscribeLuaFunction(
         luaFun: LuaFunction,
-        crossinline process: (LuaValue, Event) -> Unit,
-        crossinline block: E.(E) -> Array<LuaValue>
-    ) = subscribeAlways<E> {
-        process(luaFun.invoke(LuaValue.varargsOf(it.block(it))).arg1(), it)
+        crossinline callback: (LuaValue, Event) -> Unit, // （返回值，Event对象） 处理返回结果
+        crossinline map: E.(E) -> Array<LuaValue> //转换器，将Event对象参数转换成LuaValue数组，以便传入LuaFunction
+    ): CompletableJob = subscribeAlways<E> {
+        val varargs = LuaValue.varargsOf(it.map(it))
+        val exeResult = luaFun.invoke(varargs)
+        callback(exeResult.arg1(), it)
     }
 
     override fun getSubscribeFunction(opcode: Int): SubscribeFunction = object : SubscribeFunction(opcode) {
         override fun onSubscribe(self: LuaValue, listener: LuaFunction): LuaValue = self.also {
             if (self !is MiraiBot) throw LuaError("The reference object must be MiraiBot")
-            listeners[self.scriptId]?.let { it[opcode]?.complete() } ?: run { listeners[self.scriptId] = HashMap() }
-            var process = { lv: LuaValue, e: Event -> if (lv != LuaValue.NIL) e.intercept() }
+
+            listeners[self.scriptId]?.get(opcode)?.complete() ?: run { listeners[self.scriptId] = HashMap() }
+
+
+            val process = { lv: LuaValue, e: Event -> if (lv != LuaValue.NIL) e.intercept() }
             when (opcode) {
                 EVENT_MSG_FRIEND -> self.bot.subscribeLuaFunction<FriendMessageEvent>(listener, process) {
                     arrayOf(self, MiraiMsg(it.message, it.bot), MiraiFriend(self, it.sender))
@@ -66,7 +69,8 @@ class MiraiBot : LuaBot {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(self, MiraiMsg(it.message, self.bot), g, MiraiGroupMember(self, g, it.sender))
                 }
-                EVENT_MSG_SEND_FRIEND -> self.bot.subscribeLuaFunction<MessageSendEvent.FriendMessageSendEvent>(
+                /*
+                EVENT_MSG_SEND_FRIEND -> self.bot.subscribeLuaFunction<MessagePreSendEvent>(
                     listener,
                     process
                 ) {
@@ -78,7 +82,7 @@ class MiraiBot : LuaBot {
                 ) {
                     arrayOf(self, MiraiMsg(it.message, self.bot), MiraiGroup(self, it.target))
                 }
-
+                */
                 EVENT_BOT_ONLINE -> self.bot.subscribeLuaFunction<BotOnlineEvent>(listener, process) {
                     arrayOf(self)
                 }
@@ -147,9 +151,9 @@ class MiraiBot : LuaBot {
                     listener,
                     process
                 ) {
+
                     arrayOf(self, LuaValue.valueOf(it.groupId.toInt()))
                 }
-
                 EVENT_GROUP_MEMBER_JOIN -> self.bot.subscribeLuaFunction<MemberJoinEvent>(listener, process) {
                     var g = MiraiGroup(self, it.group)
                     arrayOf(self, g, MiraiGroupMember(self, g, it.member))
@@ -164,13 +168,31 @@ class MiraiBot : LuaBot {
                         g,
                         LuaValue.valueOf(it.eventId.toString()),
                         LuaValue.valueOf(it.fromId.toString()),
-                        LuaValue.valueOf(it.message)
+                        LuaValue.valueOf(it.message),
+                        LuaTable().apply {
+                            setFunction0Arg0Return("accept") {
+                                kotlinx.coroutines.runBlocking { accept() }
+                            }
+                            setFunction1ArgNoReturn("ignore") { blackList ->
+                                kotlinx.coroutines.runBlocking { ignore(blackList.optboolean(false)) }
+                            }
+                            setFunction2ArgNoReturn("reject") { blackList, msg ->
+                                kotlinx.coroutines.runBlocking {
+                                    reject(
+                                        blackList.optboolean(false),
+                                        msg.optjstring("")
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
-                EVENT_GROUP_MEMBER_KICKED -> self.bot.subscribeLuaFunction<MemberLeaveEvent>(listener, process) {
+                EVENT_GROUP_MEMBER_LEAVE -> self.bot.subscribeLuaFunction<MemberLeaveEvent>(listener, process) {
                     var g = MiraiGroup(self, it.group)
+
                     arrayOf(self, g, MiraiGroupMember(self, g, it.member))
                 }
+
                 EVENT_GROUP_MEMBER_CHANGE_CARD -> self.bot.subscribeLuaFunction<MemberCardChangeEvent>(
                     listener,
                     process
@@ -244,10 +266,17 @@ class MiraiBot : LuaBot {
                     } ?: arrayOf(
                         self,
                         LuaValue.valueOf(it.eventId.toInt()),
-                        LuaValue.NIL,
                         LuaValue.valueOf(it.message),
-                        LuaValue.valueOf(it.fromId.toInt()),
-                        LuaValue.valueOf(it.fromNick)
+                        LuaValue.valueOf(it.fromId.toString()),
+                        LuaValue.valueOf(it.fromNick),
+                        LuaTable().apply {
+                            setFunction0Arg0Return("accept") {
+                                kotlinx.coroutines.runBlocking { accept() }
+                            }
+                            setFunction2ArgNoReturn("reject") { blackList, msg ->
+                                kotlinx.coroutines.runBlocking { reject(blackList.optboolean(false)) }
+                            }
+                        }
                     )
                 }
 
@@ -265,16 +294,29 @@ class MiraiBot : LuaBot {
                 CLOSE_AND_JOIN -> it.also { it.bot.closeAndJoin() }
                 GET_FRIEND -> MiraiFriend(it, varargs.optlong(2, 0))
                 GET_GROUP -> MiraiGroup(it, varargs.optlong(2, 0))
+                GET_FRIENDS -> LuaTable().apply {
+                    var i: Int = 0
+                    it.bot.friends.forEach { friend ->
+                        this.insert(i++, MiraiFriend(it, friend))
+                    }
+                }
+                GET_GROUPS -> LuaTable().apply {
+                    var i: Int = 0
+                    it.bot.groups.forEach { group ->
+                        this.insert(i++, MiraiGroup(it, group))
+                    }
+                }
                 GET_SELF_QQ -> MiraiFriend(it, it.bot.selfQQ)
                 GET_ID -> it.bot.id.toLuaValue()
                 CONTAINS_FRIEND -> it.bot.containsFriend(varargs.optlong(2, 0)).toLuaValue()
                 CONTAINS_GROUP -> it.bot.containsGroup(varargs.optlong(2, 0)).toLuaValue()
                 IS_ACTIVE -> it.bot.isActive.toLuaValue()
+                //ADD_FRIEND ->it.bot.
                 LAUNCH -> LuaCoroutineJob(it.bot.launch { varargs.arg(2).checkIfType<LuaFunction>().call() })
                 else -> LuaValue.NIL
             }
         }
     }
 
-    fun unSubsribeAll() = listeners[scriptId]?.let { it.forEach { it.value.complete() } }
+    fun unSubsribeAll() = listeners[scriptId]?.forEach { it.value.complete() }
 }

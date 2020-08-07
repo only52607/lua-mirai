@@ -21,6 +21,7 @@ abstract public class LuaGroupMember extends LuaContact {
     public static final int AS_FRIEND = 11;
     public static final int GET_PERMISSION = 12;
     public static final int SEND_MEG = 13;
+    public static final int SEND_IMG = 14;
 
     private static LuaTable metaTable;
 
@@ -49,6 +50,7 @@ abstract public class LuaGroupMember extends LuaContact {
         index.rawset("asFriend", getOpFunction(AS_FRIEND));
         index.rawset("getPermission", getOpFunction(GET_PERMISSION));
         index.rawset("sendMsg", getOpFunction(SEND_MEG));
+        index.rawset("sendImg", getOpFunction(SEND_IMG));
         metaTable.rawset(INDEX, index);
         return metaTable;
     }

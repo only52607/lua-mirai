@@ -1,3 +1,9 @@
+Info={}
+Info.name="祖安机器人"
+Info.author="ooooonly"
+Info.version="1.0"
+Info.description="试着向机器人发送‘骂我’"
+
 Event.onLoad = function(bot)
     bot:subscribeGroupMsg(function(bot, msg, group, sender)
         if msg == "骂我" then

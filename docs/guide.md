@@ -41,36 +41,7 @@ bot.join() --挂起，防止进程结束
 
 ```
 
-# 事件
-lua-mirai基于事件驱动机制构建，lua-mirai中的事件包括好友、群消息事件等，当事件发生时，lua-mirai将会通过回调函数通知监听者。
-
-## 事件监听
-
-一个事件监听是由[`MiraiBot`](/docs/miraibot.md)对象创建的，基本格式为bot:subscribeXXXXX(function () end)
-
-示例：
-
-``` lua
-bot:subsribeFriendMsg(
-    function (bot, msg, sender)
-    end
-)
-```
-详情见 [`事件列表`](/docs/events.md)
-
-## 事件拦截
-
-事件被拦截意味着消息只被当前脚本接收，事件监听器默认不会拦截事件，若需要拦截事件，请在监听器内返回非空值。
-
-``` lua
-bot:subscribeFriendMsg(
-    function (bot, msg, sender)
-        return true --事件被拦截，此脚本以后的所有脚本将不会收到该事件
-    end
-)
-```
-
-# 对象
+# 内置对象
 
 ## 消息（MiraiMsg）
 
@@ -104,13 +75,19 @@ source:recall()
 
 详情见 [`MiraiGroupMember`](/docs/miraigroupmember.md)。
 
-# 在lua中执行http请求
+# 内置支持库列表
 
-详情见 [`在lua中执行http请求`](/docs/http.md)。
+## Http支持库
 
-# 在lua中与java交互
+详情见 [`Http支持库`](/docs/http.md)。
 
-详情见 [`在lua中与java交互`](/docs/luajava.md)。
+## Json支持库
+
+详情见 [`json支持库`](/docs/json.md)。
+
+## LuaJava支持库
+
+详情见 [`LuaJava支持库`](/docs/luajava.md)。
 
 # 增加的lua语法特性(基于lua5.2.x)
 
