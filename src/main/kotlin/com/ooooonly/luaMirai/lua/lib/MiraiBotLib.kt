@@ -60,11 +60,22 @@ open class MiraiBotLib : BotLib() {
             )?.let { MiraiMsg(it) } ?: MiraiMsg()
         }
 
+        setFunction2Arg("ImageUrl") { arg1, arg2 ->
+            MiraiMsg.uploadImage(
+                arg1,
+                arg2.takeIf { it != LuaValue.NIL }
+            )?.let { MiraiMsg(it) } ?: MiraiMsg()
+        }
+
         setFunction2Arg("ImageFile") { arg1, arg2 ->
             MiraiMsg.uploadImage(
                 File(arg1.checkjstring()).toURI().toURL().toString().toLuaValue(),
                 arg2.takeIf { it != LuaValue.NIL }
             )?.let { MiraiMsg(it) } ?: MiraiMsg()
+        }
+
+        setFunction1Arg("FlashImage") { arg1 ->
+            MiraiMsg(FlashImage((arg1 as MiraiMsg).chain[Image]!!))
         }
 
         setFunction0Arg("AtAll") {
@@ -73,6 +84,22 @@ open class MiraiBotLib : BotLib() {
 
         setFunction1Arg("Face") {
             MiraiMsg(Face(it.checkint()))
+        }
+
+        setFunction1Arg("Poke") {
+            MiraiMsg(getPoke(it.checkint()))
+        }
+
+        setFunction1Arg("Forward") {
+            MiraiMsg(it.checktable().buildForwardMsg())
+        }
+
+        setFunction1Arg("App") {
+            MiraiMsg(LightApp(it.checkjstring()))
+        }
+
+        setFunction2Arg("Service") { id, content ->
+            MiraiMsg(ServiceMessage(id.checkint(), content.checkjstring()))
         }
     }
 
@@ -88,5 +115,71 @@ open class MiraiBotLib : BotLib() {
             return@setFunction MiraiBot(user, pwd, 0, config)
         }
     }
+
+    private fun getPoke(code: Int) = when (code) {
+        0 -> PokeMessage.Poke
+        1 -> PokeMessage.ShowLove
+        2 -> PokeMessage.Like
+        3 -> PokeMessage.Heartbroken
+        4 -> PokeMessage.SixSixSix
+        5 -> PokeMessage.FangDaZhao
+        6 -> PokeMessage.BaoBeiQiu
+        7 -> PokeMessage.ZhaoHuanShu
+        8 -> PokeMessage.RangNiPi
+        9 -> PokeMessage.JieYin
+        10 -> PokeMessage.ShouLei
+        11 -> PokeMessage.GouYin
+        12 -> PokeMessage.ZhuaYiXia
+        13 -> PokeMessage.SuiPing
+        14 -> PokeMessage.QiaoMen
+        15 -> PokeMessage.Rose
+        else -> EmptyMessageChain
+    }
+
+    private fun LuaTable.buildForwardMsg() = run {
+        val nodes = buildNodes()
+        val displayStrategy = get("content")?.takeIf { it is LuaTable }?.checktable()?.buildDisplayStrategy(nodes)
+            ?: ForwardMessage.DisplayStrategy.Default
+        ForwardMessage(nodes, displayStrategy)
+    }
+
+    private fun LuaTable.buildDisplayStrategy(nodes: Collection<ForwardMessage.INode>) =
+        object : ForwardMessage.DisplayStrategy() {
+            override fun generateTitle(forward: ForwardMessage): String =
+                get("title")?.takeIf { it != LuaValue.NIL }?.tojstring() ?: "群聊的聊天记录"
+
+            override fun generateBrief(forward: ForwardMessage): String =
+                get("brief")?.takeIf { it != LuaValue.NIL }?.tojstring() ?: "[聊天记录]"
+
+            override fun generateSource(forward: ForwardMessage): String =
+                get("source")?.takeIf { it != LuaValue.NIL }?.tojstring() ?: "聊天记录"
+
+            override fun generatePreview(forward: ForwardMessage): Sequence<String> =
+                get("preview")?.takeIf { it is LuaTable }?.checktable()?.buildStringSequence() ?: nodes.asSequence()
+                    .map { it.senderName + ": " + it.message.contentToString() }
+
+            override fun generateSummary(forward: ForwardMessage): String =
+                get("summary")?.takeIf { it != LuaValue.NIL }?.tojstring() ?: "查看 ${nodes.size} 条转发消息"
+        }
+
+    private fun LuaTable.buildNode() = ForwardMessage.Node(
+        get("senderId")?.takeIf { it != LuaValue.NIL }?.tolong() ?: 0,
+        get("time")?.takeIf { it != LuaValue.NIL }?.toint() ?: 0,
+        get("senderName")?.takeIf { it != LuaValue.NIL }?.tojstring() ?: "",
+        (get("message")?.takeIf { it != LuaValue.NIL } as? MiraiMsg)?.chain ?: EmptyMessageChain
+    )
+
+    private fun LuaTable.buildNodes() = mutableListOf<ForwardMessage.Node>().apply {
+        for (i in 1..this@buildNodes.length()) {
+            this.add(this@buildNodes.checktable(i).buildNode())
+        }
+    }
+
+    private fun LuaTable.buildStringSequence() = mutableListOf<String>().apply {
+        for (i in 1..this@buildStringSequence.length()) {
+            this.add(this@buildStringSequence.checkjstring(i))
+        }
+    }.asSequence()
+
 }
 
