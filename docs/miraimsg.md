@@ -313,7 +313,7 @@ Forward { --可省略括号
 | ------- | ------ | ----------------------------- |
 | content | String | 消息内容，一般为一段JSON 文本 |
 
-示例（完整示例请见：[音乐卡片](../demos/音乐卡片.lua)）：
+示例（完整示例请见：[音乐卡片](../demos/音乐卡片.lua)、解析可见：[jsonmsg.md](./jsonmsg.md)）：
 ![音乐卡片示例](./res/musicCardSample.png)
 ```lua
 formAMusicShare = function (title, srcUrl, desc, preview, jmpUrl, tag)
