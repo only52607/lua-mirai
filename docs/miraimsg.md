@@ -313,11 +313,21 @@ Forward { --可省略括号
 | ------- | ------ | ----------------------------- |
 | content | String | 消息内容，一般为一段JSON 文本 |
 
-示例：
-
+示例（完整示例请见：[音乐卡片](../demos/音乐卡片.lua)）：
+![音乐卡片示例](./res/musicCardSample.png)
 ```lua
-App("xxxxxxx")
+formAMusicShare = function (title, srcUrl, desc, preview, jmpUrl, tag)
+local __format__ = [[
+{"app":"com.tencent.structmsg","config":{"autosize":true,"forward":true,"type":"normal"},
+"desc":"音乐","meta":{"music":{"desc":"%s","jumpUrl":"%s","musicUrl":"%s","preview":"%s",
+"tag":"%s","title":"%s"}},"prompt":"[%s]%s","view":"music"}]]
+    return string.format (__format__:gsub("\n", ""),
+        desc, jmpUrl, srcUrl, preview, tag, title, tag, title)
+end
+App ("天外来物", "http://music.163.com/song/media/outer/url?id=1463165983", "薛之谦",
+    "http://p4.music.126.net/HvB44MNINoLar8HFbRjIGQ==/109951165142435842.jpg", "QQbot 音乐")
 ```
+如果想制作别的 App 分享，就像是 bilibili 那种大张图片的，可以通过自己发送这样一个消息，然后截获 bot 获得的消息，分析里面的 json 构成，然后可以删减一些不必要的东西，然后用 `string.format()` 构造一个 json 文本，填入 `App()` 并发送
 
 <br />
 
