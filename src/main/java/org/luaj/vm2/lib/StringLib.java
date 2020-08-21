@@ -811,29 +811,29 @@ public class StringLib extends TwoArgFunction {
 	
 	static {
 		CHAR_TABLE = new byte[256];
-		
-		for ( int i = 0; i < 256; ++i ) {
+
+		for (int i = 0; i < 128; ++i) {
 			final char c = (char) i;
-			CHAR_TABLE[i] = (byte)( ( Character.isDigit( c ) ? MASK_DIGIT : 0 ) |
-							( Character.isLowerCase( c ) ? MASK_LOWERCASE : 0 ) |
-							( Character.isUpperCase( c ) ? MASK_UPPERCASE : 0 ) |
-							( ( c < ' ' || c == 0x7F ) ? MASK_CONTROL : 0 ) );
-			if ( ( c >= 'a' && c <= 'f' ) || ( c >= 'A' && c <= 'F' ) || ( c >= '0' && c <= '9' ) ) {
+			CHAR_TABLE[i] = (byte) ((Character.isDigit(c) ? MASK_DIGIT : 0) |
+					(Character.isLowerCase(c) ? MASK_LOWERCASE : 0) |
+					(Character.isUpperCase(c) ? MASK_UPPERCASE : 0) |
+					((c < ' ' || c == 0x7F) ? MASK_CONTROL : 0));
+			if ((c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || (c >= '0' && c <= '9')) {
 				CHAR_TABLE[i] |= MASK_HEXDIGIT;
 			}
-			if ( ( c >= '!' && c <= '/' ) || ( c >= ':' && c <= '@' ) ) {
+			if ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= '~')) {
 				CHAR_TABLE[i] |= MASK_PUNCT;
 			}
-			if ( ( CHAR_TABLE[i] & ( MASK_LOWERCASE | MASK_UPPERCASE ) ) != 0 ) {
+			if ((CHAR_TABLE[i] & (MASK_LOWERCASE | MASK_UPPERCASE)) != 0) {
 				CHAR_TABLE[i] |= MASK_ALPHA;
 			}
 		}
-		
+
 		CHAR_TABLE[' '] = MASK_SPACE;
 		CHAR_TABLE['\r'] |= MASK_SPACE;
 		CHAR_TABLE['\n'] |= MASK_SPACE;
 		CHAR_TABLE['\t'] |= MASK_SPACE;
-		CHAR_TABLE[0x0C /* '\v' */ ] |= MASK_SPACE;
+		CHAR_TABLE[0x0B /* '\v' */] |= MASK_SPACE;
 		CHAR_TABLE['\f'] |= MASK_SPACE;
 	};
 	
@@ -986,17 +986,41 @@ public class StringLib extends TwoArgFunction {
 			
 			boolean res;
 			switch ( lcl ) {
-			case 'a': res = ( cdata & MASK_ALPHA ) != 0; break;
-			case 'd': res = ( cdata & MASK_DIGIT ) != 0; break;
-			case 'l': res = ( cdata & MASK_LOWERCASE ) != 0; break;
-			case 'u': res = ( cdata & MASK_UPPERCASE ) != 0; break;
-			case 'c': res = ( cdata & MASK_CONTROL ) != 0; break;
-			case 'p': res = ( cdata & MASK_PUNCT ) != 0; break;
-			case 's': res = ( cdata & MASK_SPACE ) != 0; break;
-			case 'w': res = ( cdata & ( MASK_ALPHA | MASK_DIGIT ) ) != 0; break;
-			case 'x': res = ( cdata & MASK_HEXDIGIT ) != 0; break;
-			case 'z': res = ( c == 0 ); break;
-			default: return cl == c;
+				case 'a':
+					res = (cdata & MASK_ALPHA) != 0;
+					break;
+				case 'd':
+					res = (cdata & MASK_DIGIT) != 0;
+					break;
+				case 'l':
+					res = (cdata & MASK_LOWERCASE) != 0;
+					break;
+				case 'u':
+					res = (cdata & MASK_UPPERCASE) != 0;
+					break;
+				case 'c':
+					res = (cdata & MASK_CONTROL) != 0;
+					break;
+				case 'p':
+					res = (cdata & MASK_PUNCT) != 0;
+					break;
+				case 's':
+					res = (cdata & MASK_SPACE) != 0;
+					break;
+				case 'g':
+					res = (cdata & (MASK_ALPHA | MASK_DIGIT | MASK_PUNCT)) != 0;
+					break;
+				case 'w':
+					res = (cdata & (MASK_ALPHA | MASK_DIGIT)) != 0;
+					break;
+				case 'x':
+					res = (cdata & MASK_HEXDIGIT) != 0;
+					break;
+				case 'z':
+					res = (c == 0);
+					break;/* deprecated option */
+				default:
+					return cl == c;
 			}
 			return ( lcl == cl ) ? res : !res;
 		}
