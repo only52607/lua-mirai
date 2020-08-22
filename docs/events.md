@@ -9,7 +9,7 @@ lua-mirai基于事件驱动机制构建，lua-mirai中的事件包括好友、�
 示例：
 
 ``` lua
-bot:subsribeFriendMsg(
+bot:subscribeFriendMsg(
     function (bot, msg, sender)
     end
 )

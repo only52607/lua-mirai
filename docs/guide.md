@@ -35,7 +35,7 @@ local bot = Bot(qq账号,"qq密码","C:\\device.json")
 bot.login() --登录
 
 --在这里对bot进行事件订阅操作
---如 bot.subsribeXXX()
+--如 bot.subscribeXXX()
 
 bot.join() --挂起，防止进程结束
 
