@@ -318,5 +318,5 @@ class MiraiBot : LuaBot {
         }
     }
 
-    fun unSubsribeAll() = listeners[scriptId]?.forEach { it.value.complete() }
+    fun unSubscribeAll() = listeners[scriptId]?.forEach { it.value.complete() }
 }
