@@ -91,5 +91,5 @@ open class MiraiGlobals() : Globals() {
 
     fun onLoad() = onLoadFun?.call()
     fun onFinish() = onFinishFun?.call()
-    fun unSubsribeAll() = mBot?.unSubsribeAll()
+    fun unSubscribeAll() = mBot?.unSubscribeAll()
 }
