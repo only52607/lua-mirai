@@ -8,8 +8,8 @@ abstract class BaseGroup {
     abstract var owner: BaseMember
     abstract var bot: BaseBot
 
-    abstract fun sendMsg(msg: BaseMsg)
-    abstract fun sendImg(url: String)
+    abstract fun sendMsg(msg: LuaValue): BaseMsg
+    abstract fun sendImg(url: String): BaseMsg
     abstract fun getMember(id: Long): BaseMember
     abstract fun getBotMuteRemain(): Int
     abstract fun getBotAsMember(): BaseMember

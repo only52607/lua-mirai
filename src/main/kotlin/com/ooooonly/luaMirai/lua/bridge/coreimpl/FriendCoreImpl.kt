@@ -8,33 +8,31 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Friend
+import net.mamoe.mirai.message.data.EmptyMessageChain
 import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.message.data.asMessageChain
 import net.mamoe.mirai.message.uploadImage
+import org.luaj.vm2.LuaUserdata
+import org.luaj.vm2.LuaValue
 import java.net.URL
 
 class FriendCoreImpl(val host: Friend) : BaseFriend() {
-    override var nick: String
-        get() = host.nick
-        set(value) {}
-    override var avatarUrl: String
-        get() = host.avatarUrl
-        set(value) {}
-    override var bot: BaseBot
-        get() = BotCoreImpl(host.bot)
-        set(value) {}
+    override var nick: String = host.nick
+    override var avatarUrl: String = host.avatarUrl
+    override var bot: BaseBot = BotCoreImpl.getInstance(host.bot)
+    override var isActive: Boolean = host.isActive
 
-    override fun sendMsg(msg: BaseMsg) {
-        if (msg !is MsgCoreImpl) return
-        host.bot.launch {
-            host.sendMessage(msg.host)
+    override fun sendMsg(msg: LuaValue): BaseMsg {
+        val msgToSend = if (msg is MsgCoreImpl) msg.host else PlainText(msg.toString())
+        return runBlocking {
+            MsgCoreImpl(host.sendMessage(msgToSend).source.asMessageChain())
         }
     }
 
-    override fun sendImg(url: String) {
-        host.bot.launch {
-            host.sendMessage(host.uploadImage(URL(url)))
+    override fun sendImg(url: String): MsgCoreImpl =
+        runBlocking {
+            MsgCoreImpl(host.sendMessage(host.uploadImage(URL(url))).source.asMessageChain())
         }
-    }
 
-    override fun isActive(): Boolean = host.isActive
 }

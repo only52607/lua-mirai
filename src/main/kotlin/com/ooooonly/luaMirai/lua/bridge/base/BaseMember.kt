@@ -19,6 +19,6 @@ abstract class BaseMember {
     abstract fun kick(msg: String)
     abstract fun asFriend(): BaseFriend
     abstract fun getPermission(): LuaValue
-    abstract fun sendMsg(msg: BaseMsg)
-    abstract fun sendImg(url: String)
+    abstract fun sendMsg(msg: LuaValue): BaseMsg
+    abstract fun sendImg(url: String): BaseMsg
 }

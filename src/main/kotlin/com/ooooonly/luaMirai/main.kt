@@ -27,8 +27,6 @@ fun main(args: Array<String>) {
             bot.join()
         }
     }
-
-
 }
 
 

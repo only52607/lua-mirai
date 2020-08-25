@@ -151,7 +151,6 @@ class MiraiBot : LuaBot {
                     listener,
                     process
                 ) {
-
                     arrayOf(self, LuaValue.valueOf(it.groupId.toInt()))
                 }
                 EVENT_GROUP_MEMBER_JOIN -> self.bot.subscribeLuaFunction<MemberJoinEvent>(listener, process) {
@@ -282,7 +281,6 @@ class MiraiBot : LuaBot {
 
                 else -> null
             }?.let { listeners[self.scriptId]?.set(opcode, it) }
-
         }
     }
 
