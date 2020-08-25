@@ -8,7 +8,7 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
 import org.luaj.vm2.lib.VarArgFunction
 
-abstract class BaseBot() {
+abstract class BaseBot {
     companion object Events {
         const val EVENT_MSG_FRIEND = 100
         const val EVENT_MSG_GROUP = 101

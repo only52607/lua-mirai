@@ -1,6 +1,7 @@
 package com.ooooonly.luaMirai.lua.bridge.coreimpl
 
 import com.ooooonly.luaMirai.lua.MiraiCoreGlobals
+import com.ooooonly.luaMirai.lua.MiraiCoreGlobalsManger
 import com.ooooonly.luaMirai.lua.bridge.base.BaseBot
 import com.ooooonly.luakt.*
 import kotlinx.coroutines.*
@@ -69,7 +70,7 @@ class BotCoreImpl(val host: Bot) : BaseBot() {
         val job = host.subscribeAlways(eventId.toEvent()) {
             block.invoke(this.toVarargs())
         }
-        MiraiCoreGlobals.checkGlobals(block)?.addListener(job)
+        MiraiCoreGlobalsManger.checkGlobals(block)?.addListener(job)
         return job
     }
 

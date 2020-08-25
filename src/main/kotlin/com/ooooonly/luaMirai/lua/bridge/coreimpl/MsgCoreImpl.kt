@@ -173,12 +173,11 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
         }.asSequence()
     }
 
-    init {
-        m_instance = this
-    }
-
     override var type: String
         get() = host::class.simpleName ?: ""
+        set(value) {}
+    override var params: LuaTable
+        get() = LuaTable()
         set(value) {}
 
     override fun recall() {
@@ -203,7 +202,7 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
     }
 
     override fun toTable(): Array<MsgCoreImpl> {
-        if (host !is MessageChain) throw LuaError("You could not transform a single message to table!")
+        if (host !is MessageChain) throw LuaError("Could not case a single message to table!")
         return host.map { MsgCoreImpl(it) }.toTypedArray()
     }
 
@@ -221,4 +220,6 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
         }
         it.toString()
     }
+
+    override fun length(): Int = host.asMessageChain().size
 }

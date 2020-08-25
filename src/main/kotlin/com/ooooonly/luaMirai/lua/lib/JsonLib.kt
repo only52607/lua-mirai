@@ -1,27 +1,28 @@
 package com.ooooonly.luaMirai.lua.lib
 
 import com.ooooonly.luaMirai.utils.setFunction1Arg
+import com.ooooonly.luakt.asLuaValue
+import com.ooooonly.luakt.luaFunctionOf
+import com.ooooonly.luakt.luaTableOf
 import org.json.JSONArray
 import org.json.JSONObject
-import org.luaj.vm2.Globals
-import org.luaj.vm2.LuaTable
-import org.luaj.vm2.LuaValue
+import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
 
-open class JsonLib() : TwoArgFunction() {
-    override fun call(modname: LuaValue?, env: LuaValue): LuaValue {
-        val globals: Globals = env.checkglobals()
-        val jsonTable: LuaTable = LuaTable()
-        jsonTable.apply {
-            setFunction1Arg("parseJson") {
-                json2lua(JSONObject(it.checkjstring()))
-            }
-            setFunction1Arg("toJson") {
-                LuaValue.valueOf(it.checktable().toJsonObject().toString())
-            }
+open class JsonLib : TwoArgFunction() {
+    override fun call(modname: LuaValue?, env: LuaValue?): LuaValue {
+        val globals = env?.checkglobals()
+        val parseJson = luaFunctionOf { raw: String ->
+            return@luaFunctionOf json2lua(JSONObject(raw))
         }
-        globals.set("Json", jsonTable)
-
+        val toJson = luaFunctionOf { raw: LuaTable ->
+            return@luaFunctionOf raw.toJsonObject()
+        }
+        globals?.set("Json", luaTableOf {
+            "parseJson" to parseJson
+            "toJson" to toJson
+        })
+        LuaString.s_metatable[INDEX].set("parseJson", parseJson)
         return LuaValue.NIL
     }
 
@@ -38,7 +39,6 @@ open class JsonLib() : TwoArgFunction() {
     private fun jsonArr2lua(jsonArr: JSONArray): LuaTable = LuaTable.listOf(
         mutableListOf<LuaValue>().apply { jsonArr.forEach { it.toLuaValue()?.let(::add) } }.toTypedArray()
     )
-
 
     private fun Any.toLuaValue() = when (this::class.java) {
         Int::class.java -> LuaValue.valueOf(this as Int)
