@@ -4,12 +4,11 @@ package com.ooooonly.luaMirai.lua.bridge.coreimpl
 import com.ooooonly.luaMirai.lua.bridge.base.BaseBot
 import com.ooooonly.luaMirai.lua.bridge.base.BaseGroup
 import com.ooooonly.luaMirai.lua.bridge.base.BaseMember
-import com.ooooonly.luaMirai.lua.bridge.base.BaseMsg
 import com.ooooonly.luakt.asLuaValue
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Group
-import net.mamoe.mirai.message.data.EmptyMessageChain
+import net.mamoe.mirai.contact.isBotMuted
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.asMessageChain
 import net.mamoe.mirai.message.uploadImage
@@ -29,26 +28,35 @@ class GroupCoreImpl(val host: Group) : BaseGroup() {
     override var bot: BaseBot
         get() = BotCoreImpl.getInstance(host.bot)
         set(value) {}
+    override var settings: LuaValue
+        get() = host.settings.asLuaValue()
+        set(value) {}
+    override var botAsMember: BaseMember
+        get() = MemberCoreImpl(host.botAsMember)
+        set(value) {}
+    override var botPermission: LuaValue
+        get() = host.botPermission.asLuaValue()
+        set(value) {}
+    override var botMuteRemaining: Int
+        get() = host.botMuteRemaining
+        set(value) {}
+    override var isBotMuted: Boolean
+        get() = host.isBotMuted
+        set(value) {}
 
-    override fun sendMsg(msg: LuaValue): MsgCoreImpl {
-        val msgToSend = if (msg is MsgCoreImpl) msg.host else PlainText(msg.toString())
+    override fun sendMessage(msg: LuaValue): MessageCoreImpl {
+        val msgToSend = if (msg is MessageCoreImpl) msg.host else PlainText(msg.toString())
         return runBlocking {
-            MsgCoreImpl(host.sendMessage(msgToSend).source.asMessageChain())
+            MessageCoreImpl(host.sendMessage(msgToSend).source.asMessageChain())
         }
     }
 
-    override fun sendImg(url: String): MsgCoreImpl =
+    override fun sendImage(url: String): MessageCoreImpl =
         runBlocking {
-            MsgCoreImpl(host.sendMessage(host.uploadImage(URL(url))).source.asMessageChain())
+            MessageCoreImpl(host.sendMessage(host.uploadImage(URL(url))).source.asMessageChain())
         }
 
     override fun getMember(id: Long): MemberCoreImpl = MemberCoreImpl(host.get(id))
-
-    override fun getBotMuteRemain(): Int = host.botMuteRemaining
-
-    override fun getBotAsMember(): MemberCoreImpl = MemberCoreImpl(host.botAsMember)
-
-    override fun getBotPermission(): LuaValue = host.botPermission.asLuaValue()
 
     override fun containsMember(id: Long): Boolean = host.contains(id)
 

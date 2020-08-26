@@ -1,9 +1,9 @@
 package com.ooooonly.luaMirai.lua.bridge.coreimpl
 
-import com.ooooonly.luaMirai.lua.MiraiMsg
-import com.ooooonly.luaMirai.lua.bridge.base.BaseMsg
+import com.ooooonly.luaMirai.lua.bridge.base.BaseMessage
 import com.ooooonly.luakt.asKValue
 import com.ooooonly.luakt.luaFunctionOf
+import com.ooooonly.luakt.luakotlin.KotlinClassInLua
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.message.data.*
@@ -18,36 +18,36 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 
-class MsgCoreImpl(val host: Message) : BaseMsg() {
+class MessageCoreImpl(val host: Message) : BaseMessage() {
     companion object {
         fun setMsgConstructor(table: LuaTable) {
             table.initMsgConstructor()
         }
 
         private fun LuaTable.initMsgConstructor() {
-            set("Msg", luaFunctionOf { content: LuaValue ->
+            set("Text", luaFunctionOf { content: LuaValue ->
                 return@luaFunctionOf when (content) {
-                    is MsgCoreImpl -> content
-                    else -> MsgCoreImpl(PlainText(content.toString()))
+                    is MessageCoreImpl -> content
+                    else -> MessageCoreImpl(PlainText(content.toString()))
                 }
             })
 
             set("At", luaFunctionOf { target: MemberCoreImpl ->
                 return@luaFunctionOf when (target) {
-                    is MemberCoreImpl -> MsgCoreImpl(At(target.host))
+                    is MemberCoreImpl -> MessageCoreImpl(At(target.host))
                     else -> throw LuaError("At target must be Member!")
                 }
             })
 
-            set("Quote", luaFunctionOf { msg: MsgCoreImpl ->
+            set("Quote", luaFunctionOf { msg: MessageCoreImpl ->
                 return@luaFunctionOf when (msg) {
-                    is MsgCoreImpl -> MsgCoreImpl(QuoteReply(msg.host.asMessageChain().source))
+                    is MessageCoreImpl -> MessageCoreImpl(QuoteReply(msg.host.asMessageChain().source))
                     else -> throw LuaError("Empty quote!")
                 }
             })
 
             set("Image", luaFunctionOf { id: String ->
-                return@luaFunctionOf MsgCoreImpl(Image(id))
+                return@luaFunctionOf MessageCoreImpl(Image(id))
             })
 
             set("ImageUrl", luaFunctionOf<String, LuaUserdata> { url: String, target: Any ->
@@ -55,7 +55,7 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
                     is FriendCoreImpl -> runBlocking { target.host.uploadImage(URL(url)) }
                     is GroupCoreImpl -> runBlocking { target.host.uploadImage(URL(url)) }
                     else -> EmptyMessageChain
-                }.let { MsgCoreImpl(it) }
+                }.let { MessageCoreImpl(it) }
             })
 
             set("ImageFile", luaFunctionOf { filePath: String, target: Any ->
@@ -75,35 +75,35 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
                         )
                     }
                     else -> EmptyMessageChain
-                }.let { MsgCoreImpl(it) }
+                }.let { MessageCoreImpl(it) }
             })
 
-            set("FlashImage", luaFunctionOf { arg: MsgCoreImpl ->
-                return@luaFunctionOf MsgCoreImpl(FlashImage(arg.host as Image))
+            set("FlashImage", luaFunctionOf { arg: MessageCoreImpl ->
+                return@luaFunctionOf MessageCoreImpl(FlashImage(arg.host as Image))
             })
 
             set("AtAll", luaFunctionOf {
-                return@luaFunctionOf MsgCoreImpl(AtAll)
+                return@luaFunctionOf MessageCoreImpl(AtAll)
             })
 
             set("Face", luaFunctionOf { arg: Int ->
-                return@luaFunctionOf MsgCoreImpl(Face(arg))
+                return@luaFunctionOf MessageCoreImpl(Face(arg))
             })
 
             set("Poke", luaFunctionOf { arg: LuaValue ->
-                return@luaFunctionOf MsgCoreImpl(arg.asKValue(1).toPokeCode())
+                return@luaFunctionOf MessageCoreImpl(arg.asKValue(1).toPokeCode())
             })
 
             set("Forward", luaFunctionOf { table: LuaValue ->
-                return@luaFunctionOf MsgCoreImpl((table as LuaTable).buildForwardMsg())
+                return@luaFunctionOf MessageCoreImpl((table as LuaTable).buildForwardMsg())
             })
 
             set("App", luaFunctionOf { code: String ->
-                return@luaFunctionOf MsgCoreImpl(LightApp(code))
+                return@luaFunctionOf MessageCoreImpl(LightApp(code))
             })
 
             set("Service", luaFunctionOf { id: Int, content: String ->
-                return@luaFunctionOf MsgCoreImpl(ServiceMessage(id, content))
+                return@luaFunctionOf MessageCoreImpl(ServiceMessage(id, content))
             })
         }
 
@@ -157,7 +157,7 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
             get("senderId")?.takeIf { it != LuaValue.NIL }?.tolong() ?: 0,
             get("time")?.takeIf { it != LuaValue.NIL }?.toint() ?: 0,
             get("senderName")?.takeIf { it != LuaValue.NIL }?.tojstring() ?: "",
-            (get("message")?.takeIf { it != LuaValue.NIL } as? MiraiMsg)?.chain ?: EmptyMessageChain
+            (get("message")?.takeIf { it != LuaValue.NIL } as? MessageCoreImpl)?.host ?: EmptyMessageChain
         )
 
         private fun LuaTable.buildNodes() = mutableListOf<ForwardMessage.Node>().apply {
@@ -171,14 +171,36 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
                 this.add(this@buildStringSequence.checkjstring(i))
             }
         }.asSequence()
+
+        private val _regex = Regex("""\[mirai:(.*?):(.*?)\]""")
+    }
+
+    private var _type: String? = null
+    private var _params: Array<String>? = null
+    private fun parseTypeParams() {
+        val result = _regex.find(toString())
+        _type = result?.groupValues?.get(1) ?: ""
+        _params = result?.groupValues?.get(2)?.split(",")?.toTypedArray() ?: arrayOf()
     }
 
     override var type: String
-        get() = host::class.simpleName ?: ""
+        get() {
+            if (host is MessageChain) return "chain"
+            if (host is PlainText) return "plain"
+            return _type ?: parseTypeParams().run { _type!! }
+        }
         set(value) {}
-    override var params: LuaTable
-        get() = LuaTable()
+    override var params: Array<String>
+        get() {
+            if (host is MessageChain) return arrayOf()
+            if (host is PlainText) return arrayOf()
+            return _params ?: parseTypeParams().run { _params!! }
+        }
         set(value) {}
+
+    init {
+        kClassInLua = KotlinClassInLua.forKClass(this::class)
+    }
 
     override fun recall() {
         if (host !is MessageChain) throw LuaError("You could not recall single message!")
@@ -201,18 +223,20 @@ class MsgCoreImpl(val host: Message) : BaseMsg() {
         return@runBlocking (host as Image).queryUrl()
     }
 
-    override fun toTable(): Array<MsgCoreImpl> {
+    override fun toTable(): Array<MessageCoreImpl> {
         if (host !is MessageChain) throw LuaError("Could not case a single message to table!")
-        return host.map { MsgCoreImpl(it) }.toTypedArray()
+        return host.map { MessageCoreImpl(it) }.filter { it.host is MessageContent }.toTypedArray()
     }
 
-    override fun append(msg: LuaValue?): MsgCoreImpl = MsgCoreImpl(host + PlainText(msg.toString()))
+    override fun append(msg: LuaValue?): MessageCoreImpl = MessageCoreImpl(host + PlainText(msg.toString()))
 
-    override fun append(msg: BaseMsg?): MsgCoreImpl = MsgCoreImpl(host + (msg as MsgCoreImpl).host)
+    override fun append(message: BaseMessage?): MessageCoreImpl =
+        MessageCoreImpl(host + (message as MessageCoreImpl).host)
 
-    override fun appendTo(msg: LuaValue?): MsgCoreImpl = MsgCoreImpl(PlainText(msg.toString()) + host)
+    override fun appendTo(msg: LuaValue?): MessageCoreImpl = MessageCoreImpl(PlainText(msg.toString()) + host)
 
-    override fun appendTo(msg: BaseMsg?): MsgCoreImpl = MsgCoreImpl((msg as MsgCoreImpl).host + host)
+    override fun appendTo(message: BaseMessage?): MessageCoreImpl =
+        MessageCoreImpl((message as MessageCoreImpl).host + host)
 
     override fun toString(): String = StringBuffer().let {
         host.asMessageChain().forEachContent { content ->

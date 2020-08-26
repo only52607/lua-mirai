@@ -16,25 +16,22 @@
 
 4、任何单位或个人认为本项目可能涉嫌侵犯其合法权益，应该及时提出反馈，我们将会第一时间对违规内容给予删除等相关处理。
 
-
-
 ### QQ交流群:120408574
 
-
-
-## 开始使用
+## 快速开始
 
 ### 安卓端
 
-请参阅 [`MiraiAndroid`](https://github.com/mzdluo123/MiraiAndroid)
+请使用 [`MiraiAndroid`](https://github.com/mzdluo123/MiraiAndroid)
+开发文档:[`MiraiAndroid lua脚本开发指南`](/docs/miraiandroid.md)
 
-[`MiraiAndroid lua脚本开发指南`](/docs/miraiandroid.md)
+### PC端
 
-### PC端(JVM)
+- 控制台界面 [`lua-mirai jvm`](/docs/jvm.md)
+- Swing Gui界面
+- Web界面
 
-请参阅 [`lua-mirai jvm`](/docs/jvm.md)
-
-### 作为依赖引入第三方项目
+### 作为项目依赖
 
 #### Gradle
 
@@ -61,7 +58,7 @@ dependencies {
 
 
 
-## 开发lua-mirai脚本
+## lua-mirai脚本开发
 
 ### lua语言基础
 
@@ -69,16 +66,18 @@ dependencies {
 
 ### lua-mirai开发指南
 
-请参阅 [`lua-mirai api`](/docs/guide.md)
+[`lua-mirai 开发指南`](/docs/guide.md)
 
-[`MiraiAndroid lua api`](/docs/miraiandroid.md)
+[`lua-mirai API列表`](/docs/apis.md)
 
-### 第三方库
+## 第三方库
 
  - [`mirai`](https://github.com/mamoe/mirai)
  - [`luaj`](https://github.com/luaj/luaj)
  - okhttp3
 
-### 许可证
+
+
+## 许可证
 
 基于原项目[`mirai`](https://github.com/mamoe/mirai)使用[`GNU AGPLv3`](https://choosealicense.com/licenses/agpl-3.0/)作为开发许可证，该项目同样使用了[`GNU AGPLv3`](https://choosealicense.com/licenses/agpl-3.0/) 作为开源许可证, 因此,在使用时务必遵守相应的规则. 。

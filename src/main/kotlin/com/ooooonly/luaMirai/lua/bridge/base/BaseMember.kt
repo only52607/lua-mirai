@@ -11,14 +11,14 @@ abstract class BaseMember {
     abstract var isAdministrator: Boolean
     abstract var isOwner: Boolean
     abstract var isFriend: Boolean
+    abstract var muteTimeRemaining: Int
+    abstract var isMuted: Boolean
+    abstract var permission: LuaValue
 
-    abstract fun getMuteRemain(): Int
-    abstract fun isMuted(): Boolean
     abstract fun mute(time: Int)
     abstract fun unMute()
     abstract fun kick(msg: String)
     abstract fun asFriend(): BaseFriend
-    abstract fun getPermission(): LuaValue
-    abstract fun sendMsg(msg: LuaValue): BaseMsg
-    abstract fun sendImg(url: String): BaseMsg
+    abstract fun sendMessage(msg: LuaValue): BaseMessage
+    abstract fun sendImage(url: String): BaseMessage
 }

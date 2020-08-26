@@ -1,7 +1,8 @@
 package com.ooooonly.luaMirai.lua.lib
 
-import com.ooooonly.luaMirai.utils.setFunction
-import com.ooooonly.luaMirai.utils.toLuaValue
+import com.ooooonly.luakt.asLuaValue
+import com.ooooonly.luakt.edit
+import com.ooooonly.luakt.luaFunctionOf
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -38,8 +39,8 @@ open class HttpLib() : TwoArgFunction() {
     override fun call(modname: LuaValue?, env: LuaValue): LuaValue {
         val globals: Globals = env.checkglobals()
         val httpTable: LuaTable = LuaTable()
-        httpTable.apply {
-            setFunction("get") { args ->
+        httpTable.edit {
+            "get" to luaFunctionOf { args: Varargs ->
                 val requestUrl = args.checkjstring(1)
                 val client: OkHttpClient = if (args.narg() >= 2)
                     args.checktable(2).toOkHttpClient()
@@ -50,7 +51,7 @@ open class HttpLib() : TwoArgFunction() {
 
                 client.newCall(request).execute().toVarargs()
             }
-            setFunction("post") { args ->
+            "post" to luaFunctionOf { args: Varargs ->
                 val requestUrl = args.arg1().checkjstring()
                 val requestBody = args.arg(2).toRequestBody()
                 val client: OkHttpClient = if (args.narg() >= 3)
@@ -62,9 +63,10 @@ open class HttpLib() : TwoArgFunction() {
                 else Request.Builder().post(requestBody).url(requestUrl).build()
                 client.newCall(request).execute().toVarargs()
             }
-            setFunction("getRedirectUrl") {
-                getRedirectUrl(it.arg1().optjstring(""), it.arg(2).optjstring(""))?.toLuaValue() ?: "".toLuaValue()
+            "getRedirectUrl" to luaFunctionOf { args: Varargs ->
+                getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring(""))?.asLuaValue() ?: "".asLuaValue()
             }
+
         }
         globals.set("Http", httpTable)
         return LuaValue.NIL

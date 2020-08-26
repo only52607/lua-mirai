@@ -7,13 +7,15 @@ abstract class BaseGroup {
     abstract var name: String
     abstract var owner: BaseMember
     abstract var bot: BaseBot
+    abstract var settings: LuaValue
+    abstract var botAsMember: BaseMember
+    abstract var botPermission: LuaValue
+    abstract var botMuteRemaining: Int
+    abstract var isBotMuted: Boolean
 
-    abstract fun sendMsg(msg: LuaValue): BaseMsg
-    abstract fun sendImg(url: String): BaseMsg
+    abstract fun sendMessage(msg: LuaValue): BaseMessage
+    abstract fun sendImage(url: String): BaseMessage
     abstract fun getMember(id: Long): BaseMember
-    abstract fun getBotMuteRemain(): Int
-    abstract fun getBotAsMember(): BaseMember
-    abstract fun getBotPermission(): LuaValue
     abstract fun containsMember(id: Long): Boolean
     abstract fun quit()
 }

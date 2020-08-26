@@ -1,14 +1,42 @@
 本文档假定读者具有一定的lua开发基础，若你欠缺lua语言基础，请参阅[`RUNOOB:Lua教程`](https://www.runoob.com/lua/lua-tutorial.html)
 
-# 下载示例脚本
-你可以在这里找到示例脚本： [`下载示例脚本(适用于Mirai Android)`](https://github.com/only52607/lua-mirai/tree/master/demos)
+# 一个lua-mirai脚本的基本执行流程
+一般来说，一个lua-mirai脚本有以下的执行流程
 
-# 开始
-进行事件订阅或发送消息前，你需要获取MiraiBot对象，获取MiraiBot对象有以下方法：
+1. 获得bot对象
+2. 定义监听函数
+3. 通过bot对象传入监听函数
 
-#### 1.MiraiAndroid内
+下面是一个简单的示例，该示例实现了”复读机“的功能：
 
-##### 通过Event.onLoad事件传入[`MiraiBot`](/docs/miraibot.md)对象，示例：
+```lua
+--1.获得bot对象
+
+local bot = Bot(qq账号,"qq密码","C:\\device.json")
+bot:login() --登录
+
+
+--2.定义监听函数
+
+function listener(event)
+    --print(event)
+    local msg = event.message
+    local sender = event.sender
+    sender:sendMessage(Quote(msg) .. msg) --引用并回复相同消息
+end
+
+
+--3.通过bot对象传入监听函数
+
+bot:subscribe("FriendMessageEvent",listener)
+
+```
+
+进行事件订阅或发送消息前，你需要获取Bot对象，获取Bot对象有以下方法：
+
+#### 1.Android内
+
+##### 通过Event.onLoad事件传入[`Bot`](/docs/bot.md)对象，示例：
 
 ``` lua
 Event.onLoad = function (bot)
@@ -18,7 +46,7 @@ end
 
 #### 2.JVM内
 
-##### 使用Bot方法构造[`MiraiBot`](/docs/miraibot.md)对象，
+##### 使用Bot方法构造[`Bot`](/docs/bot.md)对象，
 
 ##### 参数列表：
 
@@ -33,71 +61,14 @@ end
 ``` lua
 local bot = Bot(qq账号,"qq密码","C:\\device.json")
 bot.login() --登录
-
---在这里对bot进行事件订阅操作
---如 bot.subscribeXXX()
-
-bot.join() --挂起，防止进程结束
-
 ```
 
-# 内置对象
+# 了解更多
 
-## 消息（MiraiMsg）
+### 下载示例脚本
 
-在lua-mirai中，会话消息的构造和解析是由MiraiMsg对象完成的，详情见 [`MiraiMsg`](/docs/miraimsg.md)。
+你可以在这里找到示例脚本： [`下载示例脚本(适用于 Android)`](https://github.com/only52607/lua-/tree/master/demos)
 
-## 消息源（MiraiSource）
+### API列表
 
-消息源对象是由消息对象创建的一个引用，可用于撤回，引用回复。
-可通过sendMsg方法或msg:getSource()获取。
-
-示例：
-``` lua
---发送消息后立即撤回
-local source = sender.sendMsg("看不见我")
-source:recall() 
-```
-
-## 机器人 (MiraiBot)
-
-详情见 [`MiraiBot`](/docs/miraibot.md)。
-
-## 好友 (MiraiFriend)
-
-详情见 [`MiraiFriend`](/docs/miraifriend.md)。
-
-## 群 (MiraiGroup)
-
-详情见 [`MiraiGroup`](/docs/miraigroup.md)。
-
-## 群成员 (MiraiGroupMember)
-
-详情见 [`MiraiGroupMember`](/docs/miraigroupmember.md)。
-
-# 内置支持库列表
-
-## Http支持库
-
-详情见 [`Http支持库`](/docs/http.md)。
-
-## Json支持库
-
-详情见 [`json支持库`](/docs/json.md)。
-
-## LuaJava支持库
-
-详情见 [`LuaJava支持库`](/docs/luajava.md)。
-
-# 增加的lua语法特性(基于lua5.2.x)
-
-### 中文命名支持，示例：
-``` lua
-    function 相加(a,b)
-        return a+b
-    end
-    function 输出(...)
-        print(...)
-    end
-    输出(相加(1,1))
-```
+点此查看：[`API`](/docs/apis.md)

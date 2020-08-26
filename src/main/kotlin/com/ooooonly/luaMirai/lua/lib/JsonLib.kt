@@ -1,6 +1,5 @@
 package com.ooooonly.luaMirai.lua.lib
 
-import com.ooooonly.luaMirai.utils.setFunction1Arg
 import com.ooooonly.luakt.asLuaValue
 import com.ooooonly.luakt.luaFunctionOf
 import com.ooooonly.luakt.luaTableOf

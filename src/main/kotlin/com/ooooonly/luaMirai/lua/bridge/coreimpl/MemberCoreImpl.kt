@@ -5,7 +5,6 @@ import com.ooooonly.luakt.asLuaValue
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.*
-import net.mamoe.mirai.message.data.EmptyMessageChain
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.asMessageChain
 import net.mamoe.mirai.message.uploadImage
@@ -13,18 +12,39 @@ import org.luaj.vm2.LuaValue
 import java.net.URL
 
 class MemberCoreImpl(val host: Member) : BaseMember() {
-    override var bot: BaseBot = BotCoreImpl.getInstance(host.bot)
-    override var group: BaseGroup = GroupCoreImpl(host.group)
-    override var nick: String = host.nick
-    override var nameCard: String = host.nameCard
-    override var specialTitle: String = host.specialTitle
-    override var isAdministrator: Boolean = host.isAdministrator()
-    override var isOwner: Boolean = host.isOwner()
-    override var isFriend: Boolean = host.isFriend
-
-    override fun getMuteRemain(): Int = host.muteTimeRemaining
-
-    override fun isMuted(): Boolean = host.isMuted
+    override var bot: BaseBot
+        get() = BotCoreImpl.getInstance(host.bot)
+        set(value) {}
+    override var group: BaseGroup
+        get() = GroupCoreImpl(host.group)
+        set(value) {}
+    override var nick: String
+        get() = host.nick
+        set(value) {}
+    override var nameCard: String
+        get() = host.nameCard
+        set(value) {}
+    override var specialTitle: String
+        get() = host.specialTitle
+        set(value) {}
+    override var isAdministrator: Boolean
+        get() = host.isAdministrator()
+        set(value) {}
+    override var isOwner: Boolean
+        get() = host.isOwner()
+        set(value) {}
+    override var isFriend: Boolean
+        get() = host.isFriend
+        set(value) {}
+    override var muteTimeRemaining: Int
+        get() = host.muteTimeRemaining
+        set(value) {}
+    override var isMuted: Boolean
+        get() = host.isMuted
+        set(value) {}
+    override var permission: LuaValue
+        get() = host.permission.asLuaValue()
+        set(value) {}
 
     override fun mute(time: Int) {
         host.bot.launch {
@@ -46,18 +66,16 @@ class MemberCoreImpl(val host: Member) : BaseMember() {
 
     override fun asFriend(): BaseFriend = FriendCoreImpl(host.asFriend())
 
-    override fun getPermission(): LuaValue = host.permission.asLuaValue()
-
-    override fun sendMsg(msg: LuaValue): MsgCoreImpl {
-        val msgToSend = if (msg is MsgCoreImpl) msg.host else PlainText(msg.toString())
+    override fun sendMessage(msg: LuaValue): MessageCoreImpl {
+        val msgToSend = if (msg is MessageCoreImpl) msg.host else PlainText(msg.toString())
         return runBlocking {
-            MsgCoreImpl(host.sendMessage(msgToSend).source.asMessageChain())
+            MessageCoreImpl(host.sendMessage(msgToSend).source.asMessageChain())
         }
     }
 
-    override fun sendImg(url: String): MsgCoreImpl =
+    override fun sendImage(url: String): MessageCoreImpl =
         runBlocking {
-            MsgCoreImpl(host.sendMessage(host.uploadImage(URL(url))).source.asMessageChain())
+            MessageCoreImpl(host.sendMessage(host.uploadImage(URL(url))).source.asMessageChain())
         }
 
 }
