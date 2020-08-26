@@ -55,11 +55,6 @@ bot:subscribe("FriendMessageEvent",listener)
 ##### Event对象成员：
 <br />
 
-### 
-##### 说明:略
-##### Event对象成员：
-<br />
-
 ### BotActiveEvent 
 ##### 说明:主动发起的动作的事件
 ##### Event对象成员：
