@@ -1,5 +1,38 @@
 # 机器人 (Bot)
 
+## 构造方式
+
+#### 1.单脚本运行环境
+
+##### 使用Bot方法构造[`Bot`](/docs/bot.md)对象，
+
+##### 参数列表：
+
+| 参数       | 类型    | 描述                                                     | 可空  |
+| ---------- | ------- | -------------------------------------------------------- | ----- |
+| account    | Integer | 账号                                                     | False |
+| password   | String  | 密码                                                     | False |
+| deviceInfo | String  | 设备信息路径，文件不存在则自动创建，不填则使用随机信息。 | True  |
+
+##### 示例：
+
+``` lua
+local bot = Bot(qq账号,"qq密码","device.json")
+bot.login() --登录
+```
+
+#### 2.多脚本运行环境
+
+##### 通过onLoad函数获取，示例
+
+``` lua
+function onLoad(bot)
+	print(bot.id)
+end
+```
+
+
+
 ## 属性
 
 | 属性名 | 类型    | 描述           |

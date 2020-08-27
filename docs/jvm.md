@@ -1,4 +1,4 @@
-# 在jvm上单独运行lua-mirai
+# 快速运行你的第一个lua-mirai脚本
 
 
 
@@ -10,33 +10,43 @@
 
 
 
-## 3.编写脚本，或者你可以使用下面的示例脚本（注意将下面的123456789以及abcdedfg替换为bot的账号密码）
+## 3.在jar目录下，创建ai.lua文件，并填入以下代码。（注意填写账号密码）
 
 ```lua
---获得bot对象
-bot = Bot(123456789,"abcdefg")
+function listener(event)
+    local msg = event.message
+    local sender = event.sender
+    local rep = msg:gsub("吗",""):gsub("?","!"):gsub("？","！")
+    sender:sendMessage(Quote(msg) .. rep)
+end
 
---登录bot
+function onLoad(bot)
+    bot:subscribe("FriendMessageEvent",listener)
+end
+
+local bot = Bot(账号,"密码")
 bot:login()
-
--- 订阅好友消息并回复相同的内容
-bot:subscribeFriendMsg(
-    function(bot, msg, sender)
-  		sender:sendMsg(msg)
-	end
-)
+onLoad(bot)
 ```
 
 
 
-## 4.进入脚本目录，运行java -jar lua-mirai.jar 脚本路径
-
-### 例如
+## 4.启动cmd，进入ai.lua目录，执行以下代码
 
 ```powershell
-java -jar lua-mirai-0.3.jar test.lua
+java -jar jar文件名 exec lua文件名
+```
+
+### 例：
+
+```powershell
+java -jar lua-mirai-1.0.0.jar exec ai.lua
 ```
 
 
 
-## 5.退出脚本请Ctrl + C 或直接关闭控制台
+## 5.测试机器人
+
+![aiDialog](\docs\res\aiDialog.png)
+
+向机器人发送上述内容，若回复成功，则代表你已经成功运行了你的一个lua-mirai脚本。

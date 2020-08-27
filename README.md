@@ -27,9 +27,9 @@
 
 ### PC端
 
-- 控制台界面 [`lua-mirai jvm`](/docs/jvm.md)
-- Swing Gui界面
-- Web界面
+- [x] 控制台界面： [`在JVM上运行lua-mirai`](/docs/jvm.md)
+- [ ] Swing Gui界面
+- [ ] Web界面
 
 ### 作为项目依赖
 
@@ -81,3 +81,4 @@ dependencies {
 ## 许可证
 
 基于原项目[`mirai`](https://github.com/mamoe/mirai)使用[`GNU AGPLv3`](https://choosealicense.com/licenses/agpl-3.0/)作为开发许可证，该项目同样使用了[`GNU AGPLv3`](https://choosealicense.com/licenses/agpl-3.0/) 作为开源许可证, 因此,在使用时务必遵守相应的规则. 。
+

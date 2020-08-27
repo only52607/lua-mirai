@@ -1,17 +1,17 @@
-# 消息对象（MiraiMsg）
+# 消息对象（Message）
 
-## 消息构造
+## 构造方式
 
 #### ~~空消息~~
 
-##### ~~方法名：Msg~~
+##### ~~方法名：Message~~
 
 ##### ~~参数：无~~
 
 ##### ~~示例：~~
 
 ```lua
-Msg()
+Message()
 ```
 
 ~~<br />~~
@@ -56,14 +56,14 @@ Text("消息内容")
 
 ##### 参数：
 
-| 参数名 | 类型                                          | 说明         |
-| ------ | --------------------------------------------- | ------------ |
-| source | [`MiraiMsg`](/docs/miraimsg.md) / MiraiSource | 被引用的消息 |
+| 参数名 | 类型                          | 说明               |
+| ------ | ----------------------------- | ------------------ |
+| source | [`Message`](/docs/message.md) | 必须是接收到的消息 |
 
 示例：
 
 ```lua
-Quote(msg)
+Quote(message)
 ```
 
 <br />
@@ -76,9 +76,9 @@ Quote(msg)
 
 ##### 参数：
 
-| 参数名 | 类型                                                         | 说明       |
-| ------ | ------------------------------------------------------------ | ---------- |
-| target | [`MiraiGroupMember`](/docs/miraigroupmember.md) / [`MiraiFriend`](/docs/miraifriend.md) | 被At的对象 |
+| 参数名 | 类型                                                      | 说明       |
+| ------ | --------------------------------------------------------- | ---------- |
+| target | [`Member`](/docs/member.md) / [`Friend`](/docs/friend.md) | 被At的对象 |
 
 示例：
 
@@ -135,7 +135,7 @@ Image("/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
 | 参数名 | 类型                                                         | 说明              |
 | ------ | ------------------------------------------------------------ | ----------------- |
 | url    | String                                                       | 完整的图片url地址 |
-| target | [`MiraiGroup`](/docs/miraigroup.md) / [`MiraiFriend`](/docs/miraifriend.md) | 将接受消息的对象  |
+| target | [`Group`](/docs/group.md) / [`Friend`](/docs/friend.md) | 将接受消息的对象  |
 
 示例：
 
@@ -156,7 +156,7 @@ ImageUrl("file:/xxxxx/xxx.jpg",friend) --本地url
 | 参数名 | 类型                                                         | 说明                       |
 | ------ | ------------------------------------------------------------ | -------------------------- |
 | path   | String                                                       | 图片本地绝对路径或相对路径 |
-| target | [`MiraiGroup`](/docs/miraigroup.md) / [`MiraiFriend`](/docs/miraifriend.md) | 将接受消息的对象           |
+| target | [`Group`](/docs/group.md) / [`Friend`](/docs/friend.md) | 将接受消息的对象           |
 
 示例：
 
@@ -178,7 +178,7 @@ ImageFile("xxx.jpg",group)
 
 | 参数名 | 类型                            | 说明         |
 | ------ | ------------------------------- | ------------ |
-| image  | [`MiraiMsg`](/docs/miraimsg.md) | 普通图片消息 |
+| image  | [`Message`](/docs/message.md) | 普通图片消息 |
 
 示例：
 
@@ -280,13 +280,13 @@ Forward { --可省略括号
             senderId = 123456789, --发送者qq号
             time = 987654, --发送的时间戳
             senderName = "发送者昵称1",
-            message = Msg("消息1") .. Face(0) --显示的消息内容
+            message = Message("消息1") .. Face(0) --显示的消息内容
         },
         {
             senderId = 123456789, 
             time = 987654,
             senderName = "发送者昵称2",
-            message = Msg("消息2") .. Face(0) --显示的消息内容
+            message = Message("消息2") .. Face(0) --显示的消息内容
         },
     }
 }
@@ -311,12 +311,12 @@ Forward { --可省略括号
 | ------- | ------ | ----------------------------- |
 | content | String | 消息内容，一般为一段JSON 文本 |
 
-示例（完整示例请见：[音乐卡片](../demos/音乐卡片.lua)、解析可见：[jsonmsg.md](./jsonmsg.md)）：
+示例（完整示例请见：[音乐卡片](../demos/音乐卡片.lua)、解析可见：[jsonmessage.md](./jsonmessage.md)）：
 ![音乐卡片示例](./res/musicCardSample.png)
 ```lua
 formAMusicShare = function (title, srcUrl, desc, preview, jmpUrl, tag)
 local __format__ = [[
-{"app":"com.tencent.structmsg","config":{"autosize":true,"forward":true,"type":"normal"},
+{"app":"com.tencent.structmessage","config":{"autosize":true,"forward":true,"type":"normal"},
 "desc":"音乐","meta":{"music":{"desc":"%s","jumpUrl":"%s","musicUrl":"%s","preview":"%s",
 "tag":"%s","title":"%s"}},"prompt":"[%s]%s","view":"music"}]]
     return string.format (__format__:gsub("\n", ""),
@@ -333,7 +333,7 @@ App ("天外来物", "http://music.163.com/song/media/outer/url?id=1463165983", 
 
 #### Service消息（测试版）
 
-服务消息，可以是 JSON 消息或  [`XML消息`](/docs/xmlmsg.md)。
+服务消息，可以是 JSON 消息或  [`XML消息`](/docs/xmlmessage.md)。
 
  JSON 消息更多情况下通过 App 发送。
 
@@ -344,7 +344,7 @@ App ("天外来物", "http://music.163.com/song/media/outer/url?id=1463165983", 
 | 参数名     | 类型    | 说明                                                         |
 | ---------- | ------- | ------------------------------------------------------------ |
 | service_id | Integer | 消息类型，目前未知, XML 一般为 60, JSON 一般为 1             |
-| content    | String  | 消息内容，可为 JSON 文本或 XML 文本，详情请参阅[`XML消息格式详解`](/docs/xmlmsg.md) |
+| content    | String  | 消息内容，可为 JSON 文本或 XML 文本，详情请参阅[`XML消息格式详解`](/docs/xmlmessage.md) |
 
 示例：
 
@@ -360,7 +360,7 @@ Service(60,"xxxxxxx")
 
 ## 消息拼接
 
-使用appendXXX 或 + 或 .. 进行拼接，下面是一个简单的示例：
+使用操作符 + 或 .. 进行拼接，下面是一个简单的示例：
 
 ``` lua
 ImageUrl("http://xxxxx",sender) .. Face(1) .. "hello"
@@ -379,7 +379,7 @@ Message对象支持使用 [`lua字符串处理函数`](https://www.runoob.com/lu
 如寻找消息中的文本可以使用以下方式：
 
 ``` lua
-msg:find("pattern") --等同于 string.find (msg, "pattern")
+message:find("pattern") --等同于 string.find (message, "pattern")
 ```
 
 <br />
@@ -391,8 +391,8 @@ msg:find("pattern") --等同于 string.find (msg, "pattern")
 下面这个示例演示了如何查找消息中的图片并下载到本地。
 
 ``` lua
-for i,m in ipairs(msg:toTable()) do
-	if (m:find("mirai:image")) then
+for i,m in ipairs(message:toTable()) do
+	if (m:find(":image")) then
         m:downloadImage("C:\1.jpg")
     end
 end
@@ -402,11 +402,11 @@ end
 
 <br /><br />
 
-## 消息方法
+## 方法
 
 | 方法名        | 参数   | 返回值 | 描述                                               |
 | ------------- | ------ | ------ | -------------------------------------------------- |
-| recall        | 无     | 无     | 撤回此消息，仅适用于接收到的MiraiMsg对象。         |
+| recall        | 无     | 无     | 撤回此消息，仅适用于接收到的Message对象。         |
 | toTable       | 无     | Table  | 将消息拆分为多个子消息，并转化为列表。             |
 | downloadImage | String | 无     | 将消息中含有的图片下载到本地，参数为本地文件路径。 |
 | getImageUrl   | 无     | String | 获取消息中图片的url地址                            |
