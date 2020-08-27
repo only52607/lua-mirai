@@ -1,14 +1,18 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.lua.bridge.coreimpl.BotCoreImpl
 import com.ooooonly.luaMirai.lua.lib.*
+import com.ooooonly.luakt.invoke
 import kotlinx.coroutines.CompletableJob
+import net.mamoe.mirai.Bot
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
+import org.luaj.vm2.LuaValue
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
 
-class MiraiCoreGlobals : Globals(), EventListenerContainable {
+class MiraiCoreGlobals : Globals(), EventListenerContainable,BotReceiverManager.BotReceivable {
     init {
         load(JseBaseLib())
         load(PackageLib())
@@ -38,5 +42,9 @@ class MiraiCoreGlobals : Globals(), EventListenerContainable {
     override fun clearListeners() = botEventListeners.run {
         forEach { it.complete() }
         clear()
+    }
+
+    override fun receiveBot(bot: Bot) {
+        get("onLoad").takeIf { it != LuaValue.NIL }?.invoke(BotCoreImpl(bot))
     }
 }
