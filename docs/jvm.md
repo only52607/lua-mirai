@@ -47,6 +47,6 @@ java -jar lua-mirai-1.0.0.jar exec ai.lua
 
 ## 5.测试机器人
 
-![aiDialog](\docs\res\aiDialog.png)
+![aiDialog](/docs/res/aiDialog.png)
 
 向机器人发送上述内容，若回复成功，则代表你已经成功运行了你的一个lua-mirai脚本。
