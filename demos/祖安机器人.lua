@@ -4,20 +4,26 @@ Info.author="ooooonly"
 Info.version="1.0"
 Info.description="试着向机器人发送‘骂我’"
 
-Event.onLoad = function(bot)
-    bot:subscribeGroupMsg(function(bot, msg, group, sender)
-        if msg == "骂我" then
-            group:sendMsg(Quote(msg) + At(sender) + Net.get("https://nmsl.shadiao.app/api.php?level=min&lang=zh_cn"))
+--[[ 单独运行时启用此代码
+    local bot = Bot(123456,"abcderf","device.json") -- 替换为自己的账号密码
+    bot:login()
+    onLoad(bot)
+]]
 
-        elseif msg:find("骂他") then
+function onLoad(bot)
+    bot:subscribe("GroupMessageEvent",function(event)
+        if event.message == "骂我" then
+            event.group:sendMessage(Quote(msg) + At(sender) + Http.get("https://nmsl.shadiao.app/api.php?level=min&lang=zh_cn"))
+
+        elseif event.message:find("骂他") then
             local at
-            for k, v in pairs(msg:toTable()) do
+            for k, v in pairs(event.message:toTable()) do
                 if v:find("mirai:at") then
                     at = v
                     break
                 end
             end
-            group:sendMsg(at .. Net.get("https://nmsl.shadiao.app/api.php?lang=zh_cn"))
+            event.group:sendMessage(at .. Http.get("https://nmsl.shadiao.app/api.php?lang=zh_cn"))
         end
     end)
 end

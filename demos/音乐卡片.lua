@@ -4,9 +4,11 @@ Info.author="thebadzhang"
 Info.version="1.0"
 Info.description="可以发送网易云热歌榜的音乐卡片"
 
-
-bot = Bot (账号, "密码")
-bot:login ()
+--[[ 单独运行时启用此代码
+    local bot = Bot(123456,"abcderf","device.json") -- 替换为自己的账号密码
+    bot:login()
+    onLoad(bot)
+]]
 
 
 local formAMusicShare = function (title, srcUrl, desc, preview, jmpUrl, tag)
@@ -69,9 +71,9 @@ local function checkResponse(msg)
     return nil
 end
 
-function Event.onLoad(bot)
-    bot:subscribeGroupMsg(function(bot, msg, group, sender)
-        local resp = checkResponse(msg)
-        if resp then group:sendMsg(resp) end
+function onLoad(bot)
+    bot:subscribe("GroupMessageEvent",function(event)
+        local resp = checkResponse(event.message)
+        if resp then event.group:sendMessage(resp) end
     end)
 end

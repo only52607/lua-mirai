@@ -4,13 +4,18 @@ Info.author="ooooonly"
 Info.version="1.0"
 Info.description="可自定义回复内容"
 
---支持使用lua模式匹配
+--[[ 单独运行时启用此代码
+    local bot = Bot(123456,"abcderf","device.json") -- 替换为自己的账号密码
+    bot:login()
+    onLoad(bot)
+]]
+
 local responses = {
     ["夸我"] = function(msg)
-        return Net.get(Quote(msg) .. "https://chp.shadiao.app/api.php")
+        return Http.get(Quote(msg) .. "https://chp.shadiao.app/api.php")
     end,
     ["骂我"] = function(msg)
-        return Quote(msg) + At(sender) + Net.get("https://nmsl.shadiao.app/api.php?level=min&lang=zh_cn")
+        return Quote(msg) + At(sender) + Http.get("https://nmsl.shadiao.app/api.php?level=min&lang=zh_cn")
     end
 }
 
@@ -23,9 +28,9 @@ local function checkResponse(msg)
     return nil
 end
 
-function Event.onLoad(bot)
-    bot:subscribeGroupMsg(function(bot, msg, group, sender)
-        local resp = checkResponse(msg)
-        if resp then group:sendMsg(resp) end
+function onLoad(bot)
+    bot:subscribe("GroupMessageEvent",function(event)
+        local resp = checkResponse(event.message)
+        if resp then event.group:sendMessage(resp) end
     end)
 end
