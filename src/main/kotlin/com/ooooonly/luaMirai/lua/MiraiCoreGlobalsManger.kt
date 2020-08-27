@@ -3,6 +3,7 @@ package com.ooooonly.luaMirai.lua
 import com.ooooonly.luakt.asKValue
 import org.luaj.vm2.LuaClosure
 
+//管理Global容器以及内部产生的监听器，便于在销毁globals时将内部产生的监听器注销
 object MiraiCoreGlobalsManger {
     private var globalsId = 0
     private var instances = mutableMapOf<Int, MiraiCoreGlobals>()
@@ -32,4 +33,6 @@ object MiraiCoreGlobalsManger {
             instances.remove(id)
         }
     }
+
+    fun listInstance():Map<Int,MiraiCoreGlobals> = instances
 }
