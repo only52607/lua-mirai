@@ -34,14 +34,14 @@
 			"sourceMsgId":"0",
 			"source_icon":"",
 			"source_url":"",
-			"tag":"QQ音乐",
+			"tag":"QQ 音乐",
 			"title":"乘着 小飞机去找你"
 		}
 	}
 }
 ```
 ```
-[分享]乘着小飞机去找你\n文橘/Cher\nhttps://i.y.qq.com/v8/playsong.html?platform=11&appshare=android_qq&appversion=9090508&hosteuin=oK4lNKcsoin5Nn**&songmid=002G9sHk2HfhfM&type=0&appsongtype=1&_wv=1&source=qq&ADTAG=qfshare\n来自: QQ音乐
+[分享]乘着小飞机去找你\n 文橘/Cher\nhttps://i.y.qq.com/v8/playsong.html?platform=11&appshare=android_qq&appversion=9090508&hosteuin=oK4lNKcsoin5Nn**&songmid=002G9sHk2HfhfM&type=0&appsongtype=1&_wv=1&source=qq&ADTAG=qfshare\n 来自: QQ 音乐
 ```
 ![音乐卡片](res/musicCardSample.png)
 
@@ -53,7 +53,7 @@
 |[view](#view) |*如何展示卡片|unknow|
 |[desc](#desc) |*卡片作者，来源|unknow|
 |[ver](#ver) |版本号|*unknow|
-|[prompt](#prompt) |*当不能显示这个app时所显示的文字</br>当连json都不能读取的时候需要在外面写上信息，就像上面第二个代码块中的内容其实不属于卡片但是时消息的一部分|unknow|
+|[prompt](#prompt) |*当不能显示这个 app 时所显示的文字</br>当连 json 都不能读取的时候需要在外面写上信息，就像上面第二个代码块中的内容其实不属于卡片但是时消息的一部分|unknow|
 |[config](#config) |配置信息（我也不知道具体配置了啥）|unknow|
 |[extra](#extra) |额外信息|可|
 |[meta.music](#metamusic) |音乐卡片的具体信息|不可|
