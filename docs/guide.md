@@ -1,6 +1,97 @@
 本文档假定读者具有一定的lua开发基础，若你欠缺lua语言基础，请参阅[`RUNOOB:Lua教程`](https://www.runoob.com/lua/lua-tutorial.html)
 
+# Bot对象获取
+
+进行事件订阅或发送消息前，你需要获取Bot对象，获取Bot对象有以下方法：
+
+#### 1.多脚本环境
+
+##### 通过onLoad事件传入[`Bot`](/docs/bot.md)对象，示例：
+
+``` lua
+function onLoad(bot)
+    print("载入Bot"..bot.id.."成功")
+end
+```
+
+这样，当后台新增加一个bot时，便会通过onLoad事件通知你的脚本。
+
+#### 2.单脚本环境
+
+##### 使用Bot方法构造[`Bot`](/docs/bot.md)对象，示例：
+
+``` lua
+local bot = Bot(qq账号,"qq密码","device.json")
+bot.login() --登录
+```
+
+由于手动构造的bot不会自动登录，需要手动调用login函数进行登录。
+
+
+
+# 通过Bot对象获取指定好友、群对象
+
+``` lua
+local friend = bot.getFriend(123456789) --123456789为指定好友qq号
+local group = bot.getGroup(123456798) --123456789为指定群qq号
+```
+
+了解更多：[`Bot`](/docs/bot.md)
+
+# 给好友、群发送纯文本消息
+
+``` lua
+local friend = bot.getFriend(123456789)
+local group = bot.getGroup(123456798)
+
+friend:sendMessage("你好！")
+group:sendMessage("你好！")
+```
+
+# 发送复杂消息
+
+``` lua
+local friend = bot.getFriend(123456789)
+friend:sendMessage("你好！" .. Face(1)) -- 添加一个表情，1为表情代码
+```
+
+
+
+了解更多消息结构请看：[`消息（Message）`](/docs/message.md)
+
+# 获取好友名称等操作
+
+``` lua
+local friend = bot.getFriend(123456789)
+local nick = friend.nick
+print("好友的昵称为：" .. nick)
+```
+
+更多操作，请看：[好友 (Friend)](/docs/friend.md)  及 [`群 (Group)`](/docs/group.md)
+
+# 订阅（监听）消息事件
+
+```lua
+function listener(event)
+    local msg = event.message
+    local sender = event.sender
+    print("收到来自好友（" .. sender.nick .. "）的消息：" .. msg)
+end
+
+
+bot:subscribe("FriendMessageEvent",listener) --监听好友消息
+```
+
+
+
+# 订阅其他事件
+
+[`事件(Events)`](/docs/events.md)
+
+
+
 # 一个lua-mirai脚本的基本执行流程
+
 一般来说，一个lua-mirai脚本有以下的执行流程
 
 1. 获得bot对象
@@ -29,38 +120,6 @@ end
 --3.通过bot对象传入监听函数
 
 bot:subscribe("FriendMessageEvent",listener)
-
-```
-
-进行事件订阅或发送消息前，你需要获取Bot对象，获取Bot对象有以下方法：
-
-#### 1.Android内
-
-##### 通过Event.onLoad事件传入[`Bot`](/docs/bot.md)对象，示例：
-
-``` lua
-Event.onLoad = function (bot)
-    print("载入Bot"..bot.id.."成功")
-end
-```
-
-#### 2.JVM内
-
-##### 使用Bot方法构造[`Bot`](/docs/bot.md)对象，
-
-##### 参数列表：
-
-| 参数       | 类型    | 描述                               | 可空  |
-| ---------- | ------- | ---------------------------------- | ----- |
-| account    | Integer | 账号                               | False |
-| password   | String  | 密码                               | False |
-| deviceInfo | String  | 设备信息路径，不填则使用随机信息。 | True  |
-
-##### 示例：
-
-``` lua
-local bot = Bot(qq账号,"qq密码","C:\\device.json")
-bot.login() --登录
 ```
 
 # 了解更多
