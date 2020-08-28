@@ -2,6 +2,7 @@ package com.ooooonly.luaMirai.lua.bridge.base
 
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.Job
+import net.mamoe.mirai.Bot
 import org.luaj.vm2.LuaClosure
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaValue

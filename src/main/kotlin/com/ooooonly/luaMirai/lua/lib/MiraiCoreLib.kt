@@ -16,43 +16,16 @@ open class MiraiCoreLib : TwoArgFunction() {
         val globals = env.checkglobals()
         BotCoreImpl.setBotFactory(globals) //载入Bot构建函数
         MessageCoreImpl.setMsgConstructor(globals) //载入Msg构建函数
-
-        //全局对象拦截器
+        //注册全局对象拦截器
         object : LuaValueConverter {
-            override fun caseToLuaValue(obj: Any): LuaValue? {
-                if (obj !is Bot) return null
-                return BotCoreImpl(obj).asLuaValue()
+            override fun caseToLuaValue(obj: Any): LuaValue? = when (obj) {
+                is Bot -> BotCoreImpl(obj).asLuaValue()
+                is Friend -> FriendCoreImpl(obj).asLuaValue()
+                is Group -> GroupCoreImpl(obj).asLuaValue()
+                is MessageChain -> MessageCoreImpl(obj).asLuaValue()
+                else -> null
             }
         }.register()
-
-        object : LuaValueConverter {
-            override fun caseToLuaValue(obj: Any): LuaValue? {
-                if (obj !is Bot) return null
-                return BotCoreImpl(obj).asLuaValue()
-            }
-        }.register()
-
-        object : LuaValueConverter {
-            override fun caseToLuaValue(obj: Any): LuaValue? {
-                if (obj !is Friend) return null
-                return FriendCoreImpl(obj).asLuaValue()
-            }
-        }.register()
-
-        object : LuaValueConverter {
-            override fun caseToLuaValue(obj: Any): LuaValue? {
-                if (obj !is Group) return null
-                return GroupCoreImpl(obj).asLuaValue()
-            }
-        }.register()
-
-        object : LuaValueConverter {
-            override fun caseToLuaValue(obj: Any): LuaValue? {
-                if (obj !is MessageChain) return null
-                return MessageCoreImpl(obj).asLuaValue()
-            }
-        }.register()
-
         return LuaValue.NIL
     }
 }
