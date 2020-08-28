@@ -12,7 +12,7 @@ import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
 
-class MiraiCoreGlobals : Globals(), EventListenerContainable,BotReceiverManager.BotReceivable {
+class MiraiCoreGlobals : Globals(), EventListenerContainable, BotReceivable {
     init {
         load(JseBaseLib())
         load(PackageLib())
