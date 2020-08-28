@@ -1,39 +1,39 @@
-本文档假定读者具有一定的lua开发基础，若你欠缺lua语言基础，请参阅[`RUNOOB:Lua教程`](https://www.runoob.com/lua/lua-tutorial.html)
+本文档假定读者具有一定的 lua 开发基础，若你欠缺 lua 语言基础，请参阅[`RUNOOB:Lua 教程`](https://www.runoob.com/lua/lua-tutorial.html)
 
-# Bot对象获取
+# Bot 对象获取
 
-进行事件订阅或发送消息前，你需要获取Bot对象，获取Bot对象有以下方法：
+进行事件订阅或发送消息前，你需要获取 Bot 对象，获取 Bot 对象有以下方法：
 
 #### 1.多脚本环境
 
-##### 通过onLoad事件传入[`Bot`](/docs/bot.md)对象，示例：
+##### 通过 onLoad 事件传入[`Bot`](/docs/bot.md)对象，示例：
 
 ``` lua
 function onLoad(bot)
-    print("载入Bot"..bot.id.."成功")
+    print("载入 Bot"..bot.id.."成功")
 end
 ```
 
-这样，当后台新增加一个bot时，便会通过onLoad事件通知你的脚本。
+这样，当后台新增加一个 bot 时，便会通过 onLoad 事件通知你的脚本。
 
 #### 2.单脚本环境
 
-##### 使用Bot方法构造[`Bot`](/docs/bot.md)对象，示例：
+##### 使用 Bot 方法构造[`Bot`](/docs/bot.md)对象，示例：
 
 ``` lua
-local bot = Bot(qq账号,"qq密码","device.json")
-bot.login() --登录
+local bot = Bot(qq 账号,"qq 密码","device.json")
+bot.login() -- 登录
 ```
 
-由于手动构造的bot不会自动登录，需要手动调用login函数进行登录。
+由于手动构造的 bot 不会自动登录，需要手动调用 login 函数进行登录。
 
 
 
-# 通过Bot对象获取指定好友、群对象
+# 通过 Bot 对象获取指定好友、群对象
 
 ``` lua
-local friend = bot.getFriend(123456789) --123456789为指定好友qq号
-local group = bot.getGroup(123456798) --123456789为指定群qq号
+local friend = bot.getFriend(123456789) --123456789为指定好友 qq 号
+local group = bot.getGroup(123456798) --123456789为指定群 qq 号
 ```
 
 了解更多：[`Bot`](/docs/bot.md)
@@ -79,7 +79,7 @@ function listener(event)
 end
 
 
-bot:subscribe("FriendMessageEvent",listener) --监听好友消息
+bot:subscribe("FriendMessageEvent",listener) -- 监听好友消息
 ```
 
 
@@ -90,21 +90,21 @@ bot:subscribe("FriendMessageEvent",listener) --监听好友消息
 
 
 
-# 一个lua-mirai脚本的基本执行流程
+# 一个 lua-mirai 脚本的基本执行流程
 
-一般来说，一个lua-mirai脚本有以下的执行流程
+一般来说，一个 lua-mirai 脚本有以下的执行流程
 
-1. 获得bot对象
+1. 获得 bot 对象
 2. 定义监听函数
-3. 通过bot对象传入监听函数
+3. 通过 bot 对象传入监听函数
 
 下面是一个简单的示例，该示例实现了”复读机“的功能：
 
 ```lua
---1.获得bot对象
+--1.获得 bot 对象
 
-local bot = Bot(qq账号,"qq密码","C:\\device.json")
-bot:login() --登录
+local bot = Bot(qq 账号,"qq 密码","C:\\device.json")
+bot:login() -- 登录
 
 
 --2.定义监听函数
@@ -113,11 +113,11 @@ function listener(event)
     --print(event)
     local msg = event.message
     local sender = event.sender
-    sender:sendMessage(Quote(msg) .. msg) --引用并回复相同消息
+    sender:sendMessage(Quote(msg) .. msg) -- 引用并回复相同消息
 end
 
 
---3.通过bot对象传入监听函数
+--3.通过 bot 对象传入监听函数
 
 bot:subscribe("FriendMessageEvent",listener)
 ```
@@ -128,6 +128,6 @@ bot:subscribe("FriendMessageEvent",listener)
 
 你可以在这里找到示例脚本： [`下载示例脚本(适用于 Android)`](https://github.com/only52607/lua-/tree/master/demos)
 
-### API列表
+### API 列表
 
 点此查看：[`API`](/docs/apis.md)

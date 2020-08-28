@@ -5,14 +5,14 @@
 | 属性名 | 类型                            | 描述    |
 | ------ | ------------------------------- | ------- |
 | id     | Integer                         | 群号码  |
-| bot    | [`Bot`](/docs/bot.md) | bot对象 |
+| bot    | [`Bot`](/docs/bot.md) | bot 对象 |
 | avatarUrl | String | 群头像地址 |
 | name | String | 群名称 |
 | owner | [`Member`](/docs/member.md) | 群主 |
 | settings | GroupSettings | 群设置 |
 | botPermission | MemberPermission | 机器人在群里的权限 |
 | isBotMuted | Boolean | 机器人是否被禁言 |
-| botAsMember | [`Member`](/docs/member.md) | 机器人在群内的自身member对象 |
+| botAsMember | [`Member`](/docs/member.md) | 机器人在群内的自身 member 对象 |
 | botMuteRemaining | Integer | 机器人被禁言时长 |
 
 ## 方法
@@ -39,7 +39,7 @@
 
 | 参数 | 类型                            | 描述     |
 | ---- | ------------------------------- | -------- |
-| url  | String | 图片URL |
+| url  | String | 图片 URL |
 
 #### 返回值：
 
@@ -57,7 +57,7 @@
 
 | 参数 | 类型    | 描述       |
 | ---- | ------- | ---------- |
-| id   | Integer | 群成员qq号 |
+| id   | Integer | 群成员 qq 号 |
 
 #### 返回值：
 
@@ -71,7 +71,7 @@
 
 | 参数 | 类型    | 描述       |
 | ---- | ------- | ---------- |
-| id   | Integer | 群成员qq号 |
+| id   | Integer | 群成员 qq 号 |
 
 #### 返回值：
 

@@ -4,8 +4,8 @@
 
 | 属性名 | 类型                                | 描述         |
 | ------ | ----------------------------------- | ------------ |
-| id     | Integer                             | 群员的qq号码 |
-| bot    | [`Bot`](/docs/bot.md)     | bot对象      |
+| id     | Integer                             | 群员的 qq 号码 |
+| bot    | [`Bot`](/docs/bot.md)     | bot 对象      |
 | group  | [`Group`](/docs/group.md) | 群员所在群   |
 | nick | String | 昵称 |
 | nameCard | String | 群名片 |
@@ -32,13 +32,13 @@
 ### kick (移除群聊)
 
 
-### asFriend (转为Friend对象)
+### asFriend (转为 Friend 对象)
 
 #### 返回值：
 
 | 类型                                  | 描述                    |
 | ------------------------------------- | ----------------------- |
-| [`Friend`](/docs/friend.md) | 转换后的Friend对象 |
+| [`Friend`](/docs/friend.md) | 转换后的 Friend 对象 |
 
 ### sendMessage (发送私聊消息)
 
@@ -62,7 +62,7 @@
 
 | 参数 | 类型                            | 描述     |
 | ---- | ------------------------------- | -------- |
-| url  | String | 图片URL |
+| url  | String | 图片 URL |
 
 #### 返回值：
 

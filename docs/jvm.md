@@ -1,8 +1,8 @@
-# 快速运行你的第一个lua-mirai脚本
+# 快速运行你的第一个 lua-mirai 脚本
 
 
 
-#### 1.配置java环境（具体配置过程请网上自行搜索，此处省略）
+#### 1.配置 java 环境（具体配置过程请网上自行搜索，此处省略）
 
 
 
@@ -10,7 +10,7 @@
 
 
 
-#### 3.在jar目录下，创建ai.lua文件，并填入以下代码。（注意填写账号密码）
+#### 3.在 jar 目录下，创建 ai.lua 文件，并填入以下代码。（注意填写账号密码）
 
 ```lua
 function listener(event)
@@ -31,10 +31,10 @@ onLoad(bot)
 
 
 
-#### 4.启动cmd，进入ai.lua目录，执行以下代码
+#### 4.启动 cmd，进入 ai.lua 目录，执行以下代码
 
 ```powershell
-java -jar jar文件名 exec lua文件名
+java -jar jar 文件名 exec lua 文件名
 ```
 
 #### 例：
@@ -49,11 +49,11 @@ java -jar lua-mirai-1.0.0.jar exec ai.lua
 
 ![aiDialog](/docs/res/aiDialog.png)
 
-向机器人发送上述内容，若回复成功，则代表你已经成功运行了你的一个lua-mirai脚本。
+向机器人发送上述内容，若回复成功，则代表你已经成功运行了你的一个 lua-mirai 脚本。
 
 
 
-# 编写自己的lua脚本
+# 编写自己的 lua 脚本
 
-[`lua-mirai脚本开发指南`](/docs/guide.md)
+[`lua-mirai 脚本开发指南`](/docs/guide.md)
 

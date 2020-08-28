@@ -4,7 +4,7 @@
 
 #### 1.单脚本运行环境
 
-##### 使用Bot方法构造[`Bot`](/docs/bot.md)对象，
+##### 使用 Bot 方法构造[`Bot`](/docs/bot.md)对象，
 
 ##### 参数列表：
 
@@ -17,13 +17,13 @@
 ##### 示例：
 
 ``` lua
-local bot = Bot(qq账号,"qq密码","device.json")
-bot.login() --登录
+local bot = Bot(qq 账号,"qq 密码","device.json")
+bot.login() -- 登录
 ```
 
 #### 2.多脚本运行环境
 
-##### 通过onLoad函数获取，示例
+##### 通过 onLoad 函数获取，示例
 
 ``` lua
 function onLoad(bot)
@@ -37,8 +37,8 @@ end
 
 | 属性名 | 类型    | 描述           |
 | ------ | ------- | -------------- |
-| id     | Integer | 机器人的qq号码 |
-| selfQQ     | [`Friend`](/docs/friend.md) | bot自身的Friend对象 |
+| id     | Integer | 机器人的 qq 号码 |
+| selfQQ     | [`Friend`](/docs/friend.md) | bot 自身的 Friend 对象 |
 | isOnline     | Boolean | 是否在线 |
 
 ## 方法
@@ -49,7 +49,7 @@ end
 
 | 参数 | 类型    | 描述     |
 | ---- | ------- | -------- |
-| id   | Integer | 好友qq号 |
+| id   | Integer | 好友 qq 号 |
 
 #### 返回值：
 
@@ -99,7 +99,7 @@ end
 
 | 参数 | 类型    | 描述     |
 | ---- | ------- | -------- |
-| id   | Integer | 好友qq号 |
+| id   | Integer | 好友 qq 号 |
 
 #### 返回值：
 
@@ -143,7 +143,7 @@ end
 | block | Function | 线程主函数 |
 
 
-### closeAndJoin (退出该bot)
+### closeAndJoin (退出该 bot)
 
 ### 参数列表：
 

@@ -1,6 +1,6 @@
-# 在Lua中执行http请求
+# 在 Lua 中执行 http 请求
 
-## get请求
+## get 请求
 
 #### 函数名：Http.get
 
@@ -34,7 +34,7 @@ local body,isSuccessful,code,message = Http.get(
         writeTimeout = 5000
     },
 
-    {   --请求头
+    {   -- 请求头
         token = "xxxx"
     }
 )
@@ -43,7 +43,7 @@ print(body)
 
 
 
-## post请求
+## post 请求
 
 #### 函数名：Http.post
 
@@ -81,7 +81,7 @@ local body,isSuccessful,code,message = Http.post(
         writeTimeout = 5000
     }, 
 
-    {   --请求头
+    {   -- 请求头
         token = "xxxx"
     }
 )
@@ -97,7 +97,7 @@ print(body)
 | 参数    | 类型         | 描述       | 可空  |
 | ------- | ------------ | ---------- | ----- |
 | url     | String       | 欲被重定向的地址   | False |
-| referer  | String | referer头   | True |
+| referer  | String | referer 头   | True |
 
 #### 返回值：
 

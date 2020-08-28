@@ -2,7 +2,7 @@
 
 # lua-mirai
 
- 这是一个实现了[`mirai`](https://github.com/mamoe/mirai)规范的lua快速开发框架。
+ 这是一个实现了[`mirai`](https://github.com/mamoe/mirai)规范的 lua 快速开发框架。
 
 
 
@@ -16,26 +16,26 @@
 
 4、任何单位或个人认为本项目可能涉嫌侵犯其合法权益，应该及时提出反馈，我们将会第一时间对违规内容给予删除等相关处理。
 
-### QQ交流群:120408574
+### QQ 交流群:120408574
 
 ## 快速开始
 
 ### 安卓端
 
 请使用 [`MiraiAndroid`](https://github.com/mzdluo123/MiraiAndroid)
-开发文档:[`MiraiAndroid lua脚本开发指南`](/docs/miraiandroid.md)
+开发文档:[`MiraiAndroid lua 脚本开发指南`](/docs/miraiandroid.md)
 
-### PC端
+### PC 端
 
-- [x] 控制台界面： [`在JVM上运行lua-mirai`](/docs/jvm.md)
-- [ ] Swing Gui界面
-- [ ] Web界面
+- [x] 控制台界面： [`在 JVM 上运行 lua-mirai`](/docs/jvm.md)
+- [ ] Swing Gui 界面
+- [ ] Web 界面
 
 ### 作为项目依赖
 
 #### Gradle
 
-添加jcenter仓库
+添加 jcenter 仓库
 
 ``` groovy
 buildscript{
@@ -47,7 +47,7 @@ buildscript{
 }
 ```
 
-添加mirai以及lua-mirai依赖
+添加 mirai 以及 lua-mirai 依赖
 
 ```groovy
 dependencies {
@@ -58,17 +58,17 @@ dependencies {
 
 
 
-## lua-mirai脚本开发
+## lua-mirai 脚本开发
 
-### lua语言基础
+### lua 语言基础
 
-请参阅 [`30分钟快速入门lua语言`](https://www.runoob.com/lua/lua-tutorial.html)
+请参阅 [`30分钟快速入门 lua 语言`](https://www.runoob.com/lua/lua-tutorial.html)
 
-### lua-mirai开发指南
+### lua-mirai 开发指南
 
 [`lua-mirai 开发指南`](/docs/guide.md)
 
-[`lua-mirai API列表`](/docs/apis.md)
+[`lua-mirai API 列表`](/docs/apis.md)
 
 ## 第三方库
 

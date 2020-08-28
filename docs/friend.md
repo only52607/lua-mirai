@@ -4,8 +4,8 @@
 
 | 属性名 | 类型                            | 描述         |
 | ------ | ------------------------------- | ------------ |
-| id     | Integer                         | 好友的qq号码 |
-| bot    | [`Bot`](/docs/bot.md) | bot对象      |
+| id     | Integer                         | 好友的 qq 号码 |
+| bot    | [`Bot`](/docs/bot.md) | bot 对象      |
 | nick | String | 昵称 |
 | nameCardOrNick | String | 备注（若不存在备注则返回昵称） |
 | avatarUrl | String | 头像地址 |
@@ -36,7 +36,7 @@
 
 | 参数 | 类型                            | 描述     |
 | ---- | ------------------------------- | -------- |
-| url  | String | 图片URL |
+| url  | String | 图片 URL |
 
 #### 返回值：
 

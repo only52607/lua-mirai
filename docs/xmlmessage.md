@@ -1,6 +1,6 @@
-# XML消息格式详解
+# XML 消息格式详解
 
-下面我们将通过这个示例XML消息解释XML消息的构成和各参数的含义。
+下面我们将通过这个示例 XML 消息解释 XML 消息的构成和各参数的含义。
 
 ```xml
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
@@ -25,13 +25,13 @@
     	<picture cover='http://xxxx/xxx.png'/>
     </item>
     
-     <source name='来自XXX' icon='http://xxxx/xxx.png'/>
+     <source name='来自 XXX' icon='http://xxxx/xxx.png'/>
 </msg>
 ```
 
 
 
-由以上示例可见，该XML将msg元素作为根元素，msg元素内部嵌套多个item元素，以及一个source元素。
+由以上示例可见，该 XML 将 msg 元素作为根元素，msg 元素内部嵌套多个 item 元素，以及一个 source 元素。
 
 下面是对各个元素的详细介绍。
 
@@ -45,11 +45,11 @@
 | ---------- | ------------------------------ |
 | templateID | 消息样式模板，默认为1          |
 | serviceID  | *未知，默认为1                 |
-| action     | *消息动作，默认为plugin        |
+| action     | *消息动作，默认为 plugin        |
 | actionData | 一般为点击这条消息后跳转的链接 |
 | brief      | *摘要                          |
 | flag       | *标志，默认为3                 |
-| url        | *跳转URL                       |
+| url        | *跳转 URL                       |
 
 <br />
 
@@ -60,7 +60,7 @@
 | 属性名 | 含义                        |
 | ------ | --------------------------- |
 | name   | 在消息下方显示的来源名称    |
-| icon   | 在消息下方显示的来源图标url |
+| icon   | 在消息下方显示的来源图标 url |
 
 <br />
 
@@ -102,6 +102,6 @@
 
 | 属性名 | 含义    |
 | ------ | ------- |
-| cover  | 图片url |
+| cover  | 图片 url |
 
 <br />
