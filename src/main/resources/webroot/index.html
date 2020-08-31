@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+    <script src="vertx-eventbus.js"></script>
+
+    <script type="application/javascript">
+  var eb = new EventBus("http://localhost/eb");
+  eb.onopen = function () {
+    eb.registerHandler("to_client", function (err, msg) {
+      console.log(msg.body);
+    })
+  }
+    </script>
+</head>
+
+<body>
+
+<h1>Main web site with public and private pages</h1>
+
+<br>
+<br>
+<a href="private/private_page.html">Private page - login is required</a>
+<br><br>
+
+<a href="page1.html">Public page - no login required</a>
+
+
+<h1>Create Bot</h1>
+<form action="/api/v1/bots" method="post">
+    <div>
+        <label>Id:</label>
+        <input type="text" name="id"/>
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" name="password"/>
+    </div>
+    <div>
+        <input type="submit" value="Log In"/>
+    </div>
+</form>
+
+
+</body>
+</html>
