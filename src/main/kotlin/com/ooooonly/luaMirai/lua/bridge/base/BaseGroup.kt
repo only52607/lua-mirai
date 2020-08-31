@@ -3,6 +3,7 @@ package com.ooooonly.luaMirai.lua.bridge.base
 import org.luaj.vm2.LuaValue
 
 abstract class BaseGroup {
+    abstract var id: Long
     abstract var avatarUrl: String
     abstract var name: String
     abstract var owner: BaseMember

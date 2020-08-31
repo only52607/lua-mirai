@@ -14,6 +14,12 @@ abstract class BaseMessage : KotlinInstanceInLua() {
         m_metatable = luaTableOf {
         }.setAll(LuaString.s_metatable[INDEX] as LuaTable)
     }
+    /*MessageSource成员*/
+    abstract val id: Int
+    abstract val internalId: Int
+    abstract val timestamp: Int //即MessageSource.time
+    abstract val fromId: Long
+    abstract val targetId: Long
 
     override fun get(key: LuaValue): LuaValue =
         m_metatable?.run { get(key) }?.takeIf { it != LuaValue.NIL } ?: super.get(key)
