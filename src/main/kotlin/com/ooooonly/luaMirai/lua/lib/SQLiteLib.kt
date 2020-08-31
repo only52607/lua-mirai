@@ -27,7 +27,7 @@ open class SQLiteLib() : TwoArgFunction(){
             logger.error(e);
         }
     }
-    class SQLite3(db_name: String?) : TwoArgFunction(){
+    class SQLite3(db_name: String?) : LuaTable(){
         private val memoryDatabase = ":memory:";
         private var connection: Connection? = null;
         private var statement: Statement? = null;
@@ -40,6 +40,12 @@ open class SQLiteLib() : TwoArgFunction(){
             }catch (e: SQLException){
                 logger.error("${databaseName}打开失败。");
                 logger.error(e);
+            }
+
+            this.edit {
+                "exec"        to luaFunctionOf { _: LuaTable, operator: String -> exec(operator); }
+                "nrows"       to luaFunctionOf { _: LuaTable, operator: String -> nrows(operator); }
+                "createTable" to luaFunctionOf { _: LuaTable, table: String, values: LuaTable -> createTable(table, values); }
             }
         }
         fun exec(operator: String) : Int{
@@ -113,18 +119,9 @@ open class SQLiteLib() : TwoArgFunction(){
             }
             return exec("create table if not exists $table ( ${str.substring(2)} );");
         }
-        override fun call(self: LuaValue?, env: LuaValue): LuaValue {
-            var mTable: LuaTable = LuaTable();
-            mTable.edit {
-                "exec"        to luaFunctionOf { _: LuaTable, operator: String -> exec(operator); }
-                "nrows"       to luaFunctionOf { _: LuaTable, operator: String -> nrows(operator); }
-                "createTable" to luaFunctionOf { _: LuaTable, table: String, values: LuaTable -> createTable(table, values); }
-            }
-            return mTable;
-        }
-
     }
     fun create(db_name: String?): SQLite3{
+        logger.info("create");
         return SQLite3(db_name);
     }
     override fun call(self: LuaValue?, env: LuaValue): LuaValue {
