@@ -15,6 +15,7 @@ class SimpleUser(private val authInfo: JsonObject) : User {
         authority: String?,
         resultHandler: Handler<AsyncResult<Boolean?>?>
     ): User {
+        println("user authority:$authority")
         resultHandler.handle(Future.succeededFuture(true))
         return this
     }

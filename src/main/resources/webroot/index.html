@@ -3,12 +3,15 @@
 <head>
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
-    <script src="vertx-eventbus.js"></script>
+    <script src="js/vertx-eventbus.js"></script>
 
     <script type="application/javascript">
   var eb = new EventBus("http://localhost/eb");
   eb.onopen = function () {
-    eb.registerHandler("to_client", function (err, msg) {
+    eb.registerHandler("bot", function (err, msg) {
+      console.log(msg.body);
+    })
+    eb.registerHandler("net", function (err, msg) {
       console.log(msg.body);
     })
   }
