@@ -16,6 +16,9 @@ import org.luaj.vm2.LuaValue
 import java.net.URL
 
 class GroupCoreImpl(val host: Group) : BaseGroup() {
+    override var id: Long
+        get() = host.id
+        set(value) {}
     override var avatarUrl: String
         get() = host.avatarUrl
         set(value) {}

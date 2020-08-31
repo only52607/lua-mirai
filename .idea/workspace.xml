@@ -5,37 +5,17 @@
       <artifact name="luaMirai.main:jar" />
     </artifacts-to-build>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="5bbf6276-0898-4cb0-90b7-6b09c50443c9" name="Default Changelist" comment="update readme">
-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/JavaClassLister.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/jarAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/taskHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaGroup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaQQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/LuaFriend.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/lib/LuaJavaExLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ooooonly/luaMirai/lua/lib/LuaJavaExLib.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/compiler/LexState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/compiler/LexState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/lib/CoroutineLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/luaj/vm2/lib/CoroutineLib.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiBot.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiBot.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiGroup.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiMsg.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiMsg.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiQQ.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/MiraiFriend.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/utils/MessageAnalyzer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/utils/MessageAnalyzer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/lua/test.lua" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/test.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/test.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/message.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/message.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/base/BaseGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/base/BaseGroup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/base/BaseMessage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/base/BaseMessage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/coreimpl/GroupCoreImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/coreimpl/GroupCoreImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/coreimpl/MessageCoreImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ooooonly/luaMirai/lua/bridge/coreimpl/MessageCoreImpl.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,13 +79,14 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$/Desktop/mirai-console-conosle-0.4.6" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.14749263" />
