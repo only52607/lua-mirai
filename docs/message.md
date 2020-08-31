@@ -63,7 +63,7 @@ Text("消息内容")
 示例：
 
 ```lua
-Quote(message) -- 后必须拼接内容
+Quote(message)
 ```
 
 <br />
@@ -142,7 +142,7 @@ Image("/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
 ```lua
 ImageUrl("http://xxxx/xxx.jpg",group) -- 网络 url
 
-ImageUrl("file:///xxxxx/xxx.jpg",friend) -- 本地 url
+ImageUrl("file:/xxxxx/xxx.jpg",friend) -- 本地 url
 ```
 
 <br />
@@ -402,17 +402,6 @@ end
 
 <br /><br />
 
-##属性
-
-|属性名        |类型    |描述|
-|-------------|-------|---|
-|`id        ` |Integer|消息 id (序列号). 在获取失败时 (概率很低) 为 `-1`.<br/>群消息的 id 由服务器维护. 好友消息的 id 由 mirai 维护.<br/>此 id 不一定从 0 开始.|
-|`internalId` |Integer|内部 id. **仅用于协议模块使用**.<br/>值没有顺序, 也可能为 0, 取决于服务器是否提供.<br/>在事件中和在引用中无法保证同一条消息的 `internalId` 相同.|
-|`timestamp ` |Integer|即MessageSource.time.<br/>发送时间时间戳, 单位为秒. 时间戳可能来自服务器, 也可能来自 mirai, 且无法保证两者时间同步.| 
-|`fromId    ` |Integer|发送人.<br/>一般为消息发出者，例如机器人(自己发出)、好友(接收好友消息)、群(接收群消息).<br/>详见`MessageSource.fromId`|
-|`targetId  ` |Integer|消息发送目标.<br/>一般为消息接收者，例如机器人(接收消息)、好友(发送好友消息)、群(发送群消息).<br/>详见`MessageSource.targetId`|
-以上属性在消息未发送时均为`-10`
-<br/><br/>
 ## 方法
 
 | 方法名        | 参数   | 返回值 | 描述                                               |
