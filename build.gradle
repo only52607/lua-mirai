@@ -53,6 +53,7 @@ dependencies {
     implementation "io.vertx:vertx-web:$vertx_version"
     implementation "io.vertx:vertx-lang-kotlin:$vertx_version"
     implementation "io.vertx:vertx-auth-common:$vertx_version"
+    implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertx_version"
 
     //implementation 'com.github.only52607:luakt:Tag'
     testCompile group: 'junit', name: 'junit', version: '4.12'
