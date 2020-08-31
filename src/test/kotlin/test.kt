@@ -1,9 +1,5 @@
 package com.ooooonly.luaMirai
-<<<<<<< Updated upstream
 
-=======
-//
->>>>>>> Stashed changes
 //import com.ooooonly.luaMirai.lua.MiraiGlobals
 //import org.luaj.vm2.Globals
 //import org.luaj.vm2.LuaValue
