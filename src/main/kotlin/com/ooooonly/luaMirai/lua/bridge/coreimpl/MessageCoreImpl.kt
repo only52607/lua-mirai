@@ -174,7 +174,7 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
 
         private val _regex = Regex("""\[mirai:(.*?):(.*?)\]""")
     }
-
+    private var source: MessageSource? = (if(host is MessageChain) host else null)?.source
     private var _type: String? = null
     private var _params: Array<String>? = null
     private fun parseTypeParams() {
@@ -182,6 +182,34 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
         _type = result?.groupValues?.get(1) ?: ""
         _params = result?.groupValues?.get(2)?.split(",")?.toTypedArray() ?: arrayOf()
     }
+
+    /*MessageSource成员*/
+    /**
+     * 消息id。详见[MessageSource.id]
+     */
+    override val id: Int
+        get() = source?.id ?: -10
+    /**
+     * 消息内部id。详见[MessageSource.internalId]
+     */
+    override val internalId: Int
+        get() = source?.internalId ?: -10
+    /**
+     * 消息时间戳。详见[MessageSource.time]
+     */
+    override val timestamp: Int
+        get() = source?.time ?: -10
+    /**
+     * 发送人。详见[MessageSource.fromId]
+     */
+    override val fromId: Long
+        get() = source?.fromId ?: -10
+    /**
+     * 消息发送目标。详见[MessageSource.targetId]
+     */
+    override val targetId: Long
+        get() = source?.targetId ?: -10
+    /* ************** */
 
     override var type: String
         get() {
