@@ -15,6 +15,9 @@ import org.luaj.vm2.LuaValue
 import java.net.URL
 
 class FriendCoreImpl(val host: Friend) : BaseFriend() {
+    override var id: Long
+        get() = host.id
+        set(value) {}
     override var nick: String
         get() = host.nick
         set(value) {}
@@ -43,5 +46,4 @@ class FriendCoreImpl(val host: Friend) : BaseFriend() {
             MessageCoreImpl(host.sendImage(URL(url)).source.asMessageChain())
             //MessageCoreImpl(host.sendMessage(host.uploadImage(URL(url))).source.asMessageChain())
         }
-
 }

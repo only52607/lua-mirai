@@ -1,5 +1,6 @@
 package com.ooooonly.luaMirai.lua.bridge.base
 
+import com.ooooonly.luakt.getOrNull
 import com.ooooonly.luakt.luaTableOf
 import com.ooooonly.luakt.luakotlin.KotlinInstanceInLua
 import com.ooooonly.luakt.setAll
@@ -12,7 +13,7 @@ abstract class BaseMessage : KotlinInstanceInLua() {
     init {
         m_instance = this
         m_metatable = luaTableOf {
-        }.setAll(LuaString.s_metatable[INDEX] as LuaTable)
+        }.setAll(LuaString.s_metatable[INDEX] as LuaTable) //添加String的metatable
     }
     /*MessageSource成员*/
     abstract val id: Int
@@ -22,7 +23,7 @@ abstract class BaseMessage : KotlinInstanceInLua() {
     abstract val targetId: Long
 
     override fun get(key: LuaValue): LuaValue =
-        m_metatable?.run { get(key) }?.takeIf { it != LuaValue.NIL } ?: super.get(key)
+        (m_metatable as LuaTable?)?.getOrNull(key) ?: super.get(key)
 
     abstract var type: String
     abstract var params: Array<String>

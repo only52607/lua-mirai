@@ -183,33 +183,17 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
         _params = result?.groupValues?.get(2)?.split(",")?.toTypedArray() ?: arrayOf()
     }
 
-    /*MessageSource成员*/
-    /**
-     * 消息id。详见[MessageSource.id]
-     */
     override val id: Int
         get() = source?.id ?: -10
-    /**
-     * 消息内部id。详见[MessageSource.internalId]
-     */
     override val internalId: Int
         get() = source?.internalId ?: -10
-    /**
-     * 消息时间戳。详见[MessageSource.time]
-     */
     override val timestamp: Int
         get() = source?.time ?: -10
-    /**
-     * 发送人。详见[MessageSource.fromId]
-     */
     override val fromId: Long
         get() = source?.fromId ?: -10
-    /**
-     * 消息发送目标。详见[MessageSource.targetId]
-     */
     override val targetId: Long
         get() = source?.targetId ?: -10
-    /* ************** */
+
 
     override var type: String
         get() {
