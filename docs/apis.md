@@ -21,3 +21,5 @@
 [`Json 支持库`](/docs/json.md)
 
 [`LuaJava 支持库`](/docs/luajava.md)
+
+[`Sqlite 支持库`](/docs/sqlite.md)
