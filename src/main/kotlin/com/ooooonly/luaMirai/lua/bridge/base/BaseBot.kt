@@ -26,5 +26,5 @@ abstract class BaseBot {
     abstract fun containsGroup(id: Long): Boolean
     abstract fun subscribe(eventName: String, block: LuaClosure): CompletableJob
     abstract fun join()
-    abstract fun closeAndJoin()
+    abstract fun close()
 }

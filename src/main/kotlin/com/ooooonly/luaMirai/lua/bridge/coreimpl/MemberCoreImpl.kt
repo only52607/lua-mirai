@@ -8,43 +8,64 @@ import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.asMessageChain
 import net.mamoe.mirai.message.uploadImage
+import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaValue
 import java.net.URL
 
 class MemberCoreImpl(val host: Member) : BaseMember() {
     override var bot: BaseBot
         get() = BotCoreImpl.getInstance(host.bot)
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var group: BaseGroup
         get() = GroupCoreImpl(host.group)
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var nick: String
         get() = host.nick
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var nameCard: String
         get() = host.nameCard
-        set(value) {}
+        set(value) {
+            host.nameCard = value
+        }
     override var specialTitle: String
         get() = host.specialTitle
-        set(value) {}
+        set(value) {
+            host.specialTitle = value
+        }
     override var isAdministrator: Boolean
         get() = host.isAdministrator()
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isOwner: Boolean
         get() = host.isOwner()
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isFriend: Boolean
         get() = host.isFriend
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var muteTimeRemaining: Int
         get() = host.muteTimeRemaining
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isMuted: Boolean
         get() = host.isMuted
         set(value) {}
     override var permission: LuaValue
         get() = host.permission.asLuaValue()
-        set(value) {}
+        set(value) {
+            throw LuaError("You could not modify this field")
+        }
 
     override fun mute(time: Int) {
         host.bot.launch {

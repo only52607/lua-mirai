@@ -19,16 +19,24 @@ import org.luaj.vm2.*
 class BotCoreImpl(val host: Bot) : BaseBot() {
     override var id: Long
         get() = host.id
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isActive: Boolean
         get() = host.isActive
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isOnline: Boolean
         get() = host.isOnline
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var selfQQ: BaseFriend
         get() = FriendCoreImpl(host.selfQQ)
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
 
     override fun login() = also {
         runBlocking {
@@ -83,8 +91,8 @@ class BotCoreImpl(val host: Bot) : BaseBot() {
         host.join()
     }
 
-    override fun closeAndJoin() = runBlocking {
-        host.closeAndJoin()
+    override fun close() = runBlocking {
+        host.close()
     }
 
 }

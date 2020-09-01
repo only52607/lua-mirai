@@ -18,34 +18,54 @@ import java.net.URL
 class GroupCoreImpl(val host: Group) : BaseGroup() {
     override var id: Long
         get() = host.id
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var avatarUrl: String
         get() = host.avatarUrl
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var name: String
         get() = host.name
-        set(value) {}
+        set(value) {
+            host.name = value
+        }
     override var owner: BaseMember
         get() = MemberCoreImpl(host.owner)
-        set(value) {}
+        set(value) {
+            owner = value
+        }
     override var bot: BaseBot
         get() = BotCoreImpl.getInstance(host.bot)
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var settings: LuaValue
         get() = host.settings.asLuaValue()
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var botAsMember: BaseMember
         get() = MemberCoreImpl(host.botAsMember)
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var botPermission: LuaValue
         get() = host.botPermission.asLuaValue()
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var botMuteRemaining: Int
         get() = host.botMuteRemaining
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isBotMuted: Boolean
         get() = host.isBotMuted
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
 
     override fun sendMessage(msg: LuaValue): MessageCoreImpl {
         val msgToSend = if (msg is MessageCoreImpl) msg.host else PlainText(msg.toString())

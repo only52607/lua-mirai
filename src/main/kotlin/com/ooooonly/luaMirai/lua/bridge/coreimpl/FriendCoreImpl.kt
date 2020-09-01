@@ -17,22 +17,34 @@ import java.net.URL
 class FriendCoreImpl(val host: Friend) : BaseFriend() {
     override var id: Long
         get() = host.id
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var nick: String
         get() = host.nick
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var avatarUrl: String
         get() = host.avatarUrl
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var bot: BaseBot
         get() = BotCoreImpl.getInstance(host.bot)
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var isActive: Boolean
         get() = host.isActive
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var nameCardOrNick: String
         get() = host.nameCardOrNick
-        set(value) {}
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
 
     override fun sendMessage(msg: LuaValue): BaseMessage {
         val msgToSend = if (msg is MessageCoreImpl) msg.host else PlainText(msg.toString())
