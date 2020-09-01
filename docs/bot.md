@@ -143,7 +143,7 @@ end
 | block | Function | 线程主函数 |
 
 
-### closeAndJoin (退出该 bot)
+### close (退出该 bot)
 
 ### 参数列表：
 
