@@ -34,13 +34,13 @@ onLoad(bot)
 #### 4.启动 cmd，进入 ai.lua 目录，执行以下代码
 
 ```powershell
-java -jar jar 文件名 exec lua 文件名
+java -jar jar文件名 exec lua文件名
 ```
 
 #### 例：
 
 ```powershell
-java -jar lua-mirai-1.0.0.jar exec ai.lua
+java -jar lua-mirai-1.1.0.jar exec ai.lua
 ```
 
 
