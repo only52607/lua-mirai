@@ -14,6 +14,7 @@ import net.mamoe.mirai.message.FriendMessageEvent
 import net.mamoe.mirai.message.GroupMessageEvent
 import net.mamoe.mirai.message.MessageEvent
 import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.SimpleLogger
 import org.luaj.vm2.*
 
 class BotCoreImpl(val host: Bot) : BaseBot() {
@@ -50,8 +51,10 @@ class BotCoreImpl(val host: Bot) : BaseBot() {
                 val user = varargs[0].asKValue<Long>()
                 val pwd = varargs[1].asKValue<String>()
                 val config =
-                    if (varargs.narg() >= 3) BotConfiguration.Default.apply { fileBasedDeviceInfo(varargs[2].asKValue()) }
-                    else BotConfiguration.Default
+                    if (varargs.narg() >= 3) {
+                        if (varargs[2].istable()) (varargs[2] as LuaTable).toBotConfiguration()
+                        else BotConfiguration.Default.copy().apply { fileBasedDeviceInfo(varargs[2].asKValue()) }
+                    } else BotConfiguration.Default
                 return@luaFunctionOf BotCoreImpl(Bot(user, pwd, config))
             })
         }
@@ -61,6 +64,60 @@ class BotCoreImpl(val host: Bot) : BaseBot() {
             if (!instances.contains(host)) instances[host] = BotCoreImpl(host)
             return instances[host]!!
         }
+
+        private fun LuaTable.toBotConfiguration(): BotConfiguration = BotConfiguration.Default.copy().apply {
+            getOrNull("protocol")?.let {
+                protocol = it.toString().toMiraiProtocol()
+            }
+            getOrNull("fileBasedDeviceInfo")?.let {
+                fileBasedDeviceInfo(it.toString())
+            }
+            getOrNull("heartbeatPeriodMillis")?.let {
+                heartbeatPeriodMillis = it.checklong()
+            }
+            getOrNull("heartbeatTimeoutMillis")?.let {
+                heartbeatTimeoutMillis = it.checklong()
+            }
+            getOrNull("firstReconnectDelayMillis")?.let {
+                firstReconnectDelayMillis = it.checklong()
+            }
+            getOrNull("reconnectPeriodMillis")?.let {
+                reconnectPeriodMillis = it.checklong()
+            }
+            getOrNull("reconnectionRetryTimes")?.let {
+                reconnectionRetryTimes = it.checkint()
+            }
+            getOrNull("noNetworkLog")?.let {
+                if (it.checkboolean()) noNetworkLog()
+            }
+            getOrNull("noBotLog")?.let {
+                if (it.checkboolean()) noBotLog()
+            }
+            getOrNull("botLogger")?.let {
+                val luaLogger = it.checkclosure()
+                botLoggerSupplier = {
+                    SimpleLogger { message, _ ->
+                        luaLogger.call(message)
+                    }
+                }
+            }
+            getOrNull("networkLogger")?.let {
+                val luaLogger = it.checkclosure()
+                networkLoggerSupplier = {
+                    SimpleLogger { message, _ ->
+                        luaLogger.call(message)
+                    }
+                }
+            }
+        }
+
+        private fun String.toMiraiProtocol(): BotConfiguration.MiraiProtocol = when (this) {
+            "ANDROID_PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
+            "ANDROID_PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
+            "ANDROID_WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
+            else -> throw LuaError("No such Protocol")
+        }
+
     }
 
     override fun getFriend(id: Long): FriendCoreImpl = FriendCoreImpl(host.getFriend(id))
