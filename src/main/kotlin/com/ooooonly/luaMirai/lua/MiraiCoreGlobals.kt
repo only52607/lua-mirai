@@ -25,6 +25,7 @@ class MiraiCoreGlobals : Globals(), EventListenerContainable, BotReceivable {
         load(JseOsLib())
         load(LuajavaLib())
 
+        load(StringExLib())
         load(MiraiCoreLib())
         load(LuaJavaExLib())
         load(ThreadExLib())

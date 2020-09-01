@@ -25,3 +25,5 @@
 [`Sqlite 支持库`](/docs/sqlite.md)
 
 [`Jsoup 支持库（XML/HTML解析）`](/docs/jsoup.md)
+
+[`String 扩展支持库`](/docs/stringex.md)
