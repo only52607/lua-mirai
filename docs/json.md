@@ -2,7 +2,7 @@
 
 ## 将 json 反序列化为 table
 
-#### 函数名：Json.parseJson（包含在String元方法中）
+#### 函数名：Json.parseJson / string.parseJson
 
 #### 参数列表：
 
@@ -22,7 +22,7 @@
 
 ## 将 table 序列化为 json
 
-#### 函数名：Json.toJson（包含在Table元方法中）
+#### 函数名：Json.toJson / table.toJson
 
 #### 参数列表：
 
