@@ -43,9 +43,10 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
     implementation 'org.json:json:20160212'
     implementation 'org.xerial:sqlite-jdbc:3.7.2'
-    implementation "io.ktor:ktor-server-netty:$ktor_version"
-    implementation "io.ktor:ktor-server-servlet:$ktor_version"
-    implementation "io.ktor:ktor-html-builder:$ktor_version"
+
+//    implementation "io.ktor:ktor-server-netty:$ktor_version"
+//    implementation "io.ktor:ktor-server-servlet:$ktor_version"
+//    implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "org.slf4j:slf4j-jdk14:$slf4j_version"
 
 

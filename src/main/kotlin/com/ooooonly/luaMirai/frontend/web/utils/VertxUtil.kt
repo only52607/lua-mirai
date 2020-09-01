@@ -2,7 +2,6 @@ package com.ooooonly.luaMirai.frontend.web.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ooooonly.luaMirai.frontend.web.entities.BotInfo
-import io.ktor.routing.Routing
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
