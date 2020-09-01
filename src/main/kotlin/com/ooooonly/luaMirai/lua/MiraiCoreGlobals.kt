@@ -31,6 +31,7 @@ class MiraiCoreGlobals : Globals(), EventListenerContainable, BotReceivable {
         load(HttpLib())
         load(JsonLib())
         load(JDBCLib())
+        load(JsoupLib())
 
         LoadState.install(this)
         LuaC.install(this)
