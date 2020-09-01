@@ -36,7 +36,7 @@
 
 ### 字符串编码转换
 
-##### 函数名：string.substring
+##### 函数名：string.encode
 
 ##### 参数列表：
 
