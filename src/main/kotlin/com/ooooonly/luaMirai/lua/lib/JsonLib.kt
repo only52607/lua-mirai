@@ -39,12 +39,14 @@ open class JsonLib : TwoArgFunction() {
         mutableListOf<LuaValue>().apply { jsonArr.forEach { it.toLuaValue()?.let(::add) } }.toTypedArray()
     )
 
-    private fun Any.toLuaValue() = when (this::class.java) {
-        Int::class.java -> LuaValue.valueOf(this as Int)
-        String::class.java -> LuaValue.valueOf(this as String)
-        Boolean::class.java -> LuaValue.valueOf(this as Boolean)
-        JSONObject::class.java -> json2lua((this as JSONObject))
-        JSONArray::class.java -> jsonArr2lua(this as JSONArray)
+    private fun Any.toLuaValue() = when (this::class) {
+        Int::class -> LuaValue.valueOf(this as Int)
+        Long::class -> LuaValue.valueOf(this as Double) //luaj不支持long类型
+        Double::class -> LuaValue.valueOf(this as Double)
+        String::class -> LuaValue.valueOf(this as String)
+        Boolean::class -> LuaValue.valueOf(this as Boolean)
+        JSONObject::class -> json2lua((this as JSONObject))
+        JSONArray::class -> jsonArr2lua(this as JSONArray)
         else -> null//println(value::class.toString() + " " + value.toString())
     }
 
