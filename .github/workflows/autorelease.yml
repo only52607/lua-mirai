@@ -8,18 +8,38 @@ name: Auto Release Publish
 
 jobs:
   build:
-    name: Upload Release Asset
+    name: Release
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [10]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      #      - name: Build project # This would actually build your project, using zip for an example artifact
-      #        run: |
-      #          zip --junk-paths my-artifact README.md
-      - name: Shadow Jar
-        uses: OrangeLabs-moe/gradle-actions@v5.0-openjdk-14
+      - uses: actions/setup-java@v1
         with:
-          args: shadowJar
+          java-version: ${{ matrix.java }}
+      # add cache to improve workflow execution time
+      - name: Cache .gradle/caches
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Cache .gradle/wrapper
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-wrapper-
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew clean build -s
+      - name: Shadow Jar
+        run: ./gradlew shadowJar
+      - name: Rename Jar
+        run: file=`ls build/libs | grep .jar`; mv $file build/libs/lua-mirai.jar
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -27,10 +47,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+#          body: |
+#            Changes in this Release
+#            - First Change
+#            - Second Change
+          body_path: ./docs/updatedoc/latest.md
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: true
@@ -41,6 +62,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path:  ${{ format('./build/libs/lua-mirai-{0}.jar', github.ref) }}
-          asset_name: ${{ format('lua-mirai-{0}.jar', github.ref) }}
+          asset_path:  ./build/libs/lua-mirai.jar
+          asset_name: lua-mirai.jar
           asset_content_type: application/jar
