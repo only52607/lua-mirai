@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         java: [10]
-    steps:
+    steps: 
       - name: Checkout code
         uses: actions/checkout@v2
       - uses: actions/setup-java@v1
@@ -39,7 +39,12 @@ jobs:
       - name: Shadow Jar
         run: ./gradlew shadowJar
       - name: Rename Jar
-        run: cd build;cd libs;a=`ls | grep .jar`;mv $a lua-mirai.jar
+        run: 
+          ls;
+          cd build/libs;
+          ls;
+          file=`ls | grep 'lua-mirai.*jar'`;
+          mv $file lua-mirai.jar
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
