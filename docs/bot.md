@@ -36,7 +36,7 @@
 
 ``` lua
 local bot = Bot(qq 账号,"qq 密码","device.json")
-bot.login() -- 登录
+bot:login() -- 登录
 ```
 
 ##### 示例2：
@@ -47,7 +47,7 @@ local bot = Bot(qq 账号,"qq 密码",{
         fileBasedDeviceInfo = "device.json", --指定设备信息路径
         noNetworkLog = true --不显示网络日志
     })
-bot.login() -- 登录
+bot:login() -- 登录
 ```
 
 

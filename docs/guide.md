@@ -22,7 +22,7 @@ end
 
 ``` lua
 local bot = Bot(qq 账号,"qq 密码","device.json")
-bot.login() -- 登录
+bot:login() -- 登录
 ```
 
 由于手动构造的 bot 不会自动登录，需要手动调用 login 函数进行登录。
@@ -32,8 +32,8 @@ bot.login() -- 登录
 # 通过 Bot 对象获取指定好友、群对象
 
 ``` lua
-local friend = bot.getFriend(123456789) --123456789为指定好友 qq 号
-local group = bot.getGroup(123456798) --123456789为指定群 qq 号
+local friend = bot:getFriend(123456789) --123456789为指定好友 qq 号
+local group = bot:getGroup(123456798) --123456789为指定群 qq 号
 ```
 
 了解更多：[`Bot`](/docs/bot.md)
@@ -41,8 +41,8 @@ local group = bot.getGroup(123456798) --123456789为指定群 qq 号
 # 给好友、群发送纯文本消息
 
 ``` lua
-local friend = bot.getFriend(123456789)
-local group = bot.getGroup(123456798)
+local friend = bot:getFriend(123456789)
+local group = bot:getGroup(123456798)
 
 friend:sendMessage("你好！")
 group:sendMessage("你好！")
@@ -51,7 +51,7 @@ group:sendMessage("你好！")
 # 发送复杂消息
 
 ``` lua
-local friend = bot.getFriend(123456789)
+local friend = bot:getFriend(123456789)
 friend:sendMessage("你好！" .. Face(1)) -- 添加一个表情，1为表情代码
 ```
 
@@ -62,7 +62,7 @@ friend:sendMessage("你好！" .. Face(1)) -- 添加一个表情，1为表情代
 # 获取好友名称等操作
 
 ``` lua
-local friend = bot.getFriend(123456789)
+local friend = bot:getFriend(123456789)
 local nick = friend.nick
 print("好友的昵称为：" .. nick)
 ```
@@ -126,7 +126,7 @@ bot:subscribe("FriendMessageEvent",listener)
 
 ### 下载示例脚本
 
-你可以在这里找到示例脚本： [`下载示例脚本(适用于 Android)`](https://github.com/only52607/lua-/tree/master/demos)
+你可以在这里找到示例脚本： [`下载示例脚本(适用于 Android)`](https://github.com/only52607/lua-mirai/tree/master/demos)
 
 ### API 列表
 
