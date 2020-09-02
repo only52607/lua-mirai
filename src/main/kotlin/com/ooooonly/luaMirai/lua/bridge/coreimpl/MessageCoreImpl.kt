@@ -174,7 +174,11 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
 
         private val _regex = Regex("""\[mirai:(.*?):(.*?)\]""")
     }
-    private var source: MessageSource? = (if(host is MessageChain) host else null)?.source
+
+    private val source: MessageSource? by lazy {
+        if (host !is MessageChain) return@lazy null
+        host[MessageSource]
+    }
     private var _type: String? = null
     private var _params: Array<String>? = null
     private fun parseTypeParams() {
@@ -193,7 +197,6 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
         get() = source?.fromId ?: -10
     override val targetId: Long
         get() = source?.targetId ?: -10
-
 
     override var type: String
         get() {
