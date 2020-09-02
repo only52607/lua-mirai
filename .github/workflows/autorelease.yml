@@ -39,7 +39,7 @@ jobs:
       - name: Shadow Jar
         run: ./gradlew shadowJar
       - name: Rename Jar
-        run: mv ./build/libs/*.jar ./build/libs/lua-mirai.jar
+        run: file=`ls build/libs | grep .jar`; mv $file build/libs/lua-mirai.jar
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
