@@ -45,10 +45,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+#          body: |
+#            Changes in this Release
+#            - First Change
+#            - Second Change
+          body_path: ./docs/updatedoc/${{ github.ref }}.md
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: true
@@ -59,6 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path:  ${{ format('./build/libs/lua-mirai-{0}.jar', github.ref) }}
-          asset_name: ${{ format('lua-mirai-{0}.jar', github.ref) }}
+          asset_path:  ./build/libs/lua-mirai-${{ github.ref }}.jar
+          asset_name: lua-mirai-${{ github.ref }}.jar
           asset_content_type: application/jar
