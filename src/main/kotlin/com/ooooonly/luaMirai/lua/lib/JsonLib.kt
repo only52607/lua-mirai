@@ -58,7 +58,7 @@ open class JsonLib : TwoArgFunction() {
         else null
 
 
-    private fun LuaTable.toJsonObject() = if (this.length() != 0) {
+    private fun LuaTable.toJsonObject(): Any = if (this.length() != 0) {
         JSONArray().apply {
             for (i in 1..this@toJsonObject.length()) {
                 this.put(this@toJsonObject.get(i).toKValue())
