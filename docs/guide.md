@@ -1,4 +1,4 @@
-本教程适用于具有一定的 lua 开发基础，想要通过lua语言快速开发一个机器人的读者。若您欠缺 lua 语言基础，请参阅[`RUNOOB:Lua 教程`](https://www.runoob.com/lua/lua-tutorial.html)
+本教程适用于具有一定的 lua 开发基础，想要通过lua语言快速开发一个机器人的读者。若您欠缺 lua 语言基础，请参阅[`RUNOOB:Lua 教程`](https://www.runoob.com/lua/lua-tutorial.html)。
 
 # 约定
 
