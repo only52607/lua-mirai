@@ -1,6 +1,6 @@
 package com.ooooonly.luaMirai
 
-import com.ooooonly.luaMirai.lua.MiraiCoreGlobalsManger
+import com.ooooonly.luaMirai.lua.MiraiCoreGlobals
 import com.ooooonly.luakt.runLuaFile
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
 }
 
 fun execFile(filePath: String) {
-    runLuaFile(filePath, MiraiCoreGlobalsManger.getInstance())
+    runLuaFile(filePath, MiraiCoreGlobals())
     Bot.forEachInstance { bot ->
         runBlocking {
             bot.join()

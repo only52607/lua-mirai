@@ -1,9 +1,10 @@
 package com.ooooonly.luaMirai.lua.bridge.coreimpl
 
-import com.ooooonly.luaMirai.lua.MiraiCoreGlobalsManger
+import com.ooooonly.luaMirai.lua.MiraiCoreGlobals
 import com.ooooonly.luaMirai.lua.bridge.EventConstants
 import com.ooooonly.luaMirai.lua.bridge.base.BaseBot
 import com.ooooonly.luaMirai.lua.bridge.base.BaseFriend
+import com.ooooonly.luaMirai.lua.globals
 import com.ooooonly.luakt.*
 import kotlinx.coroutines.*
 import net.mamoe.mirai.*
@@ -117,7 +118,6 @@ class BotCoreImpl(val host: Bot) : BaseBot() {
             "ANDROID_WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
             else -> throw LuaError("No such Protocol")
         }
-
     }
 
     override fun getFriend(id: Long): FriendCoreImpl = FriendCoreImpl(host.getFriend(id))
@@ -140,7 +140,7 @@ class BotCoreImpl(val host: Bot) : BaseBot() {
         val job = host.subscribeAlways(event) {
             block.invoke(this)
         }
-        MiraiCoreGlobalsManger.checkGlobals(block)?.addListener(job)
+        (block.globals as MiraiCoreGlobals).addListener(job)
         return job
     }
 

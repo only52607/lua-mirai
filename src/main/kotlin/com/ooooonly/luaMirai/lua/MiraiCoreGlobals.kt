@@ -12,7 +12,7 @@ import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
 
-class MiraiCoreGlobals : Globals(), EventListenerContainable, BotReceivable {
+class MiraiCoreGlobals : ExtendGlobals(), EventListenerContainable, BotReceivable {
     init {
         load(JseBaseLib())
         load(PackageLib())
@@ -42,6 +42,7 @@ class MiraiCoreGlobals : Globals(), EventListenerContainable, BotReceivable {
     override fun addListener(job: CompletableJob) {
         botEventListeners.add(job)
     }
+
     override fun clearListeners() = botEventListeners.run {
         forEach { it.complete() }
         clear()
@@ -49,5 +50,10 @@ class MiraiCoreGlobals : Globals(), EventListenerContainable, BotReceivable {
 
     override fun receiveBot(bot: Bot) {
         get("onLoad").takeIf { it != LuaValue.NIL }?.invoke(BotCoreImpl(bot))
+    }
+
+    override fun destroy() {
+        clearListeners()
+        super.destroy()
     }
 }
