@@ -8,9 +8,6 @@ import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.auth.User
 
 class SimpleUser(private val authInfo: JsonObject) : User {
-    /**
-     * 这里依然是通过resultHandle响应授权信息，返回值为当前对象是为了Fluent调用模式
-     */
     override fun isAuthorized(
         authority: String?,
         resultHandler: Handler<AsyncResult<Boolean?>?>

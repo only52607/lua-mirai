@@ -21,13 +21,13 @@ object ScriptManager : CoroutineScope {
     private suspend fun loadScript(file: File): LuaScript {
         val globals = MiraiCoreGlobals()
         val luaScript = LuaScript(file, globals)
-        BotReceiverManager.addReceiver(globals)
         try {
             (globals.loadfile(file.absolutePath) as LuaClosure).callSuspend(RUNTIME_LIMIT)
         } catch (e: Exception) {
             invalidateGlobals(globals)
             throw e
         }
+        BotReceiverManager.addReceiver(globals)
         return luaScript
     }
 
@@ -60,13 +60,8 @@ object ScriptManager : CoroutineScope {
     private suspend fun LuaClosure.callSuspend(timeLimit: Long = Long.MAX_VALUE) {
         withTimeout(timeLimit) {
             launch {
-                launch {
-                    withContext(Dispatchers.IO) {
-                        call()
-                    }
-                }
-                while (!isActive) {
-                    p.code = IntArray(0) //由于LuaClosure.call方法是阻塞的，只能通过清除代码强制产生异常，进而取消执行
+                withContext(Dispatchers.IO) {
+                    call()
                 }
             }
         }

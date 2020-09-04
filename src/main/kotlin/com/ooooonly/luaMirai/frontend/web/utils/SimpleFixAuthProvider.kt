@@ -12,11 +12,8 @@ class SimpleFixAuthProvider(val username: String, val password: String) : AuthPr
         authInfo: JsonObject,
         resultHandler: Handler<AsyncResult<User>>
     ) {
-        if (username != authInfo.getString("username") || password != authInfo.getString("password")) {
-            resultHandler.handle(Future.failedFuture("用户名或者密码错误"))
-            return
-        }
+        if (username != authInfo.getString("username") || password != authInfo.getString("password"))
+            return resultHandler.handle(Future.failedFuture("用户名或者密码错误!"))
         resultHandler.handle(Future.succeededFuture(SimpleUser(authInfo)))
     }
-
 }
