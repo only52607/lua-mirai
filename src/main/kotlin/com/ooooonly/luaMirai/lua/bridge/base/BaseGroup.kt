@@ -18,5 +18,6 @@ abstract class BaseGroup {
     abstract fun sendImage(url: String): BaseMessage
     abstract fun getMember(id: Long): BaseMember
     abstract fun containsMember(id: Long): Boolean
+    abstract fun getMembers(): Array<out BaseMember>
     abstract fun quit()
 }

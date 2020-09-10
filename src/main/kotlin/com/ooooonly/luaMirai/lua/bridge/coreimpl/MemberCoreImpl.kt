@@ -13,6 +13,11 @@ import org.luaj.vm2.LuaValue
 import java.net.URL
 
 class MemberCoreImpl(val host: Member) : BaseMember() {
+    override var id: Long
+        get() = host.id
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var bot: BaseBot
         get() = BotCoreImpl.getInstance(host.bot)
         set(value) {
@@ -39,12 +44,17 @@ class MemberCoreImpl(val host: Member) : BaseMember() {
             host.specialTitle = value
         }
     override var isAdministrator: Boolean
-        get() = host.isAdministrator()
+        get() = host.permission.isAdministrator()
         set(value) {
             throw UnsupportSetterLuaError
         }
     override var isOwner: Boolean
-        get() = host.isOwner()
+        get() = host.permission.isOwner()
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
+    override var isOperator: Boolean
+        get() = host.permission.isOperator()
         set(value) {
             throw UnsupportSetterLuaError
         }

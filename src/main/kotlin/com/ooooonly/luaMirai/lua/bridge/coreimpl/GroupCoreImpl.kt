@@ -81,6 +81,8 @@ class GroupCoreImpl(val host: Group) : BaseGroup() {
 
     override fun getMember(id: Long): MemberCoreImpl = MemberCoreImpl(host.get(id))
 
+    override fun getMembers(): Array<MemberCoreImpl> = host.members.map { MemberCoreImpl(it) }.toTypedArray()
+
     override fun containsMember(id: Long): Boolean = host.contains(id)
 
     override fun quit() {
