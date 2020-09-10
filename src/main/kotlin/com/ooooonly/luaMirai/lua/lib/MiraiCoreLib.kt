@@ -7,6 +7,7 @@ import com.ooooonly.luakt.register
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.message.data.MessageChain
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
@@ -22,6 +23,7 @@ open class MiraiCoreLib : TwoArgFunction() {
                 is Bot -> BotCoreImpl(obj).asLuaValue()
                 is Friend -> FriendCoreImpl(obj).asLuaValue()
                 is Group -> GroupCoreImpl(obj).asLuaValue()
+                is Member -> MemberCoreImpl(obj).asLuaValue()
                 is MessageChain -> MessageCoreImpl(obj).asLuaValue()
                 else -> null
             }
