@@ -15,7 +15,7 @@ open class JsonLib : TwoArgFunction() {
             return@luaFunctionOf json2lua(JSONObject(raw))
         }
         val toJson = luaFunctionOf { raw: LuaTable ->
-            return@luaFunctionOf raw.toJsonObject()
+            return@luaFunctionOf raw.toJsonObject().toString()
         }
         globals?.set("Json", luaTableOf {
             "parseJson" to parseJson
