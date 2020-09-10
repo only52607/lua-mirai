@@ -56,11 +56,11 @@ dependencies {
 //    implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "org.slf4j:slf4j-jdk14:$slf4j_version"
 
-
     implementation "io.vertx:vertx-core:$vertx_version"
     implementation "io.vertx:vertx-web:$vertx_version"
     implementation "io.vertx:vertx-lang-kotlin:$vertx_version"
     implementation "io.vertx:vertx-auth-common:$vertx_version"
+    implementation "io.vertx:vertx-auth-jwt:$vertx_version"
     implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertx_version"
 
     //implementation 'com.github.only52607:luakt:Tag'
