@@ -28,8 +28,9 @@
 ### PC 端
 
 - [x] 控制台界面： [`在 JVM 上运行 lua-mirai`](/docs/jvm.md)
+- [x] Web 界面（预览版）[mirado-rua](https://github.com/only52607/mirado-rua)
 - [ ] Swing Gui 界面
-- [ ] Web 界面
+
 
 ### 作为项目依赖
 
@@ -70,11 +71,12 @@ dependencies {
 
 [`lua-mirai API 列表`](/docs/apis.md)
 
-## 第三方库
+## 部分引用库
 
  - [`mirai`](https://github.com/mamoe/mirai)
- - [`luaj`](https://github.com/luaj/luaj)
+ - [`luakt`](https://github.com/only52607/luakt)
  - okhttp3
+ - [vert.x](https://github.com/eclipse-vertx/vert.x) / [vertx-web](https://github.com/vert-x3/vertx-web)
 
 
 
