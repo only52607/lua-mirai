@@ -34,6 +34,7 @@ fun RoutingContext.responseNotFoundEnd(message: String) = responseStatusErrorEnd
 fun RoutingContext.responseNotAcceptableEnd(message: String) = responseStatusErrorEnd(406, message)
 fun RoutingContext.responseServerErrorEnd(message: String) = responseStatusErrorEnd(500, message)
 fun RoutingContext.responseEnd(obj: Any) = when (obj) {
+    is String -> response().end(obj)
     is JsonObject -> response().end(obj.encode())
     is JsonArray -> response().end(obj.encode())
     is List<*> -> response().end(JsonArray(obj).encode())
