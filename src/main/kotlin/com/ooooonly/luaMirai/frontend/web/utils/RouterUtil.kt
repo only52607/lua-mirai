@@ -99,7 +99,14 @@ fun Router.putCoroutineHandlerApply(
     fn: suspend RoutingContext.() -> Unit
 ): Route = put().coroutineHandlerApply(coroutineScope, fn)
 
-fun Router.handleJson(): Route = route("/*").consumes(MIME_JSON).produces(MIME_JSON).handlerApply { next() }
+fun Router.handleJson(): Route = route("/*").consumes(MIME_JSON).produces(MIME_JSON).handlerApply {
+    //解决奇葩的axios.post跨域问题
+    // response.addHeader("Access-Control-Allow-Headers", allowHeaders);
+    //    response().putHeader("Access-Control-Allow-Headers", "Content-Type,XFILENAME,XFILECATEGORY,XFILESIZE,x-requested-with,Authorization")
+//    response().putHeader("Access-Control-Allow-Headers", "Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With, Authorization")
+//    response().putHeader("Access-Control-Expose-Headers", "Authorization")
+    next()
+}
 
 fun Vertx.createRouter(): Router = Router.router(this)
 fun Vertx.createSubRouter(baseRouter: Router, mountPoint: String, fn: (Router) -> Unit) =
