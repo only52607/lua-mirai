@@ -1,23 +1,31 @@
 package com.ooooonly.luaMirai.frontend.web.mirai
 
+import com.ooooonly.luaMirai.frontend.web.Config.EVENTBUS_LOG
 import io.vertx.core.eventbus.EventBus
+import io.vertx.core.json.JsonObject
+import net.mamoe.mirai.Bot
 import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.LoginSolver
 import net.mamoe.mirai.utils.SimpleLogger
 
-class WebBotConfiguration(eventBus: EventBus, botChannel: String, netChannel: String) : BotConfiguration() {
+class WebBotConfiguration(eventBus: EventBus) : BotConfiguration() {
     init {
         botLoggerSupplier = {
-            SimpleLogger("Bot [${it.id}] ") { message, e ->
+            SimpleLogger("") { message, e ->
                 println(message)
-                eventBus.publish(botChannel, message)
-                eventBus.publish("$botChannel$it.id", message)
+                eventBus.publish(
+                    EVENTBUS_LOG,
+                    JsonObject().put("type", "bot").put("from", it.id).put("message", message).encode()
+                )
             }
         }
         networkLoggerSupplier = {
-            SimpleLogger("Net [${it.id}] ") { message, e ->
+            SimpleLogger("") { message, e ->
                 println(message)
-                eventBus.publish(netChannel, message)
-                eventBus.publish("$netChannel$it.id", message)
+                eventBus.publish(
+                    EVENTBUS_LOG,
+                    JsonObject().put("type", "net").put("from", it.id).put("message", message).encode()
+                )
             }
         }
     }
