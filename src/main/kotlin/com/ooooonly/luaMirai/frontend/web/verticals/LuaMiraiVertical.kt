@@ -38,38 +38,17 @@ class LuaMiraiVertical:CoroutineVerticle() {
     private lateinit var eventBus: EventBus
     private lateinit var authProvider: JWTAuth
 
-    private val sockJsPath = "/eb/*"
-
-    companion object {
-        const val API = "/api/v1"
-        const val AUTH = "auth"
-        const val BOTS = "bots"
-        const val SCRIPTS = "scripts"
-        const val COMMAND = "command"
-        const val FILES = "files"
-    }
     override suspend fun start() {
         eventBus = vertx.eventBus()
-        authProvider = JWTAuth.create(
-            vertx, JWTAuthOptions()
-                .addPubSecKey(
-                    pubSecKeyOptionsOf(
-                        algorithm = "HS256",
-                        publicKey = "oooonly",
-                        secretKey = "ooooonlyok",
-                        symmetric = true
-                    )
-                )
-        )
+        authProvider = JWTAuth.create(vertx, Config.JWT.jwtAuthOptions)
         val mainRouter = vertx.createRouter()
-
         with(mainRouter.route()) {
             handlerApply {
                 response().putHeader(
                     "Access-Control-Allow-Headers",
                     "Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With, Authorization"
                 )
-                response().putHeader("Access-Control-Expose-Headers", "Authorization")
+                response().putHeader("Access-Control-Expose-Headers", Config.JWT.TOKEN_KEY)
                 next()
             }
             handler(
@@ -79,37 +58,38 @@ class LuaMiraiVertical:CoroutineVerticle() {
                     .allowedMethod(HttpMethod.PUT)
                     .allowedMethod(HttpMethod.DELETE)
             )
-
-            handler(BodyHandler.create().setUploadsDirectory(Config.PATH_UPLOAD).setDeleteUploadedFilesOnEnd(true))
+            handler(BodyHandler.create().setUploadsDirectory(Config.Upload.SCRIPTS).setDeleteUploadedFilesOnEnd(true))
 //            handler(SessionHandler.create(LocalSessionStore.create(vertx)))
             handler(StaticHandler.create())
             handler(ResponseContentTypeHandler.create())
             failureHandler {
                 it.failure().printStackTrace()
-                it.responseServerErrorEnd(it.failure().message ?: "")
+                kotlin.runCatching {
+                    it.responseServerErrorEnd(it.failure().message ?: "")
+                }
             }
         }
-        mainRouter.route(sockJsPath).handler(buildSockJsHandler(vertx) {
-            addOutboundAddressRegex(Config.EVENTBUS_LOG)
+        mainRouter.route(Config.Eventbus.ROUTE).handler(buildSockJsHandler(vertx) {
+            addOutboundAddressRegex(Config.Eventbus.LOG)
         })
-        mainRouter.route(API.anySubPath()).handlerApply {
-            if (request().path() == API.subPath(AUTH)) return@handlerApply next()
-            authProvider.authenticate(JsonObject().put("jwt", request().getHeader("Authorization"))) {
+        mainRouter.route(Config.Route.API.anySubPath()).handlerApply {
+            if (request().path() == Config.Route.API.subPath(Config.Route.AUTH)) return@handlerApply next()
+            authProvider.authenticate(JsonObject().put("jwt", request().getHeader(Config.JWT.TOKEN_KEY))) {
                 when (it.succeeded()) {
                     true -> next()
                     false -> responseUnauthorizedEnd("请先登录！")
                 }
             }
         }
-        vertx.createSubRouter(mainRouter,API,::api)
-        vertx.createHttpServer().requestHandler(mainRouter).listen()
+        vertx.createSubRouter(mainRouter, Config.Route.API, ::api)
+        vertx.createHttpServer().requestHandler(mainRouter).listen(Config.Deploy.PORT)
     }
     private fun api(router:Router) {
-        vertx.createSubRouter(router,AUTH.asSubPath(),::apiAuth)
-        vertx.createSubRouter(router,BOTS.asSubPath(),::apiBot)
-        vertx.createSubRouter(router,SCRIPTS.asSubPath(),::apiScript)
-        vertx.createSubRouter(router, FILES.asSubPath(), ::apiFile)
-        vertx.createSubRouter(router, COMMAND.asSubPath(), ::apiCommand)
+        vertx.createSubRouter(router, Config.Route.AUTH.asSubPath(), ::apiAuth)
+        vertx.createSubRouter(router, Config.Route.BOTS.asSubPath(), ::apiBot)
+        vertx.createSubRouter(router, Config.Route.SCRIPTS.asSubPath(), ::apiScript)
+        vertx.createSubRouter(router, Config.Route.FILES.asSubPath(), ::apiFile)
+        vertx.createSubRouter(router, Config.Route.COMMAND.asSubPath(), ::apiCommand)
     }
     private fun apiAuth(router:Router) {
         router.handleJson()
@@ -117,9 +97,12 @@ class LuaMiraiVertical:CoroutineVerticle() {
             postHandlerApply {
                 val username = bodyAsJson.getString("username")
                 val password = bodyAsJson.getString("password")
-                if ("admin" == username && "ooo" == password) {
+                val configAuth = Config.Deploy.AUTH_INFO
+                val configUsername = configAuth.getString("account")
+                val configPassword = configAuth.getString("password")
+                if (configUsername == username && configPassword == password) {
                     response().putHeader(
-                        "Authorization", authProvider.generateToken(
+                        Config.JWT.TOKEN_KEY, authProvider.generateToken(
                             JsonObject().put("auth", true),
                             JWTOptions()
                         )
@@ -130,7 +113,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 }
             }
             getHandlerApply {
-                authProvider.authenticate(JsonObject().put("jwt", request().getHeader("Authorization"))) {
+                authProvider.authenticate(JsonObject().put("jwt", request().getHeader(Config.JWT.TOKEN_KEY))) {
                     when (it.succeeded()) {
                         true -> responseOkEnd(it.result().principal())
                         false -> responseUnauthorizedEnd("验证失败！")
@@ -152,14 +135,13 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 var exception: Exception? = null
                 val result = withContext(Dispatchers.IO) {
                     val info = getBodyAsObject<BotCreateInfo>()
-                    println(info.id)
-                    println(info.password)
                     val bot = Bot(info.id, info.password, WebBotConfiguration(eventBus))
                     try {
                         bot.login()
                         ScriptManager.loadBot(bot)
                         true
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         exception = e
                         false
                     }
@@ -167,7 +149,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 if (result) {
                     responseCreatedEnd("创建成功")
                 } else {
-                    responseServerErrorEnd("创建失败！\n$exception")
+                    responseServerErrorEnd("创建失败！\n${exception?.message}")
                 }
             }
             deleteCoroutineHandlerApply("/:botId", this@LuaMiraiVertical) {
@@ -183,31 +165,35 @@ class LuaMiraiVertical:CoroutineVerticle() {
         router.apply {
             postCoroutineHandlerApply(ROOT,this@LuaMiraiVertical) {
                 val data = bodyAsJson
-                val scriptFile = File(Config.PATH_UPLOAD, data.getString("name"))
+                val scriptFile = File(Config.Upload.SCRIPTS, data.getString("name"))
                 if (!scriptFile.exists()) return@postCoroutineHandlerApply responseNotFoundEnd("此脚本不存在!")
                 try {
                     ScriptManager.addScript(scriptFile)
                     responseCreatedEnd("添加脚本成功！")
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     responseInvalidEnd("脚本执行失败！\n${e}")
                 }
+            }
+            getCoroutineHandlerApply("/:index/reload", this@LuaMiraiVertical) {
+                val index = pathParam("index").toInt()
+                if (index >= ScriptManager.listScript().size || index < 0) return@getCoroutineHandlerApply responseNotFoundEnd(
+                    "索引不存在！"
+                )
+                ScriptManager.reloadScript(index)
+                responseOkEnd("重载成功")
             }
             getHandlerApply(ROOT) {
                 val scriptInfos = JsonArray()
                 ScriptManager.listScript().forEach { script ->
-                    scriptInfos.add(JsonObject().apply {
-                        put("name", script.file.name)
-                        put("file", script.file.name)
-                        put("version", "v1.2")
-                        put("description", "测试")
-                        put("author", "oooonly")
-                    })
+                    scriptInfos.add(JsonObject.mapFrom(script.info))
                 }
                 responseOkEnd(scriptInfos)
             }
             deleteHandlerApply("/:index") {
                 val index = pathParam("index").toInt()
-                if (index >= ScriptManager.listScript().size || index < 0) return@deleteHandlerApply responseNotFoundEnd("索引不存在！")
+                if (index >= ScriptManager.listScript().size || index < 0) return@deleteHandlerApply responseNotFoundEnd(
+                    "索引不存在！"
+                )
                 ScriptManager.removeScript(index)
                 responseDeletedEnd("删除成功！")
             }
@@ -216,7 +202,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
     private fun apiFile(router: Router){
         router.apply {
             getCoroutineHandlerApply("/:filename/raw", this@LuaMiraiVertical) {
-                val file = File(Config.PATH_UPLOAD, pathParam("filename"))
+                val file = File(Config.Upload.SCRIPTS, pathParam("filename"))
                 if (!file.exists()) return@getCoroutineHandlerApply responseNotFoundEnd("不存在此文件！")
                 var data = ""
                 withContext(Dispatchers.IO) {
@@ -225,7 +211,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 responseOkEnd(data)
             }
             putCoroutineHandlerApply("/:filename/raw", this@LuaMiraiVertical) {
-                val file = File(Config.PATH_UPLOAD, pathParam("filename"))
+                val file = File(Config.Upload.SCRIPTS, pathParam("filename"))
                 withContext(Dispatchers.IO) {
                     FileOutputStream(file).apply {
                         write(Base64.getDecoder().decode(bodyAsString))
@@ -234,14 +220,14 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 responseCreatedEnd("更新成功！")
             }
             putCoroutineHandlerApply("/:filename/name", this@LuaMiraiVertical) {
-                val file = File(Config.PATH_UPLOAD, pathParam("filename"))
+                val file = File(Config.Upload.SCRIPTS, pathParam("filename"))
                 if (!file.exists()) return@putCoroutineHandlerApply responseNotFoundEnd("不存在此文件！")
                 val newName = JsonObject(bodyAsString).getString("name")
                 file.renameTo(File(file.parentFile, newName))
                 responseCreatedEnd("更新成功！")
             }
             getCoroutineHandlerApply("/:filename/file", this@LuaMiraiVertical) {
-                val file = File(Config.PATH_UPLOAD, pathParam("filename"))
+                val file = File(Config.Upload.SCRIPTS, pathParam("filename"))
                 if (!file.exists()) return@getCoroutineHandlerApply responseNotFoundEnd("不存在此文件！")
                 response().putHeader("content-Type", "text/plain");
                 response().putHeader("Content-Disposition", "attachment;filename=" + file.name);
@@ -263,19 +249,19 @@ class LuaMiraiVertical:CoroutineVerticle() {
             }
 
             getHandlerApply(ROOT) {
-                responseOkEnd(FileInfo.fromFiles(File(Config.PATH_UPLOAD).listFiles()))
+                responseOkEnd(FileInfo.fromFiles(File(Config.Upload.SCRIPTS).listFiles()))
             }
             getHandlerApply("/:filename") {
-                responseOkEnd(FileInfo.fromFile(File(Config.PATH_UPLOAD,pathParam("filename"))))
+                responseOkEnd(FileInfo.fromFile(File(Config.Upload.SCRIPTS, pathParam("filename"))))
             }
             deleteHandlerApply("/:filename") {
-                val file = File(Config.PATH_UPLOAD,pathParam("filename"))
+                val file = File(Config.Upload.SCRIPTS, pathParam("filename"))
                 if(!file.exists()) return@deleteHandlerApply responseNotFoundEnd("不存在此脚本！")
                 file.delete()
                 responseDeletedEnd("删除脚本成功!")
             }
             putHandlerApply("/:filename") {
-                val newFile = File(Config.PATH_UPLOAD, pathParam("filename"))
+                val newFile = File(Config.Upload.SCRIPTS, pathParam("filename"))
                 if (newFile.exists()) {
                     newFile.delete()
                 }
@@ -284,13 +270,11 @@ class LuaMiraiVertical:CoroutineVerticle() {
             }
         }
     }
-
     private fun apiCommand(router: Router) {
         router.handleJson()
         router.apply {
             postHandlerApply {
                 val command = bodyAsJson.getString("command")
-
                 responseOkEnd("")
             }
         }

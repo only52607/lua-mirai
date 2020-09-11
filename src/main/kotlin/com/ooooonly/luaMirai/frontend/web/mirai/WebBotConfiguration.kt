@@ -1,6 +1,6 @@
 package com.ooooonly.luaMirai.frontend.web.mirai
 
-import com.ooooonly.luaMirai.frontend.web.Config.EVENTBUS_LOG
+import com.ooooonly.luaMirai.frontend.web.Config
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.json.JsonObject
 import net.mamoe.mirai.Bot
@@ -14,7 +14,7 @@ class WebBotConfiguration(eventBus: EventBus) : BotConfiguration() {
             SimpleLogger("") { message, e ->
                 println(message)
                 eventBus.publish(
-                    EVENTBUS_LOG,
+                    Config.Eventbus.LOG,
                     JsonObject().put("type", "bot").put("from", it.id).put("message", message).encode()
                 )
             }
@@ -23,7 +23,7 @@ class WebBotConfiguration(eventBus: EventBus) : BotConfiguration() {
             SimpleLogger("") { message, e ->
                 println(message)
                 eventBus.publish(
-                    EVENTBUS_LOG,
+                    Config.Eventbus.LOG,
                     JsonObject().put("type", "net").put("from", it.id).put("message", message).encode()
                 )
             }
