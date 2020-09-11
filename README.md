@@ -71,14 +71,13 @@ dependencies {
 
 [`lua-mirai API 列表`](/docs/apis.md)
 
+
+
 ## 部分引用库
 
- - [`mirai`](https://github.com/mamoe/mirai)
- - [`luakt`](https://github.com/only52607/luakt)
- - okhttp3
- - [vert.x](https://github.com/eclipse-vertx/vert.x) / [vertx-web](https://github.com/vert-x3/vertx-web)
-
-
+ - Bot实现核心： [`mirai`](https://github.com/mamoe/mirai)
+ - Lua语言支持： [`luakt`](https://github.com/only52607/luakt)
+ - web管理后端核心： [vert.x](https://github.com/eclipse-vertx/vert.x) / [vertx-web](https://github.com/vert-x3/vertx-web)
 
 ## 许可证
 
