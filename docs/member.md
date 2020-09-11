@@ -9,9 +9,11 @@
 | group  | [`Group`](/docs/group.md) | 群员所在群   |
 | nick | String | 昵称 |
 | nameCard | String | 群名片 |
+| nameCardOrNick | String | 群名片或昵称，如果有群名片则为群名片，否则为昵称 |
 | specialTitle | String | 头衔 |
 | isAdministrator | Boolean | 是否为管理员 |
 | isOwner | Boolean | 是否为群主 |
+| isOperator | Boolean | 是否为群主或管理员 |
 | isFriend | Boolean | 是否为好友 |
 | muteTimeRemaining | Integer | 被禁言时长 |
 | isMuted | Boolean | 是否被禁言 |

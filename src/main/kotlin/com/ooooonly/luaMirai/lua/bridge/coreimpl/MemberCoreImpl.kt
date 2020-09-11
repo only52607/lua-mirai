@@ -38,6 +38,11 @@ class MemberCoreImpl(val host: Member) : BaseMember() {
         set(value) {
             host.nameCard = value
         }
+    override var nameCardOrNick: String
+        get() = host.nameCardOrNick
+        set(value) {
+            throw UnsupportSetterLuaError
+        }
     override var specialTitle: String
         get() = host.specialTitle
         set(value) {
