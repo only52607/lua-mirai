@@ -8,6 +8,7 @@ abstract class BaseMember {
     abstract var group: BaseGroup
     abstract var nick: String
     abstract var nameCard: String
+    abstract var nameCardOrNick: String
     abstract var specialTitle: String
     abstract var isAdministrator: Boolean
     abstract var isOwner: Boolean
