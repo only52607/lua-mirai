@@ -19,109 +19,82 @@
 | Connection | Connection对象 |
 
 
-## How to Specify Database Files ##
+## 如何定位一个数据库文件
 
-Here is an example to establishing a connection to a database file `C:\work\mydatabase.db` (in Windows)
+下面是一个例子，关于如何建立对 Windows 下数据库 `C:\work\mydatabase.db` 的连接
 
-```java
-Connection connection = DriverManager.getConnection("jdbc:sqlite:C:/work/mydatabase.db");
+```lua
+local connection = SqliteConnection ("C:/work/mydatabase.db");
 ```
 
-Opening a UNIX (Linux, Mac OS X, etc.) file `/home/leo/work/mydatabase.db`
-```java
-Connection connection = DriverManager.getConnection("jdbc:sqlite:/home/leo/work/mydatabase.db");
+打开一个 UNIX (Linux, Mac OS X, etc.) 等的文件 `/home/leo/work/mydatabase.db`
+
+```lua
+local connection = SqliteConnection ("/home/leo/work/mydatabase.db");
 ```
 
-## How to Use Memory Databases ##
+## 如何使用内存上的数据库
 
-SQLite supports on-memory database management, which does not create any database files. To use a memory database in your Java code, get the database connection as follows:
+SQLite 支持内存数据库管理, 不会创建任何数据库文件. 如何用 Java 连接数据库可以参考下面的例子
 
 
-```java
-Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
+```lua
+local connection = SqliteConnection (":memory:");
 ```
 
-And also, you can create memory database as follows:
-```java
-Connection connection = DriverManager.getConnection("jdbc:sqlite:");
+当然，你也可以像下面那样创建一个数据库
+```lua
+local connection = SqliteConnection ("");
 ```
 
-## How to use Online Backup and Restore Feature ##
+## 如何使用在线备份和恢复功能
 
-Take a backup of the whole database to `backup.db` file:
+创建 `backup.db` 备份整个数据库的方法
 
+```lua
 
-```java
-
-// Create a memory database
-Connection conn = DriverManager.getConnection("jdbc:sqlite:");
-Statement stmt = conn.createStatement();
-// Do some updates
-stmt.executeUpdate("create table sample(id, name)");
-stmt.executeUpdate("insert into sample values(1, \"leo\")");
-stmt.executeUpdate("insert into sample values(2, \"yui\")");
-// Dump the database contents to a file
-stmt.executeUpdate("backup to backup.db");
-Restore the database from a backup file:
-// Create a memory database
-Connection conn = DriverManager.getConnection("jdbc:sqlite:");
-// Restore the database from a backup file
-Statement stat = conn.createStatement();
-stat.executeUpdate("restore from backup.db");
-
-```
-
-## Creating BLOB data ##
-
-1. Create a table with a column of blob type: `create table T (id integer, data blob)`
-1. Create a prepared statement with `?` symbol: `insert into T values(1, ?)`
-1. Prepare a blob data in byte array (e.g., `byte[] data = ...`)
-1. `preparedStatement.setBytes(1, data)`
-1. `preparedStatement.execute()...`
-
-## Reading Database Files in classpaths or network (read-only) ##
-
-To load db files that can be found from the class loader (e.g., db 
-files inside a jar file in the classpath), 
-use `jdbc:sqlite::resource:` prefix. 
-
-For example, here is an example to access an SQLite DB file, `sample.db` 
-in a Java package `org.yourdomain`: 
-
-
-```java
-
-Connection conn = DriverManager.getConnection("jdbc:sqlite::resource:org/yourdomain/sample.db"); 
+-- 创建一个内存数据库
+local conn = SqliteConnection ("");
+local stmt = conn:createStatement();
+-- 做一些更新
+stmt:executeUpdate("create table sample(id, name)");
+stmt:executeUpdate("insert into sample values(1, \"leo\")");
+stmt:executeUpdate("insert into sample values(2, \"yui\")");
+-- 把数据库内容 dump 入文件
+stmt:executeUpdate("backup to backup.db");
+-- 创建一个内存数据库
+local conn = SqliteConnection ("");
+-- 从备份文件中恢复数据库
+local stat = conn:createStatement();
+stat:executeUpdate("restore from backup.db");
 
 ```
 
-In addition, external DB resources can be used as follows: 
+## 创建一个二进制数据
+
+1. 创建一个表，带有 blob 类型的一列 `create table T (id integer, data blob)`、
+2. 用 `?` 创建一个初始化状态 `insert into T values(1, ?)`、
+3. 用字节数组准备一个二进制数据 (e.g., `byte[] data = ...`)
+4. `preparedStatement.setBytes(1, data)`
+5. `preparedStatement.execute()...`
+
+## 通过网络以只读打开数据库
+
+外部数据库资源可以像下面这样被使用
 
 
-```java
-
-Connection conn = DriverManager.getConnection("jdbc:sqlite::resource:http://www.xerial.org/svn/project/XerialJ/trunk/sqlite-jdbc/src/test/java/org/sqlite/sample.db"); 
+```lua
+local conn = SqliteConnection (":resource:http://www.xerial.org/svn/project/XerialJ/trunk/sqlite-jdbc/src/test/java/org/sqlite/sample.db"); 
 
 ```
 
-To access db files inside some specific jar file (in local or remote), 
-use the [JAR URL](http://java.sun.com/j2se/1.5.0/docs/api/java/net/JarURLConnection.html):
+
+## 配置一个连接
 
 
 ```java
 
-Connection conn = DriverManager.getConnection("jdbc:sqlite::resource:jar:http://www.xerial.org/svn/project/XerialJ/trunk/sqlite-jdbc/src/test/resources/testdb.jar!/sample.db"); 
-
-```
-
-DB files will be extracted to a temporary folder specified in `System.getProperty("java.io.tmpdir")`.
-
-## Configure Connections #
-
-
-```java
-
-SQLiteConfig config = new SQLiteConfig();
+config = new SQLiteConfig();
 // config.setReadOnly(true);   
 config.setSharedCache(true);
 config.recursiveTriggers(true);
@@ -129,10 +102,11 @@ config.recursiveTriggers(true);
 Connection conn = DriverManager.getConnection("jdbc:sqlite:sample.db", config.toProperties());
 ```
 
-## How to Use Encrypted Databases ##
+## 如何使用加密的数据库
 
 *__Important: xerial/sqlite-jdbc does not support encryption out of the box, you need a special .dll/.so__*
 
+SQLite 支持通过特殊的 driver 和密钥加密数据库。使用一个被加密的数据库，你需要一个支持通过 `pragma key` or `pragma hexkey` 加密的 driver，例如，SQLite SSE 或者 SQLCipher，
 SQLite support encryption of the database via special drivers and a key. To use an encrypted database you need a driver which supports encrypted database via `pragma key` or `pragma hexkey`, e.g. SQLite SSE or SQLCipher. You need to specify those drivers via directly referencing the .dll/.so through:
 
 ```
@@ -144,7 +118,7 @@ Now the only need to specify the password is via:
 ```java
 Connection connection = DriverManager.getConnection("jdbc:sqlite:db.sqlite", "", "password");
 ```
-### Binary Passphrase
+### 二进制通行口令
 If you need to provide the password in binary form, you have to specify how the provided .dll/.so needs it. There are two different modes available:
 
 #### SSE:
@@ -157,7 +131,6 @@ You set the mode at the connectionstring level:
 ```java
 Connection connection = DriverManager.getConnection("jdbc:sqlite:db.sqlite?hexkey_mode=sse", "", "AE...");
 ```
-
 
 
 
