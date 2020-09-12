@@ -3,9 +3,10 @@ package com.ooooonly.luaMirai.lua
 import com.ooooonly.luakt.getOrNull
 import kotlinx.coroutines.*
 import net.mamoe.mirai.Bot
-import org.luaj.vm2.*
+import org.luaj.vm2.Globals
+import org.luaj.vm2.LuaClosure
+import org.luaj.vm2.LuaTable
 import java.io.File
-import kotlin.concurrent.thread
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -80,10 +81,10 @@ data class ScriptInfo(
     val file: String = ""
 ) {
     companion object {
-        const val defaultVersion = "1.0"
-        const val defaultAuthor = "lua-mirai"
-        const val defaultDescription = "无说明"
-        const val defaultUsage = "无"
+        private const val defaultVersion = "1.0"
+        private const val defaultAuthor = "lua-mirai"
+        private const val defaultDescription = "无说明"
+        private const val defaultUsage = "无"
         fun fromFileAndGlobal(file: File, globals: Globals): ScriptInfo {
             val info = globals.getOrNull("Info") ?: return ScriptInfo(
                 file.name, defaultVersion, defaultAuthor, defaultDescription,
