@@ -28,5 +28,6 @@ class WebBotConfiguration(eventBus: EventBus) : BotConfiguration() {
                 )
             }
         }
+        loginSolver = WebBotLoginSolver(eventBus)
     }
 }

@@ -15,11 +15,13 @@ object Config {
         const val BOTS = "bots"
         const val COMMAND = "command"
         const val FILES = "files"
+        const val LOGIN_SOLVER = "loginSolver"
     }
 
     object Eventbus {
         const val ROUTE = "/eb/*"
         const val LOG = "log"
+        const val LOGIN_SOLVER = "loginSolver"
     }
 
     object JWT {

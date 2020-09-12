@@ -4,6 +4,7 @@ import com.ooooonly.luaMirai.frontend.web.Config
 import com.ooooonly.luaMirai.frontend.web.entities.BotCreateInfo
 import com.ooooonly.luaMirai.frontend.web.entities.BotInfo
 import com.ooooonly.luaMirai.frontend.web.entities.FileInfo
+import com.ooooonly.luaMirai.frontend.web.mirai.CaptchaReceiver
 import com.ooooonly.luaMirai.frontend.web.mirai.WebBotConfiguration
 import com.ooooonly.luaMirai.frontend.web.utils.*
 import com.ooooonly.luaMirai.lua.ScriptManager
@@ -71,6 +72,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
         }
         mainRouter.route(Config.Eventbus.ROUTE).handler(buildSockJsHandler(vertx) {
             addOutboundAddressRegex(Config.Eventbus.LOG)
+            addOutboundAddressRegex(Config.Eventbus.LOGIN_SOLVER)
         })
         mainRouter.route(Config.Route.API.anySubPath()).handlerApply {
             if (request().path() == Config.Route.API.subPath(Config.Route.AUTH)) return@handlerApply next()
@@ -90,6 +92,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
         vertx.createSubRouter(router, Config.Route.SCRIPTS.asSubPath(), ::apiScript)
         vertx.createSubRouter(router, Config.Route.FILES.asSubPath(), ::apiFile)
         vertx.createSubRouter(router, Config.Route.COMMAND.asSubPath(), ::apiCommand)
+        vertx.createSubRouter(router, Config.Route.LOGIN_SOLVER.asSubPath(), ::apiLoginSolver)
     }
     private fun apiAuth(router:Router) {
         router.handleJson()
@@ -132,10 +135,10 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 responseEnd(BotInfo.fromBot(pathParam("botId").toLong()))
             }
             postCoroutineHandlerApply(ROOT, this@LuaMiraiVertical) {
+                val info = getBodyAsObject<BotCreateInfo>()
+                val bot = Bot(info.id, info.password, WebBotConfiguration(eventBus))
                 var exception: Exception? = null
-                val result = withContext(Dispatchers.IO) {
-                    val info = getBodyAsObject<BotCreateInfo>()
-                    val bot = Bot(info.id, info.password, WebBotConfiguration(eventBus))
+                withContext(Dispatchers.IO) {
                     try {
                         bot.login()
                         ScriptManager.loadBot(bot)
@@ -145,11 +148,12 @@ class LuaMiraiVertical:CoroutineVerticle() {
                         exception = e
                         false
                     }
-                }
-                if (result) {
-                    responseCreatedEnd("创建成功")
-                } else {
-                    responseServerErrorEnd("创建失败！\n${exception?.message}")
+                }.let {
+                    if (it) {
+                        responseCreatedEnd("创建成功")
+                    } else {
+                        responseServerErrorEnd("创建失败！\n${exception?.message}")
+                    }
                 }
             }
             deleteCoroutineHandlerApply("/:botId", this@LuaMiraiVertical) {
@@ -270,11 +274,22 @@ class LuaMiraiVertical:CoroutineVerticle() {
             }
         }
     }
+
     private fun apiCommand(router: Router) {
         router.handleJson()
         router.apply {
             postHandlerApply {
                 val command = bodyAsJson.getString("command")
+                responseOkEnd("")
+            }
+        }
+    }
+
+    private fun apiLoginSolver(router: Router) {
+        router.handleJson()
+        router.apply {
+            postHandlerApply {
+                CaptchaReceiver.setResult(bodyAsJson.getString("result"))
                 responseOkEnd("")
             }
         }
