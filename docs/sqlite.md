@@ -1,8 +1,8 @@
 # Sqlite支持库
 
-#### 支持库基于[sqlite-jdbc](https://github.com/xerial/sqlite-jdbc)，详细api文档请自行查询，用法与java类似。
+#### 支持库基于 [sqlite-jdbc](https://github.com/xerial/sqlite-jdbc) ，详细 api 文档请自行查询，用法与 java 类似。
 
-### 创建Sqlite连接
+### 创建 Sqlite 连接
 
 ##### 函数名：SqliteConnection
 
@@ -10,13 +10,68 @@
 
 | 参数 | 类型   | 描述                 | 可空  |
 | ---- | ------ | -------------------- | ----- |
-| path | String | sqlite数据库文件路径 | False |
+| path | String | sqlite 数据库文件路径 | False |
 
 ##### 返回值：
 
 | 类型       | 描述           |
 | ---------- | -------------- |
-| Connection | Connection对象 |
+| Connection | Connection 对象 |
+
+### 创建语句执行环境
+
+##### 函数名： createStatement
+
+##### 参数列表：
+
+| 参数 | 类型       | 描述                 | 可空  |
+| ---- | ---------- | -------------------- | ----- |
+| conn | Connection | 打开的数据库         | False |
+| path | String     | sqlite 数据库文件路径 | False |
+
+##### 返回值：
+
+| 类型       | 描述           |
+| ---------- | -------------- |
+| Statement | Statement 对象 |
+
+### 创建语句执行环境
+
+##### 函数名： createStatement
+
+##### 参数列表：
+
+| 参数 | 类型       | 描述                 | 可空  |
+| ---- | ---------- | -------------------- | ----- |
+| conn | Connection | 打开的数据库         | False |
+| path | String     | sqlite 数据库文件路径 | False |
+
+##### 返回值：
+
+| 类型       | 描述           |
+| ---------- | -------------- |
+| Statement | Statement 对象 |
+
+### 设置语句执行超时时间
+
+##### 函数名： setQueryTimeout()
+
+
+| 参数    | 类型      | 描述           | 可空  |
+| ------- | --------- | -------------- | ----- |
+| stat    | Statement | 语句的执行环境 | False |
+| seconds | Float     | 设置超时的时间 | False |
+
+##### 返回值：（空）
+
+### 更新语句
+
+executeUpdate ()
+
+### 查询语句
+
+executeQuery ()
+
 
 
 ## 如何定位一个数据库文件
