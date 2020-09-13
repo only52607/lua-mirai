@@ -50,7 +50,7 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
                 return@luaFunctionOf MessageCoreImpl(Image(id))
             })
 
-            set("ImageUrl", luaFunctionOf<String, LuaUserdata> { url: String, target: Any ->
+            set("ImageUrl", luaFunctionOf { url: String, target: Any ->
                 return@luaFunctionOf when (target) {
                     is FriendCoreImpl -> runBlocking { target.host.uploadImage(URL(url)) }
                     is GroupCoreImpl -> runBlocking { target.host.uploadImage(URL(url)) }
@@ -61,14 +61,14 @@ class MessageCoreImpl(val host: Message) : BaseMessage() {
             set("ImageFile", luaFunctionOf { filePath: String, target: Any ->
                 return@luaFunctionOf when (target) {
                     is FriendCoreImpl -> runBlocking {
-                        (target as FriendCoreImpl).host.uploadImage(
+                        target.host.uploadImage(
                             URL(
                                 File(filePath).toURI().toURL().toString()
                             )
                         )
                     }
                     is GroupCoreImpl -> runBlocking {
-                        (target as GroupCoreImpl).host.uploadImage(
+                        target.host.uploadImage(
                             URL(
                                 File(filePath).toURI().toURL().toString()
                             )
