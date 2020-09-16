@@ -58,7 +58,7 @@ object Config {
         const val SCRIPTS = "$FILE_ROOT/scripts"
     }
 
-    const val FILE_ROOT = "C:/Users/86182/Desktop/config"
+    const val FILE_ROOT = "config"
     const val PATH_CONFIG = "$FILE_ROOT/config.json"
     val CONFIG: JsonObject = File(PATH_CONFIG).let {
         if (!it.exists()) initConfig(it)

@@ -44,6 +44,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
         authProvider = JWTAuth.create(vertx, Config.JWT.jwtAuthOptions)
         val mainRouter = vertx.createRouter()
         with(mainRouter.route()) {
+            handler(StaticHandler.create())
             handlerApply {
                 response().putHeader(
                     "Access-Control-Allow-Headers",
@@ -83,6 +84,7 @@ class LuaMiraiVertical:CoroutineVerticle() {
                 }
             }
         }
+
         vertx.createSubRouter(mainRouter, Config.Route.API, ::api)
         vertx.createHttpServer().requestHandler(mainRouter).listen(Config.Deploy.PORT)
     }
