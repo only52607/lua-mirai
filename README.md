@@ -28,7 +28,7 @@
 ### PC 端
 
 - [x] 控制台界面： [`在 JVM 上运行 lua-mirai`](/docs/jvm.md)
-- [x] Web 界面（预览版）[mirado-rua](https://github.com/only52607/mirado-rua)
+- [x] Web 界面（预览版）[`运行 lua-mirai并使用浏览器管理`](/docs/web.md)
 - [ ] Swing Gui 界面
 
 
