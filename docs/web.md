@@ -38,13 +38,13 @@ end
 #### 4.启动 cmd，进入 ai.lua 目录，执行以下代码
 
 ```powershell
-java -jar <jar 文件名> server
+java -jar <jar 文件名> web
 ```
 
 #### 例：
 
 ```powershell
-java -jar lua-mirai-1.2.0.jar server
+java -jar lua-mirai-1.2.0.jar web
 ```
 
 
