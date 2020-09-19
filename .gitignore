@@ -4,8 +4,3 @@ src/test
 .idea
 .gradle
 .settings
-
-
-/.gradle/
-/.idea/
-/src/test/
