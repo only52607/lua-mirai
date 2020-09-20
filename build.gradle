@@ -27,7 +27,7 @@ plugins {
 }
 
 
-def VERSION = "1.2.0"
+def VERSION = "1.2.1"
 group 'com.ooooonly'
 version VERSION
 
