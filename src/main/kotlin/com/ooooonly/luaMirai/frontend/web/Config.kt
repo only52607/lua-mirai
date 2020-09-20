@@ -1,6 +1,5 @@
 package com.ooooonly.luaMirai.frontend.web
 
-import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.kotlin.ext.auth.pubSecKeyOptionsOf
@@ -41,32 +40,38 @@ object Config {
 
     object Deploy {
         var PORT: Int
-            get() = CONFIG.getInteger("port")
+            get() = CONFIG_ROOT.getInteger("port")
             set(value) {
-                CONFIG.put("port", value)
+                CONFIG_ROOT.put("port", value)
                 writeConfig()
             }
         var AUTH_INFO: JsonObject
-            get() = CONFIG.getJsonObject("auth")
+            get() = CONFIG_ROOT.getJsonObject("auth")
             set(value) {
-                CONFIG.put("auth", value)
+                CONFIG_ROOT.put("auth", value)
                 writeConfig()
             }
     }
 
     object Upload {
-        const val SCRIPTS = "$FILE_ROOT/scripts"
+        const val SCRIPTS = "$DICTIONARY_ROOT/scripts"
     }
 
-    const val FILE_ROOT = "config"
-    const val PATH_CONFIG = "$FILE_ROOT/config.json"
-    val CONFIG: JsonObject = File(PATH_CONFIG).let {
-        if (!it.exists()) initConfig(it)
-        else JsonObject(it.readText())
+    const val DICTIONARY_ROOT = "config"
+
+    private const val CONFIG_FILE_PATH = "$DICTIONARY_ROOT/config.json"
+
+    val CONFIG_ROOT: JsonObject by lazy {
+        val configFile = File(CONFIG_FILE_PATH)
+        if (!configFile.exists()) {
+            configFile.parentFile.mkdirs()
+            initConfig(configFile)
+        }
+        return@lazy JsonObject(configFile.readText())
     }
 
     private fun writeConfig() {
-        File(PATH_CONFIG).writeText(CONFIG.encodePrettily())
+        File(CONFIG_FILE_PATH).writeText(CONFIG_ROOT.encodePrettily())
     }
 
     private fun initConfig(configFile: File): JsonObject {
