@@ -49,7 +49,7 @@ java -jar lua-mirai-1.2.0.jar web
 
 
 
-#### 5.进入浏览器，进入http://localhost
+#### 5.进入浏览器，进入http://localhost，默认登录账号密码均为"admin"。
 
 
 
