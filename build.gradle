@@ -45,15 +45,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "net.mamoe:mirai-core-qqandroid:$mirai_core_version"
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
-
-
     implementation 'org.json:json:20160212'
     implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
     implementation "org.jsoup:jsoup:$jsoup_version"
-
-//    implementation "io.ktor:ktor-server-netty:$ktor_version"
-//    implementation "io.ktor:ktor-server-servlet:$ktor_version"
-//    implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "org.slf4j:slf4j-jdk14:$slf4j_version"
 
     implementation "io.vertx:vertx-core:$vertx_version"
@@ -63,7 +57,10 @@ dependencies {
     implementation "io.vertx:vertx-auth-jwt:$vertx_version"
     implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertx_version"
 
-    //implementation 'com.github.only52607:luakt:Tag'
+//    implementation "io.ktor:ktor-server-netty:$ktor_version"
+//    implementation "io.ktor:ktor-server-servlet:$ktor_version"
+//    implementation "io.ktor:ktor-html-builder:$ktor_version"
+    implementation 'com.ooooonly:luakt:1.0.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -105,10 +102,13 @@ publish {
     website = 'https://github.com/only52607/lua-mirai'
 }
 
-
 apply plugin: 'com.github.johnrengelman.shadow'
 shadowJar {
+//    archivesBaseName("lua-mirai")
+
+//    archiveVersion ("v$VERSION")
     baseName = 'lua-mirai'
+//    archiveClassifier = null
     classifier = null
     version = "v$VERSION"
     ///dependencies {
