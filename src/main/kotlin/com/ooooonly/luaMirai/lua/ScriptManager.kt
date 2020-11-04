@@ -40,10 +40,14 @@ object ScriptManager : CoroutineScope {
         return scripts.size - 1
     }
 
+    suspend fun addScriptFromAbsolutePath(fileAbsolutePath:String){
+        addScript(File(fileAbsolutePath))
+    }
+
     suspend fun reloadScript(index: Int) {
-        val orignScript = scripts[index]
-        invalidateGlobals(orignScript.globals)
-        scripts[index] = loadScript(orignScript.file)
+        val originScript = scripts[index]
+        invalidateGlobals(originScript.globals)
+        scripts[index] = loadScript(originScript.file)
     }
 
     fun removeScript(index: Int) {
@@ -53,6 +57,10 @@ object ScriptManager : CoroutineScope {
 
     fun loadBot(bot: Bot) {
         BotReceiverManager.noticeReceivers(bot)
+    }
+
+    fun loadBotFromId(botId:Long){
+        BotReceiverManager.noticeReceivers(Bot.getInstance(botId))
     }
 
     private suspend fun LuaClosure.callSuspend(timeLimit: Long = Long.MAX_VALUE) {
