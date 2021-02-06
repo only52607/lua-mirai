@@ -1,8 +1,7 @@
 package com.ooooonly.luaMirai.lua.lib
 
-import com.ooooonly.luakt.asLuaValue
+import com.ooooonly.luakt.buildLuaTable
 import com.ooooonly.luakt.luaFunctionOf
-import com.ooooonly.luakt.luaTableOf
 import org.json.JSONArray
 import org.json.JSONObject
 import org.luaj.vm2.*
@@ -17,7 +16,7 @@ open class JsonLib : TwoArgFunction() {
         val toJson = luaFunctionOf { raw: LuaTable ->
             return@luaFunctionOf raw.toJsonObject().toString()
         }
-        globals?.set("Json", luaTableOf {
+        globals?.set("Json", buildLuaTable {
             "parseJson" to parseJson
             "toJson" to toJson
         })
@@ -40,9 +39,13 @@ open class JsonLib : TwoArgFunction() {
     )
 
     private fun Any.toLuaValue() = when (this::class) {
+        Unit::class -> LuaValue.NIL
+        Short::class -> LuaValue.valueOf((this as Short).toInt())
         Int::class -> LuaValue.valueOf(this as Int)
-        Long::class -> LuaValue.valueOf(this as Double) //luaj不支持long类型
+        Long::class -> LuaValue.valueOf(this.toString()) //luaj不支持long类型
+        Float::class -> LuaValue.valueOf((this as Float).toDouble())
         Double::class -> LuaValue.valueOf(this as Double)
+        Char::class -> LuaValue.valueOf(this.toString())
         String::class -> LuaValue.valueOf(this as String)
         Boolean::class -> LuaValue.valueOf(this as Boolean)
         JSONObject::class -> json2lua((this as JSONObject))
@@ -55,7 +58,10 @@ open class JsonLib : TwoArgFunction() {
         else if (isint()) checkint()
         else if (isstring()) checkjstring()
         else if (istable()) checktable().toJsonObject()
-        else null
+        else if (islong()) checklong()
+        else if (isnumber()) checkdouble()
+        else if (isnil()) null
+        else toString()
 
 
     private fun LuaTable.toJsonObject(): Any = if (this.length() != 0) {
