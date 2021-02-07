@@ -21,13 +21,14 @@ buildscript{
     }
     dependencies {
         classpath 'com.novoda:bintray-release:0.9.2'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
     }
 }
 
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version "1.4.21"
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 def VERSION = "1.3.0"
@@ -54,16 +55,19 @@ dependencies {
     implementation 'org.json:json:20160212'
     implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
     implementation "org.jsoup:jsoup:$jsoup_version"
-    implementation "org.slf4j:slf4j-jdk14:$slf4j_version"
+//    implementation "org.slf4j:slf4j-jdk14:$slf4j_version"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+allprojects {
+    //Support @JvmDefault
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            freeCompilerArgs = ['-Xjvm-default=enable'] //enable or compatibility
+            jvmTarget = "1.8"
+        }
+    }
 }
 
 tasks.withType(Javadoc).all { enabled = false }
@@ -78,11 +82,11 @@ publish {
     website = 'https://github.com/only52607/lua-mirai'
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
+
 shadowJar {
-    baseName = 'lua-mirai'
-    classifier = null
-    version = "v$VERSION"
+    archiveBaseName.set('lua-mirai')
+    archiveClassifier.set('')
+    archiveVersion.set("v$VERSION")
     manifest {
         attributes(
                 'Main-Class': 'com.ooooonly.luaMirai.MainKt'

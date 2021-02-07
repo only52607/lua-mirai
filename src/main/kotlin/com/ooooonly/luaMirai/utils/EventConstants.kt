@@ -1,12 +1,13 @@
-package com.ooooonly.luaMirai.lua.bridge
+package com.ooooonly.luaMirai.utils
 
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.events.*
-import net.mamoe.mirai.message.FriendMessageEvent
-import net.mamoe.mirai.message.GroupMessageEvent
+import net.mamoe.mirai.utils.MiraiInternalApi
 import kotlin.reflect.KClass
 
+/*
 object EventConstants {
+    @MiraiInternalApi
     val events by lazy {
         val map = mutableMapOf<String, KClass<out Event>>()
         map.apply {
@@ -72,12 +73,12 @@ object EventConstants {
             set("MessagePreSendEvent", MessagePreSendEvent::class)  //在发送消息前广播的事件
             set("GroupMessagePreSendEvent", GroupMessagePreSendEvent::class)  //在发送群消息前广播的事件
             set("UserMessagePreSendEvent", UserMessagePreSendEvent::class)  //在发送好友或群临时会话消息前广播的事件
-            set("TempMessagePreSendEvent", TempMessagePreSendEvent::class)  //在发送群临时会话消息前广播的事件
+            set("TempMessagePreSendEvent", GroupTempMessagePreSendEvent::class)  //在发送群临时会话消息前广播的事件
             set("FriendMessagePreSendEvent", FriendMessagePreSendEvent::class)  //在发送好友消息前广播的事件
             set("MessagePostSendEvent", MessagePostSendEvent::class)  //在发送消息后广播的事件
             set("GroupMessagePostSendEvent", GroupMessagePostSendEvent::class)  //在群消息发送后广播的事件
             set("UserMessagePostSendEvent", UserMessagePostSendEvent::class)  //在好友或群临时会话消息发送后广播的事件
-            set("TempMessagePostSendEvent", TempMessagePostSendEvent::class)  //在群临时会话消息发送后广播的事件
+            set("TempMessagePostSendEvent", GroupTempMessagePostSendEvent::class)  //在群临时会话消息发送后广播的事件
             set("MessageRecallEvent", MessageRecallEvent::class)  //消息撤回事件
             set("MessageRecallEvent.FriendRecall", MessageRecallEvent.FriendRecall::class)  //好友消息撤回事件
             set("MessageRecallEvent.GroupRecall", MessageRecallEvent.GroupRecall::class)  //群消息撤回事件
@@ -89,4 +90,4 @@ object EventConstants {
             set("GroupMessageEvent", GroupMessageEvent::class)  //机器人收到的群消息的事件
         }
     }
-}
+}*/

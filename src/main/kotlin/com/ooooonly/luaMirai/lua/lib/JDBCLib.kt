@@ -14,6 +14,9 @@ class JDBCLib : TwoArgFunction() {
             "SqliteConnection" to luaFunctionOf { url: String ->
                 return@luaFunctionOf DriverManager.getConnection("jdbc:sqlite:$url")
             }
+            "Connection" to luaFunctionOf { url: String ->
+                return@luaFunctionOf DriverManager.getConnection(url)
+            }
         }
         return LuaValue.NIL
     }
