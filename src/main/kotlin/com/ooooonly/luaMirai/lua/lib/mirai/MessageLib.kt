@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Contact.Companion.uploadImage
 import net.mamoe.mirai.contact.UserOrBot
+import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
@@ -24,12 +25,21 @@ object MessageLib : TwoArgFunction() {
             return@addKValueMapperBefore if (kValue is Message) LuaMiraiMessage(kValue) else null
         }
         globals.injectMessageConstructors()
+        val constructors = LuaTable().apply { injectMessageConstructors() }
+        globals.edit {
+            "Message" to constructors
+        }
+        globals.setFrom(constructors)
         return LuaValue.NIL
     }
 
     @MiraiInternalApi
-    private fun Globals.injectMessageConstructors() = edit {
-        "Text" to luaFunctionOf { content: String ->
+    private fun LuaTable.injectMessageConstructors() = edit {
+        listOf("MiraiCode", "Code") nto luaFunctionOf { code: String ->
+            return@luaFunctionOf MiraiCode.deserializeMiraiCode(code)
+        }
+
+        listOf("PlainText", "Text", "Plain") nto luaFunctionOf { content: String ->
             return@luaFunctionOf PlainText(content)
         }
 
@@ -37,7 +47,7 @@ object MessageLib : TwoArgFunction() {
             return@luaFunctionOf At(target)
         }
 
-        "Quote" to luaFunctionOf { msg: Message ->
+        listOf("QuoteReply", "Quote", "Reply") nto luaFunctionOf { msg: Message ->
             return@luaFunctionOf when (msg) {
                 is MessageSource -> QuoteReply(msg)
                 is MessageChain -> msg[MessageSource] ?: throw LuaError("No message source found!")
@@ -45,7 +55,7 @@ object MessageLib : TwoArgFunction() {
             }
         }
 
-        "Image" to luaFunctionOf { id: String ->
+        listOf("ImageId", "Image") nto luaFunctionOf { id: String ->
             return@luaFunctionOf Image(id)
         }
 
@@ -57,12 +67,7 @@ object MessageLib : TwoArgFunction() {
             return@luaFunctionOf runBlocking { target.uploadImage(File(filePath)) }
         }
 
-        "Flash" to luaFunctionOf { arg: Image ->
-            return@luaFunctionOf FlashImage(arg)
-        }
-
-        //Deprecated
-        "FlashImage" to luaFunctionOf { arg: Image ->
+        listOf("FlashImage", "Flash") nto luaFunctionOf { arg: Image ->
             return@luaFunctionOf FlashImage(arg)
         }
 
@@ -84,15 +89,15 @@ object MessageLib : TwoArgFunction() {
             return@luaFunctionOf arg.asKValue<Int>().toVipFace(count.asKValue())
         }
 
-        "Poke" to luaFunctionOf { arg: LuaValue ->
+        listOf("PokeMessage", "Poke") nto luaFunctionOf { arg: LuaValue ->
             return@luaFunctionOf arg.asKValue<Int>().toPokeMessage()
         }
 
-        "Forward" to luaFunctionOf { table: LuaValue ->
+        listOf("ForwardMessage", "Forward") nto luaFunctionOf { table: LuaValue ->
             return@luaFunctionOf table.checktable().buildForwardMsg()
         }
 
-        "App" to luaFunctionOf { code: String ->
+        listOf("LightApp", "App") nto luaFunctionOf { code: String ->
             return@luaFunctionOf LightApp(code)
         }
 
@@ -100,11 +105,14 @@ object MessageLib : TwoArgFunction() {
             return@luaFunctionOf Voice(fileName, md5, fileSize, codec, url)
         }
 
-        "Service" to luaFunctionOf { serviceId: Int, content: String ->
+        listOf("SimpleServiceMessage", "Service") nto luaFunctionOf { serviceId: Int, content: String ->
             return@luaFunctionOf SimpleServiceMessage(serviceId, content)
         }
 
-        "MusicShare" to luaFunctionOf { kindId: LuaValue, title: String, summary: String, jumpUrl: String, pictureUrl: String, musicUrl: String ->
+        listOf(
+            "MusicShare",
+            "Music"
+        ) nto luaFunctionOf { kindId: LuaValue, title: String, summary: String, jumpUrl: String, pictureUrl: String, musicUrl: String ->
             return@luaFunctionOf MusicShare(kindId.toMusicKind(), title, summary, jumpUrl, pictureUrl, musicUrl)
         }
     }
@@ -137,4 +145,3 @@ object MessageLib : TwoArgFunction() {
         get("message")?.takeIf { it != LuaValue.NIL }?.asKValue() ?: EmptyMessageChain
     )
 }
-
