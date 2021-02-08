@@ -6,6 +6,8 @@ buildscript{
     ext.slf4j_version = "1.7.25"
 
     ext.mirai_core_version = "2.3.2"
+    ext.mirai_console_version = "2.0.0"
+
     ext.okhttp3_version = "4.7.2"
     ext.jsoup_version = "1.7.3"
 
@@ -56,6 +58,9 @@ dependencies {
     implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
     implementation "org.jsoup:jsoup:$jsoup_version"
 //    implementation "org.slf4j:slf4j-jdk14:$slf4j_version"
+
+    compileOnly "net.mamoe:mirai-console:$mirai_console_version"
+    testImplementation "net.mamoe:mirai-console-terminal:$mirai_console_version"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
