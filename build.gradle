@@ -1,17 +1,11 @@
 buildscript{
-    ext.ktor_version = "1.1.2"
     ext.kotlin_version = "1.4.21"
-    ext.tomcat_plugin_version = "2.4.2"
-    ext.tomcat_version = "9.0.4"
-    ext.slf4j_version = "1.7.25"
 
     ext.mirai_core_version = "2.3.2"
     ext.mirai_console_version = "2.0.0"
 
     ext.okhttp3_version = "4.7.2"
     ext.jsoup_version = "1.7.3"
-
-    ext.vertx_version = "3.9.2"
     ext.sqlite_jdbc_version = "3.7.2"
 
     ext.shadow_version = "6.1.0"
