@@ -1,9 +1,12 @@
 package com.ooooonly.luaMirai.lua.lib.mirai
 
 import com.ooooonly.luakt.*
+import com.ooooonly.luakt.mapper.ValueMapperChain
+import com.ooooonly.luakt.mapper.userdata.KotlinInstanceWrapper
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.ContactOrBot
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -25,13 +28,22 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         globals.edit {
             "Event" to eventTable
         }
+        ValueMapperChain.addKValueMapperBefore { obj, _ ->
+            if (obj is ContactOrBot) return@addKValueMapperBefore KotlinInstanceWrapper(obj).apply {
+                m_metatable = buildLuaTable {
+                    INDEX to eventTable
+                }
+            }
+            return@addKValueMapperBefore null
+        }
         return LuaValue.NIL
     }
 
-    private val eventTable: LuaTable
-        get() = buildLuaTable {
+    private val eventTable: LuaTable by lazy {
+        buildLuaTable {
             "subscribe" to subscriber
         }
+    }
 
     private val subscriber
         get() = varArgFunctionOf { varargs ->
