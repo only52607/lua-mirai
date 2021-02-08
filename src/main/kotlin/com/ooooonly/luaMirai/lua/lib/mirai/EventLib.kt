@@ -15,7 +15,6 @@ import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
-import kotlin.reflect.full.allSuperclasses
 
 
 @Suppress("unused")
@@ -39,27 +38,12 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
             var channel = GlobalEventChannel.parentScope(coroutineScope)
             val varargsList = varargs.toList()
             varargsList.take(varargs.narg() - 1).forEachIndexed { i, rule ->
-                if (rule.isfunction()) {
-                    channel = channel.filterByLuaFunction(rule.checkfunction())
-                } else if (rule.isstring()) {
-                    channel = channel.filter { event ->
-                        event::class.allSuperclasses.any { clazz -> clazz.simpleName == rule.checkjstring() }
-                    }
-                } else if (rule.isuserdata()) {
-                    channel = when (val obj = rule.checkuserdata()) {
-                        is Bot -> {
-                            channel.filter {
-                                it is BotEvent && it.bot.id == obj.id
-                            }
-                        }
-                        is Contact -> {
-                            channel.filter {
-                                it is UserEvent && it.user.id == obj.id
-                            }
-                        }
-                        else -> throw LuaError("Unknown filter rule in arg $i.")
-                    }
-                } else throw LuaError("Unknown filter rule in arg $i.")
+                channel = when {
+                    rule.isfunction() -> channel.filterByLuaFunction(rule.checkfunction())
+                    rule.isstring() -> channel.filterByEventName(rule.checkjstring())
+                    rule.isuserdata() -> channel.filterByUserData(rule.checkuserdata())
+                    else -> throw LuaError("Unknown filter rule in arg $i.")
+                }
             }
             val listener = varargs.checkfunction(varargs.narg())
             return@varArgFunctionOf channel.exceptionHandler {
@@ -73,4 +57,23 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         val result = luaFunction.invoke(it.asLuaValue())
         return@filter !result.isnil(0)
     }
+
+    private fun EventChannel<*>.filterByEventName(eventName: String): EventChannel<*> = filter { event ->
+        return@filter event::class.simpleName == eventName
+    }
+
+    private fun EventChannel<*>.filterByUserData(obj: Any): EventChannel<*> =
+        when (obj) {
+            is Bot -> {
+                filter {
+                    it is BotEvent && it.bot.id == obj.id
+                }
+            }
+            is Contact -> {
+                filter {
+                    it is UserEvent && it.user.id == obj.id
+                }
+            }
+            else -> throw LuaError("Unknown userdata filter rule ${obj}.")
+        }
 }
