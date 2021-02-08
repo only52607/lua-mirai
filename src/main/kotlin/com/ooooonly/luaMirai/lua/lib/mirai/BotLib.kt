@@ -2,6 +2,7 @@ package com.ooooonly.luaMirai.lua.lib.mirai
 
 import com.ooooonly.luakt.*
 import kotlinx.coroutines.CoroutineScope
+import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.SimpleLogger
@@ -15,6 +16,9 @@ import org.luaj.vm2.lib.TwoArgFunction
 class BotLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()
+        val botsTable = LuaTable()
+        globals.set("Bots", botsTable)
+        Bot.instances.forEach { botsTable[it.id] = it }
         globals.edit {
             "Bot" to varArgFunctionOf { varargs: Varargs ->
                 val user = varargs[0].asKValue<Long>()
@@ -24,7 +28,9 @@ class BotLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
                     if (varargs[2].istable()) varargs[2].checktable().toBotConfiguration().setScope()
                     else BotConfiguration.Default.copy().setDeviceFile(varargs[2].asKValue()).setScope()
                 }
-                return@varArgFunctionOf BotFactory.newBot(user, pwd, config).asLuaValue()
+                val bot = BotFactory.newBot(user, pwd, config)
+                botsTable[user] = bot
+                return@varArgFunctionOf bot.asLuaValue()
             }
         }
         return LuaValue.NIL
