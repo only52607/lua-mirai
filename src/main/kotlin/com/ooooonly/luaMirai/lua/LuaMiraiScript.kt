@@ -13,9 +13,13 @@ import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 @MiraiExperimentalApi
-class MiraiLuaScript(private val sourceFile: File? = null, private val sourceCode: String? = null) : BotScript,
+class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCode: String? = null) : BotScript,
     CoroutineScope, Globals() {
     override val coroutineContext: CoroutineContext = Dispatchers.Default + SupervisorJob()
+
+    private val info = BotScript.Info(name = sourceFile?.name ?: "", file = sourceFile?.absolutePath ?: "")
+
+    override fun getInfo(): BotScript.Info = info
 
     override fun onDestroy() {
         onStop()
