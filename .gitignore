@@ -4,3 +4,5 @@ src/test
 .idea
 .gradle
 .settings
+doc
+local.properties
