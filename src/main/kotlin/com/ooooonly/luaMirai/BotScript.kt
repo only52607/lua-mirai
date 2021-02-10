@@ -1,17 +1,29 @@
-package com.ooooonly.luaMirai.lua
+package com.ooooonly.luaMirai
 
 @Suppress("unused")
 interface BotScript {
+    fun isLoaded(): Boolean
+
     fun create() = onCreate()
     fun onCreate() {}
 
-    fun stop() = onStop()
+    fun stop() {
+        onStop()
+    }
+
     fun onStop() {}
 
-    fun destroy() = onDestroy()
+    fun destroy() {
+        onStop()
+        onDestroy()
+    }
+
     fun onDestroy() {}
 
-    fun load() = onLoad()
+    fun load() {
+        onLoad()
+    }
+
     fun onLoad() {}
 
     fun reload() = onReload()

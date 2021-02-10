@@ -1,4 +1,4 @@
-package com.ooooonly.luaMirai.lua
+package com.ooooonly.luaMirai
 
 interface BotScriptManager {
     fun list(): List<BotScript>

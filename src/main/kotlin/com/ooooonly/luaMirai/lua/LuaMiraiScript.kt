@@ -1,5 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.BotScript
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.lua.lib.mirai.MiraiLib
 import kotlinx.coroutines.*
@@ -21,13 +22,13 @@ class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCod
 
     override fun getInfo(): BotScript.Info = info
 
-    override fun onDestroy() {
-        onStop()
-    }
+    var loaded = false
+    override fun isLoaded(): Boolean = loaded
 
     override fun onStop() {
         coroutineContext[Job]?.cancel()
         cancel()
+        loaded = false
     }
 
     override fun onLoad() {
@@ -36,6 +37,7 @@ class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCod
             sourceCode != null -> load(sourceCode).invoke()
             else -> throw Exception("No script content found.")
         }
+        loaded = true
     }
 
     init {
