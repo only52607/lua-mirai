@@ -1,9 +1,6 @@
 package com.ooooonly.luaMirai.lua.lib
 
-import com.ooooonly.luakt.asKValue
-import com.ooooonly.luakt.edit
-import com.ooooonly.luakt.get
-import com.ooooonly.luakt.luaFunctionOf
+import com.ooooonly.luakt.*
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
@@ -25,10 +22,10 @@ class StringExLib : TwoArgFunction() {
 //            "codePointAt" to luaFunctionOf{ s:String,begin:Int,end:Int ->
 //                return@luaFunctionOf s.codePointCount(begin,end)
 //            }
-            "substring" to luaFunctionOf { args: Varargs ->
-                if (args.narg() > 2) return@luaFunctionOf args[0].asKValue<String>()
-                    .substring(args[1].asKValue(), args[2].asKValue())
-                return@luaFunctionOf args[0].asKValue<String>().substring(args[1].asKValue<Int>())
+            "substring" to varArgFunctionOf { args: Varargs ->
+                if (args.narg() > 2) return@varArgFunctionOf args[0].asKValue<String>()
+                    .substring(args[1].asKValue(), args[2].asKValue()).asLuaValue()
+                return@varArgFunctionOf args[0].asKValue<String>().substring(args[1].asKValue<Int>()).asLuaValue()
             }
             "encode" to luaFunctionOf { s: String, fromCharset: String, toCharset: String ->
                 return@luaFunctionOf String(s.toByteArray(Charset.forName(fromCharset)), Charset.forName(toCharset))

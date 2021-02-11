@@ -2,7 +2,7 @@ package com.ooooonly.luaMirai.lua.lib
 
 import com.ooooonly.luakt.asLuaValue
 import com.ooooonly.luakt.edit
-import com.ooooonly.luakt.luaFunctionOf
+import com.ooooonly.luakt.varArgFunctionOf
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -16,14 +16,14 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-open class HttpLib() : TwoArgFunction() {
+open class HttpLib : TwoArgFunction() {
     companion object {
-        fun getRedirectUrl(path: String, referer: String?): String? {
+        fun getRedirectUrl(path: String, referer: String?): String {
             val url = URL(path)
             val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
-            conn.setInstanceFollowRedirects(false)
-            conn.setConnectTimeout(5000)
-            referer?.takeIf { !it.isBlank() }.let {
+            conn.instanceFollowRedirects = false
+            conn.connectTimeout = 5000
+            referer?.takeIf { it.isNotBlank() }.let {
                 conn.addRequestProperty("Referer", it)
             }
             return conn.getHeaderField("Location").toByteArray(Charset.forName("ISO-8859-1")).let {
@@ -32,15 +32,15 @@ open class HttpLib() : TwoArgFunction() {
         }
     }
 
-    val defaultClient: OkHttpClient by lazy {
+    private val defaultClient: OkHttpClient by lazy {
         OkHttpClient()
     }
 
     override fun call(modname: LuaValue?, env: LuaValue): LuaValue {
         val globals: Globals = env.checkglobals()
-        val httpTable: LuaTable = LuaTable()
+        val httpTable = LuaTable()
         httpTable.edit {
-            "get" to luaFunctionOf { args: Varargs ->
+            "get" to varArgFunctionOf { args: Varargs ->
                 val requestUrl = args.checkjstring(1)
                 val client: OkHttpClient = if (args.narg() >= 2)
                     args.checktable(2).toOkHttpClient()
@@ -48,10 +48,9 @@ open class HttpLib() : TwoArgFunction() {
                 val request: Request = if (args.narg() >= 3)
                     Request.Builder().get().applyHeaderFromLuaTable(args.checktable(3)).url(requestUrl).build()
                 else Request.Builder().get().url(requestUrl).build()
-
                 client.newCall(request).execute().toVarargs()
             }
-            "post" to luaFunctionOf { args: Varargs ->
+            "post" to varArgFunctionOf { args: Varargs ->
                 val requestUrl = args.arg1().checkjstring()
                 val requestBody = args.arg(2).toRequestBody()
                 val client: OkHttpClient = if (args.narg() >= 3)
@@ -63,8 +62,8 @@ open class HttpLib() : TwoArgFunction() {
                 else Request.Builder().post(requestBody).url(requestUrl).build()
                 client.newCall(request).execute().toVarargs()
             }
-            "getRedirectUrl" to luaFunctionOf { args: Varargs ->
-                getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring(""))?.asLuaValue() ?: "".asLuaValue()
+            "getRedirectUrl" to varArgFunctionOf { args: Varargs ->
+                getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")).asLuaValue()
             }
 
         }
@@ -72,7 +71,7 @@ open class HttpLib() : TwoArgFunction() {
         return LuaValue.NIL
     }
 
-
+    @Suppress("unused")
     private fun Response.toLuaTable(): LuaTable = LuaTable().also { table ->
         table.set("body", this.body?.string())
         table.set("code", this.code)
@@ -107,6 +106,7 @@ open class HttpLib() : TwoArgFunction() {
         }
     }.build()
 
+    @Suppress("unused")
     private fun LuaTable.toRequest(): Request = Request.Builder().apply {
         this@toRequest.keys().forEach { key ->
             this.header(key.tojstring(), this@toRequest.get(key).tojstring())
@@ -121,9 +121,8 @@ open class HttpLib() : TwoArgFunction() {
     }
 
     private fun LuaValue.toRequestBody(): RequestBody = when (this::class) {
-        LuaTable::class -> RequestBody.create(
-            this.get("type").optjstring("text/plain;chaset=utf-8").toMediaTypeOrNull(), this.get("data").optjstring("")
-        )
-        else -> this.optjstring("").toRequestBody("text/plain;chaset=utf-8".toMediaTypeOrNull())
+        LuaTable::class -> this.get("data").optjstring("")
+            .toRequestBody(this.get("type").optjstring("text/plain;charset=utf-8").toMediaTypeOrNull())
+        else -> this.optjstring("").toRequestBody("text/plain;charset=utf-8".toMediaTypeOrNull())
     }
 }

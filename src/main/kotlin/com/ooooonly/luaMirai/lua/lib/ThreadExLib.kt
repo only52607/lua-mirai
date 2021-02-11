@@ -8,7 +8,7 @@ import org.luaj.vm2.LuaClosure
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
 
-open class ThreadExLib(val coroutineScope: CoroutineScope) : TwoArgFunction() {
+open class ThreadExLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
     override fun call(modName: LuaValue?, env: LuaValue?): LuaValue {
         val globals: Globals? = env?.checkglobals()
         globals?.edit {
