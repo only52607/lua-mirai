@@ -23,22 +23,22 @@ class LuaMiraiMessage(val message: Message) : KotlinInstanceWrapper(message) {
     override fun rawget(key: String?): LuaValue = when (message) {
         is MessageChain -> message.find { it.typename() == key }.asLuaValue()
         else -> message.takeIf { it.typename() == key }?.asLuaValue() ?: LuaValue.NIL
-    }
+    }.takeIf { !it.isnil() } ?: super.rawget(key)
 
     override fun rawget(key: Int): LuaValue = when (message) {
         is MessageChain -> message.getOrNull(key - 1)?.asLuaValue() ?: LuaValue.NIL
         else -> message.takeIf { key == 1 }?.asLuaValue() ?: LuaValue.NIL
-    }
+    }.takeIf { !it.isnil() } ?: super.rawget(key)
 
-    override fun get(key: String?): LuaValue = rawget(key)
+    override fun get(key: String?): LuaValue = rawget(key).takeIf { !it.isnil() } ?: super.rawget(key)
 
-    override fun get(key: Int): LuaValue = rawget(key)
+    override fun get(key: Int): LuaValue = rawget(key).takeIf { !it.isnil() } ?: super.rawget(key)
 
     override fun get(key: LuaValue): LuaValue = when {
         key.isnumber() -> rawget(key.checkint())
         key.isstring() -> rawget(key.checkjstring())
         else -> NIL
-    }
+    }.takeIf { !it.isnil() } ?: super.rawget(key)
 
     override fun rawlen(): Int = if (message is MessageChain) message.size else 1
     override fun length(): Int = rawlen()
