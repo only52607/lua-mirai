@@ -5,18 +5,6 @@ import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
 public class LuaJavaExLib extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modName, LuaValue env) {
@@ -47,7 +35,7 @@ public class LuaJavaExLib extends TwoArgFunction {
         return LuaValue.NIL;
     }
 
-    class JavaClassProxy extends LuaTable {
+    static class JavaClassProxy extends LuaTable {
         public LuaValue clazz;
         public LuaString className;
 
