@@ -19,9 +19,6 @@ buildscript{
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
         jcenter()
     }
-//    dependencies {
-//        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-//    }
 }
 
 plugins {
@@ -119,11 +116,11 @@ bintray {
             desc = aritifact_description
             released = new Date()
             vcsTag = aritifact_version
-//            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']//可忽略的属性，有需求可以查看官方文档进行相关配置
         }
     }
     publications = ['LMPublication']
 }
+
 publishing {
     publications {
         LMPublication(MavenPublication) {
