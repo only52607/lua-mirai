@@ -57,7 +57,7 @@ jobs:
 #            - First Change
 #            - Second Change
           body_path: ./docs/updatedoc/latest.md
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ github.ref }}
           draft: false
           prerelease: true
       - name: Upload Release Asset
