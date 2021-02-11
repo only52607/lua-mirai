@@ -97,11 +97,15 @@ task javadocJar(type: Jar) {
 }
 
 bintray {
-    Properties properties = new Properties()
-    InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
-    properties.load(inputStream)
-    user = properties.getProperty('BINTRAY_USER') //System.getenv('BINTRAY_USER')
-    key = properties.getProperty('BINTRAY_KEY') //System.getenv('BINTRAY_KEY')
+    try{
+        Properties properties = new Properties()
+        InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
+        properties.load(inputStream)
+        user = properties.getProperty('BINTRAY_USER') //System.getenv('BINTRAY_USER')
+        key = properties.getProperty('BINTRAY_KEY') //System.getenv('BINTRAY_KEY')
+    }catch(Exception e){
+        e.printStackTrace()
+    }
     override = true     //如果有相同版本是否覆盖
     publish = true      //是否上传后直接发布
     pkg {
