@@ -4,6 +4,7 @@ import com.ooooonly.luakt.asLuaValue
 import com.ooooonly.luakt.mapper.userdata.KotlinInstanceWrapper
 import net.mamoe.mirai.message.code.CodableMessage
 import net.mamoe.mirai.message.data.*
+import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
@@ -20,32 +21,32 @@ class LuaMiraiMessage(val message: Message) : KotlinInstanceWrapper(message) {
 
     override fun typename(): String = message.typename()
 
-    override fun rawget(key: String?): LuaValue = when (message) {
-        is MessageChain -> message.find { it.typename() == key }.asLuaValue()
-        else -> message.takeIf { it.typename() == key }?.asLuaValue() ?: LuaValue.NIL
-    }.takeIf { !it.isnil() } ?: super.rawget(key)
+    /**
+     * 1-based
+     */
+    private fun getMessageElement(index: Int) = when (message) {
+        is MessageChain -> message.getOrNull(index - 1)?.asLuaValue() ?: LuaValue.NIL
+        else -> throw LuaError("$message is not a MessageChain.")
+    }
 
-    override fun rawget(key: Int): LuaValue = when (message) {
-        is MessageChain -> message.getOrNull(key - 1)?.asLuaValue() ?: LuaValue.NIL
-        else -> message.takeIf { key == 1 }?.asLuaValue() ?: LuaValue.NIL
-    }.takeIf { !it.isnil() } ?: super.rawget(key)
-
-    override fun get(key: String?): LuaValue = rawget(key).takeIf { !it.isnil() } ?: super.rawget(key)
-
-    override fun get(key: Int): LuaValue = rawget(key).takeIf { !it.isnil() } ?: super.rawget(key)
+    private fun getMessageElement(type: String) = when (message) {
+        is MessageChain -> message.find { it.typename() == type }.asLuaValue()
+        else -> throw LuaError("$message is not a MessageChain.")
+    }
 
     override fun get(key: LuaValue): LuaValue = when {
-        key.isnumber() -> rawget(key.checkint())
-        key.isstring() -> rawget(key.checkjstring())
+        key.isnumber() -> getMessageElement(key.checkint())
+        key.isstring() -> getMessageElement(key.checkjstring())
         else -> NIL
-    }.takeIf { !it.isnil() } ?: super.rawget(key)
+    }?.takeIf { !it.isnil() } ?: super.get(key)
 
+    override fun eq(value: LuaValue?): LuaValue = valueOf(message.toString() == value.toString())
     override fun rawlen(): Int = if (message is MessageChain) message.size else 1
     override fun length(): Int = rawlen()
     override fun len(): LuaValue = LuaValue.valueOf(rawlen())
     override fun checktable(): LuaTable =
         if (message is MessageChain) LuaValue.listOf(message.map { it.asLuaValue() }.toTypedArray())
-        else LuaValue.listOf(arrayOf(this))
+        else throw LuaError("$message is not a MessageChain.")
 
     private fun LuaValue.checkMessage() = if (isuserdata()) checkuserdata() as Message else PlainText(toString())
     override fun add(rhs: LuaValue): LuaValue = (message + rhs.checkMessage()).asLuaValue()
