@@ -4,32 +4,43 @@ import com.ooooonly.luakt.*
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
+import net.mamoe.mirai.event.GlobalEventChannel
+import net.mamoe.mirai.event.events.BotEvent
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.SimpleLogger
-import org.luaj.vm2.LuaError
-import org.luaj.vm2.LuaTable
-import org.luaj.vm2.LuaValue
-import org.luaj.vm2.Varargs
+import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
 
 @Suppress("unused")
 class BotLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
+    private val botIdSet = mutableSetOf<Long>() // 记录已加载的bot
+
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()
         val botsTable = LuaTable()
         globals.set("Bots", botsTable)
-        Bot.instances.forEach { botsTable[it.id] = it }
+        Bot.instances.forEach {
+            botsTable[it.id] = it
+            botIdSet.add(it.id)
+        }
+        GlobalEventChannel.parentScope(coroutineScope).subscribeAlways<BotEvent> {
+            if (!botIdSet.contains(this@subscribeAlways.bot.id)) {
+                botsTable[this@subscribeAlways.bot.id] = this@subscribeAlways.bot
+                botIdSet.add(this@subscribeAlways.bot.id)
+            }
+        }
         globals.edit {
             "Bot" to varArgFunctionOf { varargs: Varargs ->
-                val user = varargs[0].asKValue<Long>()
-                val pwd = varargs[1].asKValue<String>()
+                val account = varargs[0].checklong()
+                val pwd = varargs[1].checkjstring()
                 val config = BotConfiguration.Default.setScope()
                 if (varargs.narg() >= 3) {
                     if (varargs[2].istable()) varargs[2].checktable().toBotConfiguration().setScope()
-                    else BotConfiguration.Default.copy().setDeviceFile(varargs[2].asKValue()).setScope()
+                    else BotConfiguration.Default.copy().setDeviceFile(varargs[2].checkjstring()).setScope()
                 }
-                val bot = BotFactory.newBot(user, pwd, config)
-                botsTable[user] = bot
+                val bot = BotFactory.newBot(account, pwd, config)
+                botIdSet.add(account)
+                botsTable[account] = bot
                 return@varArgFunctionOf bot.asLuaValue()
             }
         }

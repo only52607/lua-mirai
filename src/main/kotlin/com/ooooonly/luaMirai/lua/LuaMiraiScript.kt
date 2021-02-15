@@ -3,6 +3,9 @@ package com.ooooonly.luaMirai.lua
 import com.ooooonly.luaMirai.BotScript
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.lua.lib.mirai.MiraiLib
+import com.ooooonly.luakt.lib.KotlinCoroutineLib
+import com.ooooonly.luakt.lib.LuaKotlinLib
+import com.ooooonly.luakt.mapper.ValueMapperChain
 import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import org.luaj.vm2.Globals
@@ -54,8 +57,9 @@ class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCod
 
         load(StringExLib())
         load(MiraiLib(this))
-        load(LuaJavaExLib())
-        load(ThreadExLib(this))
+        load(LuaKotlinLib(this, ValueMapperChain))
+        load(KotlinCoroutineLib(this))
+
         load(HttpLib())
         load(JsonLib())
         load(JDBCLib())
