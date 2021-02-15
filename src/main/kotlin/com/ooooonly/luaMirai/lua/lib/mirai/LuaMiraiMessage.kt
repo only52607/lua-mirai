@@ -40,7 +40,8 @@ class LuaMiraiMessage(val message: Message) : KotlinInstanceWrapper(message) {
         else -> NIL
     }?.takeIf { !it.isnil() } ?: super.get(key)
 
-    override fun eq(value: LuaValue?): LuaValue = valueOf(message.toString() == value.toString())
+    override fun eq_b(value: LuaValue?): Boolean = message.toString() == value.toString()
+    override fun eq(value: LuaValue?): LuaValue = if (eq_b(value)) TRUE else FALSE
     override fun rawlen(): Int = if (message is MessageChain) message.size else 1
     override fun length(): Int = rawlen()
     override fun len(): LuaValue = LuaValue.valueOf(rawlen())
