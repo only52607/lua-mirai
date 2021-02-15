@@ -9,9 +9,10 @@ fun main(args: Array<String>) {
     args.ifEmpty { throw Exception("请指定运行参数！") }
     when (args[0]) {
         "exec" -> if (args.size >= 2) {
-            LuaMiraiScript(sourceFile = File(args[1])).load()
+            val script = LuaMiraiScript(sourceFile = File(args[1]))
+            script.create()
+            script.load()
         } else throw Exception("请指定脚本路径！")
         else -> throw Exception("未知的运行参数！")
     }
 }
-
