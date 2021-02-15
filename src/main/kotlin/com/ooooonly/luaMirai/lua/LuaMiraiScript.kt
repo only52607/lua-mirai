@@ -29,7 +29,6 @@ class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCod
     override fun isLoaded(): Boolean = loaded
 
     override fun onStop() {
-        coroutineContext[Job]?.cancel()
         cancel()
         loaded = false
     }
@@ -43,7 +42,7 @@ class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCod
         loaded = true
     }
 
-    init {
+    override fun onCreate() {
         load(JseBaseLib())
         load(PackageLib())
         load(Bit32Lib())

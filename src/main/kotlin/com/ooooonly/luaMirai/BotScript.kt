@@ -30,6 +30,8 @@ interface BotScript {
 
     fun onReload() {
         onStop()
+        onDestroy()
+        onCreate()
         onLoad()
     }
 
