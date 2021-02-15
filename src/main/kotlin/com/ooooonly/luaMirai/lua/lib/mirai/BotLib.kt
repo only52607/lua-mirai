@@ -33,11 +33,10 @@ class BotLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
             "Bot" to varArgFunctionOf { varargs: Varargs ->
                 val account = varargs[0].checklong()
                 val pwd = varargs[1].checkjstring()
-                val config = BotConfiguration.Default.setScope()
-                if (varargs.narg() >= 3) {
+                val config = if (varargs.narg() >= 3) {
                     if (varargs[2].istable()) varargs[2].checktable().toBotConfiguration().setScope()
                     else BotConfiguration.Default.copy().setDeviceFile(varargs[2].checkjstring()).setScope()
-                }
+                } else BotConfiguration.Default.setScope()
                 val bot = BotFactory.newBot(account, pwd, config)
                 botIdSet.add(account)
                 botsTable[account] = bot
