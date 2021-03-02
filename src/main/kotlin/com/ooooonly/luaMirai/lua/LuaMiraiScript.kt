@@ -7,7 +7,6 @@ import com.ooooonly.luakt.lib.KotlinCoroutineLib
 import com.ooooonly.luakt.lib.LuaKotlinLib
 import com.ooooonly.luakt.mapper.ValueMapperChain
 import kotlinx.coroutines.*
-import net.mamoe.mirai.utils.MiraiExperimentalApi
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
 import org.luaj.vm2.compiler.LuaC
@@ -16,7 +15,6 @@ import org.luaj.vm2.lib.jse.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-@MiraiExperimentalApi
 class LuaMiraiScript(
     private val sourceFile: File? = null,
     private val sourceCode: String? = null

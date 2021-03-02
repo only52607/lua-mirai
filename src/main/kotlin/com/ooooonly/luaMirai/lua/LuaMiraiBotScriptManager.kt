@@ -2,12 +2,10 @@ package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.BotScriptManager
 import kotlinx.serialization.json.*
-import net.mamoe.mirai.utils.MiraiExperimentalApi
 import java.io.File
 import java.lang.IndexOutOfBoundsException
 
 @Suppress("unused")
-@MiraiExperimentalApi
 class LuaMiraiBotScriptManager(private val configFile: File?) : BotScriptManager {
     private val scripts: MutableList<LuaMiraiScript> = mutableListOf()
     init {
