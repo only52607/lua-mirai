@@ -34,11 +34,14 @@ class LuaMiraiMessage(val message: Message) : KotlinInstanceWrapper(message) {
         else -> throw LuaError("$message is not a MessageChain.")
     }
 
-    override fun get(key: LuaValue): LuaValue = when {
-        key.isnumber() -> getMessageElement(key.checkint())
-        key.isstring() -> getMessageElement(key.checkjstring())
-        else -> NIL
-    }?.takeIf { !it.isnil() } ?: super.get(key)
+    override fun get(key: LuaValue): LuaValue {
+        if (message !is MessageChain) return super.get(key)
+        return when {
+            key.isnumber() -> getMessageElement(key.checkint())
+            key.isstring() -> getMessageElement(key.checkjstring())
+            else -> NIL
+        }?.takeIf { !it.isnil() } ?: super.get(key)
+    }
 
     override fun eq_b(value: LuaValue?): Boolean = message.toString() == value.toString()
     override fun eq(value: LuaValue?): LuaValue = if (eq_b(value)) TRUE else FALSE
