@@ -52,11 +52,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-#          body: |
-#            Changes in this Release
-#            - First Change
-#            - Second Change
-          body_path: ./docs/updatedoc/latest.md
+          body: |
+            Lua Mirai
+            -
+#          body_path: ./docs/updatedoc/latest.md
           release_name: ${{ github.ref }}
           draft: false
           prerelease: true
