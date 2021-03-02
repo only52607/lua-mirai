@@ -50,8 +50,8 @@ object MessageLib : TwoArgFunction() {
         listOf("QuoteReply", "Quote", "Reply") nto luaFunctionOf { msg: Message ->
             return@luaFunctionOf when (msg) {
                 is MessageSource -> QuoteReply(msg)
-                is MessageChain -> msg[MessageSource] ?: throw LuaError("No message source found!")
-                else -> throw LuaError("No message source found!")
+                is MessageChain -> QuoteReply(msg)
+                else -> throw LuaError("Quote reply is required MessageSource or MessageSource.")
             }
         }
 
