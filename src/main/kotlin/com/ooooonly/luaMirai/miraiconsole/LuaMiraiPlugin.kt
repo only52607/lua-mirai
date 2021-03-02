@@ -13,7 +13,12 @@ import net.mamoe.mirai.utils.info
 @ConsoleExperimentalApi
 @MiraiExperimentalApi
 object LuaMiraiPlugin : KotlinPlugin(
-    JvmPluginDescription.loadFromResource()
+//    JvmPluginDescription.loadFromResource()
+    JvmPluginDescription(
+        id = "com.ooooonly.luaMirai",
+        name = "lua-mirai",
+        version = "2.0.8"
+    )
 ) {
     private lateinit var manager: LuaMiraiBotScriptManager
     private const val scriptConfigFile = "scripts.json"

@@ -8,5 +8,6 @@ interface BotScriptManager {
     fun reload(scriptId: Int)
     fun stop(scriptId: Int)
     fun delete(scriptId: Int)
+
     fun stopAll()
 }

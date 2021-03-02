@@ -17,8 +17,10 @@ import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 @MiraiExperimentalApi
-class LuaMiraiScript(private val sourceFile: File? = null, private val sourceCode: String? = null) : BotScript,
-    CoroutineScope, Globals() {
+class LuaMiraiScript(
+    private val sourceFile: File? = null,
+    private val sourceCode: String? = null
+) : BotScript, CoroutineScope, Globals() {
     override val coroutineContext: CoroutineContext = Dispatchers.Default + SupervisorJob()
 
     private val info = BotScript.Info(name = sourceFile?.name ?: "", file = sourceFile?.absolutePath ?: "")

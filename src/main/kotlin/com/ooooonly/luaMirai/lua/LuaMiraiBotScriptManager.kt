@@ -10,7 +10,6 @@ import java.lang.IndexOutOfBoundsException
 @MiraiExperimentalApi
 class LuaMiraiBotScriptManager(private val configFile: File?) : BotScriptManager {
     private val scripts: MutableList<LuaMiraiScript> = mutableListOf()
-
     init {
         kotlin.runCatching {
             loadScriptsFromConfigFile()
