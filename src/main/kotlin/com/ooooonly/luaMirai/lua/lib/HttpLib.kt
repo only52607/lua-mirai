@@ -65,7 +65,6 @@ open class HttpLib : TwoArgFunction() {
             "getRedirectUrl" to varArgFunctionOf { args: Varargs ->
                 getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")).asLuaValue()
             }
-
         }
         globals.set("Http", httpTable)
         return LuaValue.NIL
@@ -81,7 +80,7 @@ open class HttpLib : TwoArgFunction() {
 
     private fun Response.toVarargs(): Varargs = LuaValue.varargsOf(
         arrayOf(
-            LuaValue.valueOf(this.body?.string()),
+            LuaValue.valueOf(this.body?.bytes()),
             LuaValue.valueOf(this.isSuccessful),
             LuaValue.valueOf(this.code),
             LuaValue.valueOf(this.message)
