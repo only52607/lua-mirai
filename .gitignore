@@ -5,4 +5,8 @@ src/test
 .gradle
 .settings
 doc
+docs
+logo
 local.properties
+hs_err_*
+replay_*
