@@ -1,8 +1,6 @@
 package cn.qzwxsaedc.requests;
 
 
-import cn.qzwxsaedc.requests.entity.Requests;
-import cn.qzwxsaedc.requests.entity.Response;
 import kotlin.Suppress;
 import okhttp3.OkHttpClient;
 import org.luaj.vm2.LuaTable;

@@ -1,5 +1,6 @@
-package cn.qzwxsaedc.requests.entity;
+package cn.qzwxsaedc.requests;
 
+import cn.qzwxsaedc.requests.PreparedRequest;
 import kotlin.Suppress;
 import okhttp3.Headers;
 

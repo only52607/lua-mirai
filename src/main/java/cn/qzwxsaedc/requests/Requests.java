@@ -1,4 +1,4 @@
-package cn.qzwxsaedc.requests.entity;
+package cn.qzwxsaedc.requests;
 
 import cn.qzwxsaedc.requests.entity.libs.IgnoreCheckSSLSocketClient;
 import cn.qzwxsaedc.requests.exception.NotImplementedException;

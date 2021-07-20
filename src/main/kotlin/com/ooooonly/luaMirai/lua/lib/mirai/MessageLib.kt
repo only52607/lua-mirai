@@ -78,13 +78,13 @@ object MessageLib : TwoArgFunction() {
         "Face" to luaFunctionOf { arg: Int ->
             return@luaFunctionOf Face(arg)
         }
-/*
 
-        set("MarketFace", luaFunctionOf { id: Int,name:String ->
-            return@luaFunctionOf net.mamoe.mirai.message.data.MarketFace(id, name)
-        })
 
-*/
+//        set("MarketFace", luaFunctionOf { id: Int,name:String ->
+//            return@luaFunctionOf net.mamoe.mirai.message.data.MarketFace(id, name)
+//        })
+
+
         "VipFace" to luaFunctionOf { arg: LuaValue, count: LuaValue ->
             return@luaFunctionOf arg.asKValue<Int>().toVipFace(count.asKValue())
         }

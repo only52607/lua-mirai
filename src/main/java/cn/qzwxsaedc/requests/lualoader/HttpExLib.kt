@@ -1,5 +1,6 @@
-package cn.qzwxsaedc.requests
 
+
+import cn.qzwxsaedc.requests.LuaRequests
 import com.ooooonly.luakt.edit
 import com.ooooonly.luakt.luaFunctionOf
 import org.luaj.vm2.LuaTable
