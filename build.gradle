@@ -1,7 +1,7 @@
 buildscript{
     ext.kotlin_version = "1.4.21"
 
-    ext.mirai_core_version = "2.4.1"
+    ext.mirai_core_version = "2.6.7"
     ext.mirai_console_version = "2.0.0"
 
     ext.okhttp3_version = "4.7.2"
