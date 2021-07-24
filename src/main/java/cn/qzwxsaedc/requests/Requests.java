@@ -1,6 +1,6 @@
 package cn.qzwxsaedc.requests;
 
-import cn.qzwxsaedc.requests.entity.libs.IgnoreCheckSSLSocketClient;
+import cn.qzwxsaedc.requests.libs.IgnoreCheckSSLSocketClient;
 import cn.qzwxsaedc.requests.exception.NotImplementedException;
 import kotlin.Suppress;
 import okhttp3.OkHttpClient;
@@ -40,7 +40,7 @@ public class Requests {
             if (bin_data.length > 0)
                 request_builder.method(method, RequestBody.create(bin_data));
             else if (!method.equals("GET"))
-                throw new IllegalArgumentException(String.format("%s 方法必须设置data", method));
+                throw new IllegalArgumentException(String.format("%s ????????????data", method));
 
             return new Response(client.newCall(request_builder.url(url).build()).execute());
         } catch (IOException e) {
@@ -64,14 +64,14 @@ public class Requests {
     public Requests setData (final String data) {
         this.data = data;
         if(form != null || files != null)
-            throw new IllegalArgumentException("参数冲突: data/form/files不可同时使用。");
+            throw new IllegalArgumentException("???????: data/form/files????????��?");
         setBinData(data);
         return this;
     }
     public Requests setForm (final String form) throws NotImplementedException {
         this.form = form;
         if(data != null || files != null)
-            throw new IllegalArgumentException("参数冲突: data/form/files不可同时使用。");
+            throw new IllegalArgumentException("???????: data/form/files????????��?");
         throw new NotImplementedException();
 //        return this;
     }
@@ -83,9 +83,9 @@ public class Requests {
     }
     public Requests setFiles (final String[] files) throws IOException {
         if(data != null || form != null)
-            throw new IllegalArgumentException("参数冲突: data/json/files不可同时使用。");
+            throw new IllegalArgumentException("???????: data/json/files????????��?");
         if(files.length > 2)
-            throw new IllegalArgumentException("参数files最多只能接受两个值。");
+            throw new IllegalArgumentException("????files????????????????");
 
         this.files = files;
 
@@ -93,26 +93,26 @@ public class Requests {
             case 1:
                 File target = new File(files[0]);
                 if(!target.exists())
-                    throw new FileNotFoundException(String.format("文件 %s 不存在。", files[0]));
+                    throw new FileNotFoundException(String.format("??? %s ???????", files[0]));
                 setBinData(target);
                 break;
             case 2:
                 setBinData(files[1]);
                 break;
             default:
-                throw new IllegalArgumentException("长度不能为0。");
+                throw new IllegalArgumentException("????????0??");
         }
         return this;
     }
     public Requests setAuth (final String[] auth) {
         if(auth.length > 2)
-            throw new IllegalArgumentException("参数auth最多只能接受两个值。");
+            throw new IllegalArgumentException("????auth????????????????");
         this.auth = auth;
         return this;
     }
     public Requests setTimeout (final Long[] timeout) {
         if(timeout.length > 3)
-            throw new IllegalArgumentException("参数timeout最多只能接受三个值。");
+            throw new IllegalArgumentException("????timeout????????????????");
         this.timeout = timeout;
 
         switch (timeout.length){
@@ -124,7 +124,7 @@ public class Requests {
                 client_builder.connectTimeout(Duration.ofMillis(timeout[0]));
                 break;
             default:
-                throw new IllegalArgumentException("长度不能为0。");
+                throw new IllegalArgumentException("????????0??");
         }
         return this;
     }

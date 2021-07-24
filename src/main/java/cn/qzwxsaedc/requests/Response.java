@@ -15,35 +15,35 @@ import java.util.*;
 
 public class Response {
     private final okhttp3.Response response;
-    // å“åº”å†…å®¹
+    // ÏìÓ¦ÄÚÈİ
     public final byte[] content;
-    // æœåŠ¡å™¨è¿”å›çš„Cookies
+    // ·şÎñÆ÷·µ»ØµÄCookies
     public CookieJar cookies = null;
-    // ä»å‘é€åˆ°æ¥æ”¶æ€»å…±èŠ±è´¹çš„æ—¶é—´
+    // ´Ó·¢ËÍµ½½ÓÊÕ×Ü¹²»¨·ÑµÄÊ±¼ä
     public final long elapsed;
-    // Response.textæ‰€ç”¨çš„ç¼–ç 
+    // Response.textËùÓÃµÄ±àÂë
     public Charset encoding = StandardCharsets.UTF_8;
-    // å“åº”å¤´
+    // ÏìÓ¦Í·
     public final Map<String, List<String>> headers;
-    // æ˜¯å¦ä¸ºæ°¸ä¹…é‡å®šå‘(302)
+    // ÊÇ·ñÎªÓÀ¾ÃÖØ¶¨Ïò(302)
     public boolean is_permanent_redirect;
-    // æ˜¯å¦ä¸ºé‡å®šå‘(301, 302)
+    // ÊÇ·ñÎªÖØ¶¨Ïò(301, 302)
     public final boolean is_redirect;
-    // è¿”å›å“åº”çš„è§£æå¤´é“¾æ¥
+    // ·µ»ØÏìÓ¦µÄ½âÎöÍ·Á´½Ó
     public final String links = null;
-    // è¿”å›é‡å®šå‘é“¾ä¸­ä¸‹ä¸€ä¸ªè¯·æ±‚çš„PreparedRequest
+    // ·µ»ØÖØ¶¨ÏòÁ´ÖĞÏÂÒ»¸öÇëÇóµÄPreparedRequest
     public final PreparedRequest next = null;
-    // status_code < 400 æ—¶ä¸ºtrue
+    // status_code < 400 Ê±Îªtrue
     public final boolean ok;
-    // å“åº”å†…å®¹çš„åŸå§‹æµ
+    // ÏìÓ¦ÄÚÈİµÄÔ­Ê¼Á÷
     public final InputStream raw;
-    // æ–‡å­—å½¢å¼çš„HTTPçŠ¶æ€ï¼Œä¾‹å¦‚"Not Found"æˆ–è€…"OK"
+    // ÎÄ×ÖĞÎÊ½µÄHTTP×´Ì¬£¬ÀıÈç"Not Found"»òÕß"OK"
     public final String reason;
-    // å“åº”çš„PreparedRequestå¯¹è±¡ã€‚
+    // ÏìÓ¦µÄPreparedRequest¶ÔÏó¡£
     public final PreparedRequest request = null;
-    // æ•°å­—å½¢å¼çš„HTTPçŠ¶æ€ï¼Œä¾‹å¦‚"404"æˆ–è€…"200"
+    // Êı×ÖĞÎÊ½µÄHTTP×´Ì¬£¬ÀıÈç"404"»òÕß"200"
     public final int status_code;
-    // å“åº”å†…å®¹ï¼Œå­—ç¬¦ç¼–ç ä¸ºencoding
+    // ÏìÓ¦ÄÚÈİ£¬×Ö·û±àÂëÎªencoding
     public String text() {
         try{
             StringBuilder sb = new StringBuilder();
@@ -57,7 +57,7 @@ public class Response {
             return "";
         }
     }
-    // æœ€ç»ˆçš„URL
+    // ×îÖÕµÄURL
     public final String url;
     public Response(okhttp3.Response response) throws IOException {
         this.response = response;

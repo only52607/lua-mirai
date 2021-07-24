@@ -1,14 +1,11 @@
 package cn.qzwxsaedc.requests;
 
-
 import kotlin.Suppress;
 import okhttp3.OkHttpClient;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-
 import java.lang.reflect.Method;
-
-import static cn.qzwxsaedc.requests.entity.libs.Misc.*;
+import static cn.qzwxsaedc.requests.libs.Misc.*;
 
 @Suppress(names = "unused")
 public class LuaRequests extends Requests{

@@ -23,7 +23,7 @@ public class LuaValueEx {
             else if (type == byte.class || type == Byte.class)
                 return value.tobyte();
             else
-                throw new ClassCastException(String.format("æ— æ³•è¿›è¡Œè½¬æ¢: ä¸æ”¯æŒçš„ç±»å‹ %s", type.getName()));
+                throw new ClassCastException(String.format("ÎŞ·¨½øĞĞ×ª»»: ²»Ö§³ÖµÄÀàĞÍ %s", type.getName()));
         }
         else if (value.isnil())
             return null;
@@ -31,7 +31,7 @@ public class LuaValueEx {
             return value.checktable();
         else
             throw new ClassCastException(
-                    String.format("æºç±»å‹å’Œç›®æ ‡ç±»å‹å†²çª: éœ€è¦çš„ç±»å‹ä¸º%sï¼Œä½†æä¾›çš„ç±»å‹ä¸º%s",
+                    String.format("Ô´ÀàĞÍºÍÄ¿±êÀàĞÍ³åÍ»: ĞèÒªµÄÀàĞÍÎª%s£¬µ«Ìá¹©µÄÀàĞÍÎª%s",
                             type.getName(),
                             value.typename()));
     }

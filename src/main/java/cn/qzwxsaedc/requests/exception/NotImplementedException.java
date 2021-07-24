@@ -2,6 +2,6 @@ package cn.qzwxsaedc.requests.exception;
 
 public class NotImplementedException extends Exception{
     public NotImplementedException(){
-        super("è¯¥åŠŸèƒ½æš‚æœªå®žçŽ°");
+        super("¸Ã¹¦ÄÜÔÝÎ´ÊµÏÖ");
     }
 }

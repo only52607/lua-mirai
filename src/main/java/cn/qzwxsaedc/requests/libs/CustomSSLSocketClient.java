@@ -1,4 +1,4 @@
-package cn.qzwxsaedc.requests.entity.libs;
+package cn.qzwxsaedc.requests.libs;
 
 public class CustomSSLSocketClient {
 }
