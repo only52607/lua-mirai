@@ -28,6 +28,13 @@ object LuaMiraiPlugin : KotlinPlugin(
     override fun onEnable() {
         logger.info { "lua-mirai 加载成功，当前版本：${description.version}" }
         manager = LuaMiraiBotScriptManager(resolveConfigFile(scriptConfigFile))
+        try {
+            manager.loadScriptsByConfig()
+        } catch (e:Exception) {
+            logger.error("配置文件加载失败！")
+            e.printStackTrace()
+        }
+
         LuaMiraiCommand(manager, logger).register()
     }
 
