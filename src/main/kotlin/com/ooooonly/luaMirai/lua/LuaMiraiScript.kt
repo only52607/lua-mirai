@@ -23,9 +23,18 @@ class LuaMiraiScript(
     private val sourceFile: File? = null,
     private val sourceCode: String? = null
 ) : AbstractBotScript(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Default + SupervisorJob()
+
+    override lateinit var coroutineContext: CoroutineContext
+
+    private fun prepareCoroutineContext() {
+        coroutineContext = Dispatchers.Default + SupervisorJob()
+    }
 
     private var luaGlobals: Globals? = null
+
+    private fun prepareLuaGlobals() {
+        luaGlobals = Globals()
+    }
 
     override val info: BotScriptInfo by lazy {
         BotScriptInfo(name = sourceFile?.name ?: "", file = sourceFile?.absolutePath ?: "")
@@ -39,20 +48,16 @@ class LuaMiraiScript(
         loadAndExecuteSource()
     }
 
-    override fun onReload() {
-        cancel()
-        prepareLuaGlobals()
-        initLuaGlobals()
-        loadAndExecuteSource()
-    }
-
     override fun onCreate() {
+        prepareCoroutineContext()
         prepareLuaGlobals()
         initLuaGlobals()
     }
 
-    private fun prepareLuaGlobals() {
-        luaGlobals = Globals()
+    override fun onReload() {
+        onStop()
+        onCreate()
+        onLoad()
     }
 
     private fun initLuaGlobals() {
