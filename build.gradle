@@ -1,17 +1,13 @@
 buildscript{
     ext.kotlin_version = "1.4.21"
-
     ext.mirai_core_version = "2.6.7"
     ext.mirai_console_version = "2.0.0"
-
     ext.okhttp3_version = "4.7.2"
     ext.jsoup_version = "1.7.3"
     ext.sqlite_jdbc_version = "3.7.2"
-
     ext.shadow_version = "6.1.0"
-
     ext.auto_service_version = "1.0-rc7"
-
+    ext.lua_mirai_version = "2.0.12"
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
@@ -25,14 +21,11 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version "1.4.21"
     id 'com.github.johnrengelman.shadow' version "5.2.0"
-    id "com.jfrog.bintray" version "1.8.4"
     id 'maven-publish'
-//    id "org.jetbrains.kotlin.kapt" version "1.4.21"
-//    id "net.mamoe.mirai-console" version "2.0.0"
 }
 
-group aritifact_group
-version aritifact_version
+group 'com.ooooonly'
+version '2.0.12'
 
 repositories {
     maven { url 'https://jitpack.io' }
@@ -58,9 +51,9 @@ dependencies {
     runtimeOnly "net.mamoe:mirai-core:$mirai_core_version"
     compileOnly "net.mamoe:mirai-console:$mirai_console_version"
     testImplementation "net.mamoe:mirai-console-terminal:$mirai_console_version"
-
-//    kapt "com.google.auto.service:auto-service:$auto_service_version"
-//    compileOnly "com.google.auto.service:auto-service-annotations:$auto_service_version"
+    implementation "com.github.only52607:luakt:$lua_mirai_version"
+    // kapt "com.google.auto.service:auto-service:$auto_service_version"
+    // compileOnly "com.google.auto.service:auto-service-annotations:$auto_service_version"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
@@ -76,9 +69,6 @@ allprojects {
 }
 
 shadowJar {
-    archiveBaseName.set(aritifact_name)
-    archiveClassifier.set('')
-    archiveVersion.set(aritifact_version)
     manifest {
         attributes(
                 'Main-Class': 'com.ooooonly.luaMirai.MainKt'
@@ -94,46 +84,4 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
-}
-
-bintray {
-    try{
-        Properties properties = new Properties()
-        InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
-        properties.load(inputStream)
-        user = properties.getProperty('BINTRAY_USER') //System.getenv('BINTRAY_USER')
-        key = properties.getProperty('BINTRAY_KEY') //System.getenv('BINTRAY_KEY')
-    }catch(Exception e){
-        e.printStackTrace()
-    }
-    override = true     //如果有相同版本是否覆盖
-    publish = true      //是否上传后直接发布
-    pkg {
-        repo = 'maven'
-        name = project.name
-        userOrg = user
-        licenses = ['AGPL-V3']
-        vcsUrl = "github.com/only52607/lua-mirai"
-        issueTrackerUrl = "github.com/only52607/lua-mirai/issues"
-        version {
-            name = aritifact_version
-            desc = aritifact_description
-            released = new Date()
-            vcsTag = aritifact_version
-        }
-    }
-    publications = ['LMPublication']
-}
-
-publishing {
-    publications {
-        LMPublication(MavenPublication) {
-            artifact(jar)               //配置库jar包
-            artifact(sourcesJar)        //配置库源码jar包
-            artifact(javadocJar)        //配置库javadoc jar包
-            groupId aritifact_group     //包名
-            artifactId aritifact_id     //库id
-            version aritifact_version   //设置版本号
-        }
-    }
 }
