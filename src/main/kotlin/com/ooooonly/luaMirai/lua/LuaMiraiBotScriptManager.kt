@@ -1,10 +1,8 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.AbstractBotScriptManager
-import com.ooooonly.luaMirai.BotScriptManager
 import kotlinx.serialization.json.*
 import java.io.File
-import java.lang.IndexOutOfBoundsException
 
 @Suppress("unused")
 class LuaMiraiBotScriptManager(private val configFile: File?) : AbstractBotScriptManager<LuaMiraiScript>() {
