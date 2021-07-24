@@ -1,6 +1,8 @@
 package com.ooooonly.luaMirai.lua
 
+import com.ooooonly.luaMirai.AbstractBotScript
 import com.ooooonly.luaMirai.BotScript
+import com.ooooonly.luaMirai.BotScriptInfo
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.lua.lib.mirai.MiraiLib
 import com.ooooonly.luakt.lib.KotlinCoroutineLib
@@ -13,58 +15,97 @@ import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
 import java.io.File
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 
 class LuaMiraiScript(
     private val sourceFile: File? = null,
     private val sourceCode: String? = null
-) : BotScript, CoroutineScope, Globals() {
+) : AbstractBotScript(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Default + SupervisorJob()
 
-    private val info = BotScript.Info(name = sourceFile?.name ?: "", file = sourceFile?.absolutePath ?: "")
+    private var luaGlobals: Globals? = null
 
-    override fun getInfo(): BotScript.Info = info
-
-    var loaded = false
-    override fun isLoaded(): Boolean = loaded
+    override val info: BotScriptInfo by lazy {
+        BotScriptInfo(name = sourceFile?.name ?: "", file = sourceFile?.absolutePath ?: "")
+    }
 
     override fun onStop() {
         cancel()
-        loaded = false
     }
 
     override fun onLoad() {
-        when {
-            sourceFile != null -> loadfile(sourceFile.absolutePath).invoke()
-            sourceCode != null -> load(sourceCode).invoke()
-            else -> throw Exception("No script content found.")
-        }
-        loaded = true
+        loadAndExecuteSource()
+    }
+
+    override fun onReload() {
+        cancel()
+        prepareLuaGlobals()
+        initLuaGlobals()
+        loadAndExecuteSource()
     }
 
     override fun onCreate() {
-        load(JseBaseLib())
-        load(PackageLib())
-        load(Bit32Lib())
-        load(TableLib())
-        load(StringLib())
-        load(CoroutineLib())
-        load(JseMathLib())
-        load(JseIoLib())
-        load(JseOsLib())
-        load(LuajavaLib())
+        prepareLuaGlobals()
+        initLuaGlobals()
+    }
 
-        load(StringExLib())
-        load(MiraiLib(this))
-        load(LuaKotlinLib(this, ValueMapperChain))
-        load(KotlinCoroutineLib(this))
+    private fun prepareLuaGlobals() {
+        luaGlobals = Globals()
+    }
 
-        load(HttpLib())
-        load(JsonLib())
-        load(JDBCLib())
-        load(JsoupLib())
+    private fun initLuaGlobals() {
+        if (luaGlobals == null) throw Exception("Lua Globals not prepared!")
+        installLibs()
+        LoadState.install(luaGlobals)
+        LuaC.install(luaGlobals)
+    }
 
-        LoadState.install(this)
-        LuaC.install(this)
+    private fun installLibs() {
+        loadBaseLibs()
+        loadMiraiLibs()
+        loadExtendLibs()
+    }
+
+    private fun loadBaseLibs() {
+        luaGlobals?.apply {
+            load(JseBaseLib())
+            load(PackageLib())
+            load(Bit32Lib())
+            load(TableLib())
+            load(StringLib())
+            load(CoroutineLib())
+            load(JseMathLib())
+            load(JseIoLib())
+            load(JseOsLib())
+            load(LuajavaLib())
+        }
+    }
+
+    private fun loadMiraiLibs() {
+        luaGlobals?.apply {
+            load(StringExLib())
+            load(MiraiLib(this@LuaMiraiScript))
+            load(LuaKotlinLib(this@LuaMiraiScript, ValueMapperChain))
+            load(KotlinCoroutineLib(this@LuaMiraiScript))
+        }
+    }
+
+    private fun loadExtendLibs() {
+        luaGlobals?.apply {
+            load(HttpLib())
+            load(JsonLib())
+            load(JDBCLib())
+            load(JsoupLib())
+        }
+    }
+
+    private fun loadAndExecuteSource() {
+        when {
+            sourceFile != null -> luaGlobals?.loadfile(sourceFile.absolutePath)?.invoke()
+            sourceCode != null -> luaGlobals?.load(sourceCode)?.invoke()
+            else -> throw Exception("No script content found.")
+        }
     }
 }

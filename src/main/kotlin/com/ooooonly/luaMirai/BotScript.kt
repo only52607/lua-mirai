@@ -2,48 +2,24 @@ package com.ooooonly.luaMirai
 
 @Suppress("unused")
 interface BotScript {
-    fun isLoaded(): Boolean
+    fun stop()
 
-    fun create() = onCreate()
-    fun onCreate() {}
+    fun destroy()
 
-    fun stop() {
-        onStop()
-    }
+    fun load()
 
-    fun onStop() {}
+    fun reload()
 
-    fun destroy() {
-        onStop()
-        onDestroy()
-    }
+    val isLoaded: Boolean
 
-    fun onDestroy() {}
-
-    fun load() {
-        onLoad()
-    }
-
-    fun onLoad() {}
-
-    fun reload() = onReload()
-
-    fun onReload() {
-        onStop()
-        onDestroy()
-        onCreate()
-        onLoad()
-    }
-
-    fun getInfo(): Info? = null
-
-    data class Info(
-        var name: String = "",
-        var version: String = "",
-        var author: String = "",
-        var description: String = "",
-        var usage: String = "",
-        var file: String = ""
-    )
+    val info: BotScriptInfo?
 }
 
+data class BotScriptInfo (
+    var name: String = "",
+    var version: String = "",
+    var author: String = "",
+    var description: String = "",
+    var usage: String = "",
+    var file: String = ""
+)

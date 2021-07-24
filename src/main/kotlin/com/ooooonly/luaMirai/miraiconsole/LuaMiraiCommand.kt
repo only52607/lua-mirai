@@ -7,6 +7,7 @@ import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
+import java.io.File
 
 
 @Suppress("unused")
@@ -35,8 +36,8 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
         val list = manager.list()
         logger.info("已加载${list.size}个脚本：")
         list.forEachIndexed { i: Int, botScript: BotScript ->
-            botScript.getInfo()?.let { info ->
-                logger.info("[$i]   ${info.name}    ${if (botScript.isLoaded()) "已启用" else "未启用"}")
+            botScript.info?.let { info ->
+                logger.info("[$i]\t${info.name}\t${if (botScript.isLoaded) "已启用" else "未启用"}")
             }
         }
     }
@@ -45,7 +46,7 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
     @Description("载入一个脚本，但不执行")
     fun ConsoleCommandSender.add(@Name("文件名") fileName: String) {
         try {
-            manager.add(fileName)
+            manager.add(File(fileName))
             logger.info("添加脚本[$fileName]成功")
             manager.updateConfig()
         } catch (e: Exception) {
@@ -57,7 +58,7 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
     @Description("载入一个脚本，并且执行")
     fun ConsoleCommandSender.load(@Name("文件名") fileName: String) {
         try {
-            manager.load(fileName)
+            manager.load(File(fileName))
             logger.info("加载脚本[$fileName]成功")
             manager.updateConfig()
         } catch (e: Exception) {

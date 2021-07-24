@@ -19,10 +19,12 @@ class BotLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         val globals = env.checkglobals()
         val botsTable = LuaTable()
         globals.set("Bots", botsTable)
+        // bot lib被加载后，先读取所有bot实例到记录
         Bot.instances.forEach {
             botsTable[it.id] = it
             botIdSet.add(it.id)
         }
+        // 监听bot创建事件，当bot被创建后加入记录
         GlobalEventChannel.parentScope(coroutineScope).subscribeAlways<BotEvent> {
             if (!botIdSet.contains(this@subscribeAlways.bot.id)) {
                 botsTable[this@subscribeAlways.bot.id] = this@subscribeAlways.bot
@@ -36,7 +38,9 @@ class BotLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
                 val config = if (varargs.narg() >= 3) {
                     if (varargs[2].istable()) varargs[2].checktable().toBotConfiguration().setScope()
                     else BotConfiguration.Default.copy().setDeviceFile(varargs[2].checkjstring()).setScope()
-                } else BotConfiguration.Default.setScope()
+                } else {
+                    BotConfiguration.Default.setScope()
+                }
                 val bot = BotFactory.newBot(account, pwd, config)
                 botIdSet.add(account)
                 botsTable[account] = bot
