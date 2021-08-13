@@ -1,5 +1,6 @@
 package com.ooooonly.luaMirai.lua.lib.mirai
 
+import com.ooooonly.luaMirai.utils.miraiEventNames
 import com.ooooonly.luakt.*
 import com.ooooonly.luakt.mapper.ValueMapperChain
 import com.ooooonly.luakt.mapper.userdata.KotlinInstanceWrapper
@@ -12,6 +13,7 @@ import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotEvent
 import net.mamoe.mirai.event.events.UserEvent
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
@@ -19,9 +21,10 @@ import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
 
-
+@MiraiInternalApi
 @Suppress("unused")
 class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
+    @MiraiExperimentalApi
     @MiraiInternalApi
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()
@@ -39,12 +42,14 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         return LuaValue.NIL
     }
 
+    @MiraiExperimentalApi
     private val eventTable: LuaTable by lazy {
         buildLuaTable {
             "subscribe" to subscriber
         }
     }
 
+    @MiraiExperimentalApi
     private val subscriber
         get() = varArgFunctionOf { varargs ->
             var channel = GlobalEventChannel.parentScope(coroutineScope)
@@ -70,7 +75,12 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         return@filter !result.isnil(0)
     }
 
+    @MiraiExperimentalApi
     private fun EventChannel<*>.filterByEventName(eventName: String): EventChannel<*> = filter { event ->
+        val storeEventName = miraiEventNames[event::class]
+        if (storeEventName != null) {
+            return@filter storeEventName == eventName
+        }
         return@filter event::class.simpleName == eventName
     }
 
