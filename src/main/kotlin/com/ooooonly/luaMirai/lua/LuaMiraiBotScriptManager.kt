@@ -3,6 +3,7 @@ package com.ooooonly.luaMirai.lua
 import com.ooooonly.luaMirai.AbstractBotScriptManager
 import kotlinx.serialization.json.*
 import java.io.File
+import java.io.FileNotFoundException
 
 @Suppress("unused")
 class LuaMiraiBotScriptManager(private val configFile: File?) : AbstractBotScriptManager<LuaMiraiScript>() {
@@ -40,6 +41,7 @@ class LuaMiraiBotScriptManager(private val configFile: File?) : AbstractBotScrip
     }
 
     override fun add(file: File): Int {
+        if (!file.exists()) throw FileNotFoundException("文件 ${file.absolutePath} 不存在！")
         val script = LuaMiraiScript(file)
         scripts.add(script)
         script.create()
