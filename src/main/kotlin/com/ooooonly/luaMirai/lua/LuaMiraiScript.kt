@@ -15,8 +15,6 @@ import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
 import java.io.File
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 
 class LuaMiraiScript(
@@ -37,7 +35,7 @@ class LuaMiraiScript(
     }
 
     override val info: BotScriptInfo by lazy {
-        BotScriptInfo(name = sourceFile?.name ?: "", file = sourceFile?.absolutePath ?: "")
+        BotScriptInfo(name = sourceFile?.name ?: "", file = sourceFile?.path ?: "")
     }
 
     override fun onStop() {
