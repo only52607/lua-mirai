@@ -1,6 +1,7 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.AbstractBotScriptManager
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -37,7 +38,8 @@ class LuaMiraiBotScriptManager(private val configFile: File?) : AbstractBotScrip
                 })
             }
         }
-        configFile.writeText(configArray.toString())
+        val format = Json { prettyPrint = true }
+        configFile.writeText(format.encodeToString(configArray))
     }
 
     override fun add(file: File): Int {
