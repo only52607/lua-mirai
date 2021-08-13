@@ -23,6 +23,9 @@ class ExtensionLib : TwoArgFunction() {
                     func.call()
                 }
             }
+            "sleep" to luaFunctionOf { time: Long ->
+                Thread.sleep(time)
+            }
         }
         return LuaValue.NIL
     }
