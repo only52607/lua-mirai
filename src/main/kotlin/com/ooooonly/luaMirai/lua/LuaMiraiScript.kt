@@ -83,6 +83,7 @@ class LuaMiraiScript(
             load(JseIoLib())
             load(JseOsLib())
             load(LuajavaLib())
+            load(ExtensionLib())
         }
     }
 
