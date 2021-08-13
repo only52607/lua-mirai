@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import com.ooooonly.luaMirai.lua.LuaMiraiScript
+import net.mamoe.mirai.utils.MiraiInternalApi
 import java.io.File
 
 /**
@@ -16,8 +17,9 @@ import java.io.File
  * @version
  */
 class Executor : CliktCommand(help = "运行脚本", name = "exec") {
-    val file by argument(help = "文件路径").file(mustExist = true, mustBeReadable = true, canBeDir = false)
+    private val file by argument(help = "文件路径").file(mustExist = true, mustBeReadable = true, canBeDir = false)
 
+    @MiraiInternalApi
     override fun run() {
         val script = LuaMiraiScript(sourceFile = file)
         script.create()

@@ -9,6 +9,8 @@ import com.ooooonly.luakt.lib.KotlinCoroutineLib
 import com.ooooonly.luakt.lib.LuaKotlinLib
 import com.ooooonly.luakt.mapper.ValueMapperChain
 import kotlinx.coroutines.*
+import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.utils.MiraiInternalApi
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
 import org.luaj.vm2.compiler.LuaC
@@ -17,6 +19,7 @@ import org.luaj.vm2.lib.jse.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
+@MiraiInternalApi
 class LuaMiraiScript(
     private val sourceFile: File? = null,
     private val sourceCode: String? = null
@@ -46,18 +49,21 @@ class LuaMiraiScript(
         loadAndExecuteSource()
     }
 
+    @MiraiExperimentalApi
     override fun onCreate() {
         prepareCoroutineContext()
         prepareLuaGlobals()
         initLuaGlobals()
     }
 
+    @MiraiExperimentalApi
     override fun onReload() {
         onStop()
         onCreate()
         onLoad()
     }
 
+    @MiraiExperimentalApi
     private fun initLuaGlobals() {
         if (luaGlobals == null) throw Exception("Lua Globals not prepared!")
         installLibs()
@@ -65,6 +71,7 @@ class LuaMiraiScript(
         LuaC.install(luaGlobals)
     }
 
+    @MiraiExperimentalApi
     private fun installLibs() {
         loadBaseLibs()
         loadMiraiLibs()
@@ -87,6 +94,7 @@ class LuaMiraiScript(
         }
     }
 
+    @MiraiExperimentalApi
     private fun loadMiraiLibs() {
         luaGlobals?.apply {
             load(StringExLib())

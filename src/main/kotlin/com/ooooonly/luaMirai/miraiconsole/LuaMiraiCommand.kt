@@ -6,6 +6,7 @@ import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 
@@ -13,6 +14,7 @@ import java.io.File
 @Suppress("unused")
 @MiraiExperimentalApi
 @ConsoleExperimentalApi
+@MiraiInternalApi
 class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val logger: MiraiLogger) :
     CompositeCommand(
         owner = LuaMiraiPlugin,

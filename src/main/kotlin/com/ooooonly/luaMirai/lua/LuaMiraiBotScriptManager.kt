@@ -3,10 +3,12 @@ package com.ooooonly.luaMirai.lua
 import com.ooooonly.luaMirai.AbstractBotScriptManager
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import net.mamoe.mirai.utils.MiraiInternalApi
 import java.io.File
 import java.io.FileNotFoundException
 
 @Suppress("unused")
+@MiraiInternalApi
 class LuaMiraiBotScriptManager(private val configFile: File?) : AbstractBotScriptManager<LuaMiraiScript>() {
     /**
      * 从配置文件读取已加载脚本信息

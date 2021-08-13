@@ -6,10 +6,12 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.info
 
 @Suppress("unused")
 @ConsoleExperimentalApi
+@MiraiInternalApi
 object LuaMiraiPlugin : KotlinPlugin(
     try {
         JvmPluginDescription.loadFromResource()
