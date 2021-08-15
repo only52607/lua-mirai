@@ -23,25 +23,31 @@ object LuaMiraiPlugin : KotlinPlugin(
         )
     }
 ) {
-    private lateinit var manager: LuaMiraiBotScriptManager
+    private val manager: LuaMiraiBotScriptManager by lazy {
+        LuaMiraiBotScriptManager()
+    }
+
+    @MiraiExperimentalApi
+    private val command: LuaMiraiCommand by lazy {
+        LuaMiraiCommand(manager, logger, resolveConfigFile(scriptConfigFile))
+    }
+
     private const val scriptConfigFile = "scripts.json"
 
     @MiraiExperimentalApi
     override fun onEnable() {
-        logger.info { "lua-mirai 加载成功，当前版本：${description.version}" }
-        manager = LuaMiraiBotScriptManager(resolveConfigFile(scriptConfigFile))
         try {
-            manager.loadScriptsByConfig()
-        } catch (e:Exception) {
+            command.loadScripts()
+        } catch (e: Exception) {
             logger.error("配置文件加载失败！")
             e.printStackTrace()
         }
-
-        LuaMiraiCommand(manager, logger).register()
+        command.register()
+        logger.info { "lua-mirai 加载成功，当前版本：${description.version}" }
     }
 
     override fun onDisable() {
-        logger.info { "lua-mirai 已被停用" }
-        manager.stopAll()
+        manager.deleteAll()
+        logger.info { "lua-mirai 已停用" }
     }
 }

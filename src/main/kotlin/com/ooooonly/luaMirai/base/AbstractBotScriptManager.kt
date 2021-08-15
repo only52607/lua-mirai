@@ -1,6 +1,5 @@
 package com.ooooonly.luaMirai.base
 
-import java.io.File
 import java.lang.IndexOutOfBoundsException
 
 /**
@@ -10,17 +9,23 @@ import java.lang.IndexOutOfBoundsException
  * @author ooooonly
  * @version
  */
-abstract class AbstractBotScriptManager<S: BotScript>: BotScriptManager {
+abstract class AbstractBotScriptManager<Script : BotScript<Info>, Info, Source> :
+    BotScriptManager<Script, Info, Source> {
 
-    protected val scripts: MutableList<S> = mutableListOf()
+    private val scripts: MutableList<Script> = mutableListOf()
 
-    override fun list() = scripts
+    protected fun appendScript(script: Script): Int {
+        scripts.add(script)
+        return scripts.size - 1
+    }
+
+    override fun list() = scripts.toList()
 
     override fun getScript(index: Int) =
-        scripts.getOrNull(index) ?: throw IndexOutOfBoundsException("Index ${index} out of script bounds!")
+        scripts.getOrNull(index) ?: throw IndexOutOfBoundsException("Index $index out of script bounds!")
 
-    override fun load(file: File): Int {
-        return add(file).also { getScript(it).load() }
+    override fun load(source: Source): Int {
+        return add(source).also { getScript(it).load() }
     }
 
     override fun execute(scriptId: Int) {

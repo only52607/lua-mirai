@@ -1,7 +1,11 @@
 package com.ooooonly.luaMirai.miraiconsole
 
 import com.ooooonly.luaMirai.base.BotScript
+import com.ooooonly.luaMirai.lua.LuaSource
+import com.ooooonly.luaMirai.lua.BotScriptInfo
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
@@ -9,13 +13,19 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
+import java.lang.IllegalArgumentException
+import java.net.URL
 
 
 @Suppress("unused")
 @MiraiExperimentalApi
 @ConsoleExperimentalApi
 @MiraiInternalApi
-class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val logger: MiraiLogger) :
+class LuaMiraiCommand(
+    private val manager: LuaMiraiBotScriptManager,
+    private val logger: MiraiLogger,
+    private val configFile: File?
+) :
     CompositeCommand(
         owner = LuaMiraiPlugin,
         primaryName = "lua",
@@ -37,7 +47,7 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
     fun ConsoleCommandSender.list() {
         val list = manager.list()
         logger.info("已加载${list.size}个脚本：")
-        list.forEachIndexed { i: Int, botScript: BotScript ->
+        list.forEachIndexed { i: Int, botScript: BotScript<BotScriptInfo> ->
             botScript.info?.let { info ->
                 logger.info("[$i]\t${info.name}\t${if (botScript.isLoaded) "已启用" else "未启用"}")
             }
@@ -48,9 +58,21 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
     @Description("载入一个脚本，但不执行")
     fun ConsoleCommandSender.add(@Name("文件名") fileName: String) {
         try {
-            manager.add(File(fileName))
-            logger.info("添加脚本[$fileName]成功")
-            manager.updateConfig()
+            val index = manager.add(LuaSource.LuaFileSource(fileName))
+            logger.info("添加脚本[$index] $fileName 成功")
+            updateConfig()
+        } catch (e: Exception) {
+            logger.error(e.message)
+        }
+    }
+
+    @SubCommand
+    @Description("载入一个远程脚本，但不执行")
+    fun ConsoleCommandSender.addRemote(@Name("脚本URL") path: String) {
+        try {
+            val index = manager.add(LuaSource.LuaURLSource(URL(path)))
+            logger.info("添加脚本[$index] $path 成功")
+            updateConfig()
         } catch (e: Exception) {
             logger.error(e.message)
         }
@@ -60,9 +82,21 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
     @Description("载入一个脚本，并且执行")
     fun ConsoleCommandSender.load(@Name("文件名") fileName: String) {
         try {
-            manager.load(File(fileName))
-            logger.info("加载脚本[$fileName]成功")
-            manager.updateConfig()
+            val index = manager.load(LuaSource.LuaFileSource(fileName))
+            logger.info("加载脚本[$index] $fileName 成功")
+            updateConfig()
+        } catch (e: Exception) {
+            logger.error(e.message)
+        }
+    }
+
+    @SubCommand
+    @Description("载入一个远程脚本，并且执行")
+    fun ConsoleCommandSender.loadRemote(@Name("脚本URL") path: String) {
+        try {
+            val index = manager.load(LuaSource.LuaURLSource(URL(path)))
+            logger.info("加载脚本[$index] $path 成功")
+            updateConfig()
         } catch (e: Exception) {
             logger.error(e.message)
         }
@@ -74,7 +108,7 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
         try {
             manager.execute(scriptId)
             logger.info("执行脚本[$scriptId]成功")
-            manager.updateConfig()
+            updateConfig()
         } catch (e: Exception) {
             logger.error(e.message)
         }
@@ -86,7 +120,7 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
         try {
             manager.reload(scriptId)
             logger.info("重载脚本[$scriptId]成功")
-            manager.updateConfig()
+            updateConfig()
         } catch (e: Exception) {
             logger.error(e.message)
         }
@@ -98,7 +132,7 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
         try {
             manager.stop(scriptId)
             logger.info("停用脚本[$scriptId]成功")
-            manager.updateConfig()
+            updateConfig()
         } catch (e: Exception) {
             logger.error(e.message)
         }
@@ -110,9 +144,77 @@ class LuaMiraiCommand(private val manager: LuaMiraiBotScriptManager, private val
         try {
             manager.delete(scriptId)
             logger.info("删除脚本[$scriptId]成功")
-            manager.updateConfig()
+            updateConfig()
         } catch (e: Exception) {
             logger.error(e.message)
         }
+    }
+
+    fun loadScripts() {
+        loadScriptsByConfigFile()
+    }
+
+    /**
+     * 从配置文件读取已加载脚本信息
+     */
+    private fun loadScriptsByConfigFile() {
+        if (configFile == null || !configFile.exists()) return
+        val jsonConfigArray = Json.parseToJsonElement(configFile.readText()).jsonArray
+        jsonConfigArray.forEachIndexed { _, itemElement ->
+            kotlin.runCatching {
+                val item = itemElement.jsonObject
+                val index: Int = when (item["type"]?.jsonPrimitive?.contentOrNull) {
+                    "file" -> {
+                        val fileName = item["file"]?.jsonPrimitive?.contentOrNull!!
+                        manager.add(LuaSource.LuaFileSource(fileName))
+                    }
+                    "content" -> {
+                        val content = item["content"]?.jsonPrimitive?.contentOrNull!!
+                        manager.add(LuaSource.LuaContentSource(content))
+                    }
+                    "url" -> {
+                        val urlString = item["url"]?.jsonPrimitive?.contentOrNull!!
+                        manager.add(LuaSource.LuaURLSource(URL(urlString)))
+                    }
+                    else -> throw IllegalArgumentException("Illegal script type.")
+                }
+                if (item["enable"]?.jsonPrimitive?.booleanOrNull == true) {
+                    manager.getScript(index).load()
+                }
+            }
+        }
+    }
+
+    private val jsonFormat by lazy {
+        Json { prettyPrint = true }
+    }
+
+    /**
+     * 写出脚本信息到配置文件
+     */
+    private fun updateConfig() {
+        if (configFile == null) return
+        val configArray = buildJsonArray {
+            manager.list().forEach { script ->
+                add(buildJsonObject {
+                    when (val source = script.getSource()) {
+                        is LuaSource.LuaFileSource -> {
+                            this@buildJsonObject.put("type", "file")
+                            this@buildJsonObject.put("file", source.file.path)
+                        }
+                        is LuaSource.LuaContentSource -> {
+                            this@buildJsonObject.put("type", "content")
+                            this@buildJsonObject.put("content", source.content)
+                        }
+                        is LuaSource.LuaURLSource -> {
+                            this@buildJsonObject.put("type", "url")
+                            this@buildJsonObject.put("url", source.url.toString())
+                        }
+                    }
+                    this@buildJsonObject.put("enable", script.isLoaded)
+                })
+            }
+        }
+        configFile.writeText(jsonFormat.encodeToString(configArray))
     }
 }

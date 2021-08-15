@@ -1,29 +1,27 @@
 package com.ooooonly.luaMirai.base
 
-import java.io.File
-
-interface BotScriptManager {
+interface BotScriptManager<Script : BotScript<Info>, Info, Source> {
     /**
      * 列出所有脚本
      */
-    fun list(): List<BotScript>
+    fun list(): List<Script>
 
     /**
      * 获取指定位置脚本
      */
-    fun getScript(index: Int): BotScript
+    fun getScript(index: Int): Script
 
     /**
      * 读入脚本
      * 返回脚本索引
      */
-    fun add(file: File): Int
+    fun add(source: Source): Int
 
     /**
      * 读入并加载脚本
      * 返回脚本索引
      */
-    fun load(file: File): Int
+    fun load(source: Source): Int
 
     /**
      * 加载指定位置脚本

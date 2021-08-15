@@ -2,12 +2,10 @@ package com.ooooonly.luaMirai.commander
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
+import com.ooooonly.luaMirai.lua.LuaSource
 import com.ooooonly.luaMirai.lua.LuaMiraiScript
 import net.mamoe.mirai.utils.MiraiInternalApi
-import java.io.File
 
 /**
  * ClassName: Executor
@@ -21,7 +19,7 @@ class Executor : CliktCommand(help = "运行脚本", name = "exec") {
 
     @MiraiInternalApi
     override fun run() {
-        val script = LuaMiraiScript(sourceFile = file)
+        val script = LuaMiraiScript(LuaSource.LuaFileSource(file))
         script.create()
         script.load()
     }

@@ -7,7 +7,7 @@ package com.ooooonly.luaMirai.base
  * @author ooooonly
  * @version
  */
-abstract class AbstractBotScript: BotScript {
+abstract class AbstractBotScript<T> : BotScript<T> {
 
     private var isLoaderInternal = false
 

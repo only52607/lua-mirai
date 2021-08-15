@@ -1,7 +1,7 @@
 package com.ooooonly.luaMirai.base
 
 @Suppress("unused")
-interface BotScript {
+interface BotScript<T> {
     fun stop()
 
     fun destroy()
@@ -12,14 +12,5 @@ interface BotScript {
 
     val isLoaded: Boolean
 
-    val info: BotScriptInfo?
+    val info: T?
 }
-
-data class BotScriptInfo (
-    var name: String = "",
-    var version: String = "",
-    var author: String = "",
-    var description: String = "",
-    var usage: String = "",
-    var file: String = ""
-)

@@ -1,7 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.base.AbstractBotScript
-import com.ooooonly.luaMirai.base.BotScriptInfo
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.lua.lib.mirai.MiraiLib
 import com.ooooonly.luakt.lib.KotlinCoroutineLib
@@ -15,14 +14,12 @@ import org.luaj.vm2.LoadState
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
-import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 @MiraiInternalApi
 class LuaMiraiScript(
-    private val sourceFile: File? = null,
-    private val sourceCode: String? = null
-) : AbstractBotScript(), CoroutineScope {
+    private val source: LuaSource
+) : AbstractBotScript<BotScriptInfo>(), CoroutineScope {
 
     override lateinit var coroutineContext: CoroutineContext
 
@@ -37,8 +34,10 @@ class LuaMiraiScript(
     }
 
     override val info: BotScriptInfo by lazy {
-        BotScriptInfo(name = sourceFile?.name ?: "", file = sourceFile?.path ?: "")
+        BotScriptInfo(name = source.chunkName)
     }
+
+    fun getSource() = source
 
     override fun onStop() {
         cancel()
@@ -113,10 +112,16 @@ class LuaMiraiScript(
     }
 
     private fun loadAndExecuteSource() {
-        when {
-            sourceFile != null -> luaGlobals?.loadfile(sourceFile.absolutePath)?.invoke()
-            sourceCode != null -> luaGlobals?.load(sourceCode)?.invoke()
-            else -> throw Exception("No script content found.")
-        }
+        val globals = luaGlobals ?: throw Exception("Globals have not been initialize.")
+        source.load(globals).invoke()
     }
 }
+
+data class BotScriptInfo(
+    var name: String = "",
+    var version: String = "",
+    var author: String = "",
+    var description: String = "",
+    var usage: String = "",
+    var file: String = ""
+)
