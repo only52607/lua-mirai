@@ -34,10 +34,10 @@ class StringExLib : TwoArgFunction() {
                 return@luaFunctionOf s.length
             }
             "encodeURL" to luaFunctionOf { s: String, charset: String ->
-                return@luaFunctionOf URLEncoder.encode(s, Charset.forName(charset))
+                return@luaFunctionOf URLEncoder.encode(s, charset)
             }
             "decodeURL" to luaFunctionOf { s: String, charset: String ->
-                return@luaFunctionOf URLDecoder.decode(s, Charset.forName(charset))
+                return@luaFunctionOf URLDecoder.decode(s, charset)
             }
         }
         return LuaValue.NIL
