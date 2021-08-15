@@ -1,4 +1,4 @@
-package com.ooooonly.luaMirai
+package com.ooooonly.luaMirai.base
 
 /**
  * ClassName: AbstractBotScript

@@ -1,6 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.AbstractBotScriptManager
+import com.ooooonly.luaMirai.base.AbstractBotScriptManager
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.utils.MiraiInternalApi

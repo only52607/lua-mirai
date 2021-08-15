@@ -1,8 +1,7 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.AbstractBotScript
-import com.ooooonly.luaMirai.BotScript
-import com.ooooonly.luaMirai.BotScriptInfo
+import com.ooooonly.luaMirai.base.AbstractBotScript
+import com.ooooonly.luaMirai.base.BotScriptInfo
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.lua.lib.mirai.MiraiLib
 import com.ooooonly.luakt.lib.KotlinCoroutineLib

@@ -1,6 +1,5 @@
-package com.ooooonly.luaMirai
+package com.ooooonly.luaMirai.base
 
-import com.ooooonly.luaMirai.lua.LuaMiraiScript
 import java.io.File
 import java.lang.IndexOutOfBoundsException
 

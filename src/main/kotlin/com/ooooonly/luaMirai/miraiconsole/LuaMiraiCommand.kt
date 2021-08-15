@@ -1,6 +1,6 @@
 package com.ooooonly.luaMirai.miraiconsole
 
-import com.ooooonly.luaMirai.BotScript
+import com.ooooonly.luaMirai.base.BotScript
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.ConsoleCommandSender
