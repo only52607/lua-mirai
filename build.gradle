@@ -9,11 +9,9 @@ buildscript{
     ext.auto_service_version = "1.0-rc7"
     ext.lua_mirai_version = "2.0.12"
     repositories {
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
-        jcenter()
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
     }
 }
 
@@ -25,17 +23,13 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '2.2.0'
+version '2.2.2'
 
 repositories {
     maven { url 'https://jitpack.io' }
-    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
-    maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
-    maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/google' }
     mavenCentral()
-    jcenter()
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
 }
 
 dependencies {
