@@ -23,7 +23,7 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '2.2.2.1'
+version '2.2.2.2'
 
 repositories {
     maven { url 'https://jitpack.io' }
@@ -80,4 +80,15 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = group
+            artifactId = 'lua-mirai'
+            version = version
+            from components.java
+        }
+    }
 }
