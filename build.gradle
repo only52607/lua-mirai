@@ -23,7 +23,7 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '2.2.2.2'
+version '2.2.3'
 
 repositories {
     maven { url 'https://jitpack.io' }
@@ -55,10 +55,9 @@ dependencies {
 }
 
 allprojects {
-    //Support @JvmDefault
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
-            freeCompilerArgs = ['-Xjvm-default=enable'] //enable or compatibility
+            freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn']
             jvmTarget = "1.8"
         }
     }
