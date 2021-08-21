@@ -23,9 +23,9 @@ import org.luaj.vm2.lib.TwoArgFunction
 
 @MiraiInternalApi
 @Suppress("unused")
+@OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
 class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
-    @MiraiExperimentalApi
-    @MiraiInternalApi
+    @OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()
         globals.edit {
@@ -42,14 +42,14 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         return LuaValue.NIL
     }
 
-    @MiraiExperimentalApi
+    @OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
     private val eventTable: LuaTable by lazy {
         buildLuaTable {
             "subscribe" to subscriber
         }
     }
 
-    @MiraiExperimentalApi
+    @OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
     private val subscriber
         get() = varArgFunctionOf { varargs ->
             var channel = GlobalEventChannel.parentScope(coroutineScope)
@@ -75,7 +75,7 @@ class EventLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
         return@filter !result.isnil(0)
     }
 
-    @MiraiExperimentalApi
+    @OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
     private fun EventChannel<*>.filterByEventName(eventName: String): EventChannel<*> = filter { event ->
         val storeEventName = miraiEventNames[event::class]
         if (storeEventName != null) {

@@ -7,14 +7,14 @@ package com.ooooonly.luaMirai.base
  * @author ooooonly
  * @version
  */
-abstract class AbstractBotScript<T> : BotScript<T> {
+abstract class AbstractBotScript : BotScript {
 
     private var isLoaderInternal = false
 
     override val isLoaded: Boolean
         get() = isLoaderInternal
 
-    fun create() = onCreate()
+    override fun create() = onCreate()
 
     protected open fun onCreate() {}
 

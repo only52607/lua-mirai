@@ -1,9 +1,8 @@
 package com.ooooonly.luaMirai.miraiconsole
 
-import com.ooooonly.luaMirai.base.BotScript
-import com.ooooonly.luaMirai.lua.LuaSource
-import com.ooooonly.luaMirai.lua.BotScriptInfo
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
+import com.ooooonly.luaMirai.lua.LuaMiraiScript
+import com.ooooonly.luaMirai.lua.LuaSource
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.command.CompositeCommand
@@ -13,7 +12,6 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.net.URL
 
 
@@ -47,10 +45,8 @@ class LuaMiraiCommand(
     fun ConsoleCommandSender.list() {
         val list = manager.list()
         logger.info("已加载${list.size}个脚本：")
-        list.forEachIndexed { i: Int, botScript: BotScript<BotScriptInfo> ->
-            botScript.info?.let { info ->
-                logger.info("[$i]\t${info.name}\t${if (botScript.isLoaded) "已启用" else "未启用"}")
-            }
+        list.forEachIndexed { i: Int, botScript: LuaMiraiScript ->
+            logger.info("[$i]\t${botScript.header.getOrDefault("name", botScript.getSource().chunkName) }\t${if (botScript.isLoaded) "已启用" else "未启用"}")
         }
     }
 

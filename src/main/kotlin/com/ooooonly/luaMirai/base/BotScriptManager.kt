@@ -1,6 +1,6 @@
 package com.ooooonly.luaMirai.base
 
-interface BotScriptManager<Script : BotScript<Info>, Info, Source> {
+interface BotScriptManager<Script : BotScript, Source> {
     /**
      * 列出所有脚本
      */

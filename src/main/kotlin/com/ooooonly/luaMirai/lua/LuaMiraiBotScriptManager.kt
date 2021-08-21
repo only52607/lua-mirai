@@ -6,7 +6,7 @@ import java.io.FileNotFoundException
 
 @Suppress("unused")
 @MiraiInternalApi
-class LuaMiraiBotScriptManager : AbstractBotScriptManager<LuaMiraiScript, BotScriptInfo, LuaSource>() {
+class LuaMiraiBotScriptManager : AbstractBotScriptManager<LuaMiraiScript, LuaSource>() {
     override fun add(source: LuaSource): Int {
         if (source is LuaSource.LuaFileSource && !source.file.exists()) throw FileNotFoundException("文件 ${source.file.absolutePath} 不存在！")
         val script = LuaMiraiScript(source)

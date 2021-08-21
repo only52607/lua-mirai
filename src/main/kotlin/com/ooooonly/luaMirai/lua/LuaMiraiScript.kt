@@ -1,6 +1,7 @@
 package com.ooooonly.luaMirai.lua
 
 import com.ooooonly.luaMirai.base.AbstractBotScript
+import com.ooooonly.luaMirai.base.BotScriptHeader
 import com.ooooonly.luaMirai.lua.lib.*
 import com.ooooonly.luaMirai.lua.lib.mirai.MiraiLib
 import com.ooooonly.luakt.lib.KotlinCoroutineLib
@@ -14,12 +15,17 @@ import org.luaj.vm2.LoadState
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
+import java.io.InputStream
+import java.io.PrintStream
 import kotlin.coroutines.CoroutineContext
 
 @MiraiInternalApi
 class LuaMiraiScript(
-    private val source: LuaSource
-) : AbstractBotScript<BotScriptInfo>(), CoroutineScope {
+    private var source: LuaSource,
+    private val stdout: PrintStream? = System.out,
+    private val stderr: PrintStream? = System.err,
+    private val stdin: InputStream? = null
+) : AbstractBotScript(), CoroutineScope {
 
     override lateinit var coroutineContext: CoroutineContext
 
@@ -30,12 +36,15 @@ class LuaMiraiScript(
     private var luaGlobals: Globals? = null
 
     private fun prepareLuaGlobals() {
-        luaGlobals = Globals()
+        luaGlobals = Globals().apply {
+            STDOUT = stdout
+            STDERR = stderr
+            STDIN = stdin
+        }
     }
 
-    override val info: BotScriptInfo by lazy {
-        BotScriptInfo(name = source.chunkName)
-    }
+    override val header: BotScriptHeader
+        get() = source.getHeader()
 
     fun getSource() = source
 
@@ -57,6 +66,7 @@ class LuaMiraiScript(
     @MiraiExperimentalApi
     override fun onReload() {
         onStop()
+        source = source.copy()
         onCreate()
         onLoad()
     }
@@ -117,11 +127,3 @@ class LuaMiraiScript(
     }
 }
 
-data class BotScriptInfo(
-    var name: String = "",
-    var version: String = "",
-    var author: String = "",
-    var description: String = "",
-    var usage: String = "",
-    var file: String = ""
-)

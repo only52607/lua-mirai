@@ -9,8 +9,8 @@ import java.lang.IndexOutOfBoundsException
  * @author ooooonly
  * @version
  */
-abstract class AbstractBotScriptManager<Script : BotScript<Info>, Info, Source> :
-    BotScriptManager<Script, Info, Source> {
+abstract class AbstractBotScriptManager<Script : BotScript, Source> :
+    BotScriptManager<Script, Source> {
 
     private val scripts: MutableList<Script> = mutableListOf()
 

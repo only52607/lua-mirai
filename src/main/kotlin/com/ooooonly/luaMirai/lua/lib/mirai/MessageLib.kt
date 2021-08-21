@@ -16,7 +16,7 @@ import java.io.File
 import java.net.URL
 
 @Suppress("unused")
-@MiraiExperimentalApi
+@OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
 object MessageLib : TwoArgFunction() {
     @MiraiInternalApi
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {

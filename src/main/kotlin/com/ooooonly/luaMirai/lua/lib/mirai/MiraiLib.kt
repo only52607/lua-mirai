@@ -6,8 +6,7 @@ import net.mamoe.mirai.utils.MiraiInternalApi
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
 
-@MiraiExperimentalApi
-@MiraiInternalApi
+@OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
 open class MiraiLib(private val coroutineScope: CoroutineScope) : TwoArgFunction() {
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()
