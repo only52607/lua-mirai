@@ -15,6 +15,19 @@ class LuaMiraiMessage(val message: Message) : KotlinInstanceWrapper(message) {
     private fun Message.typename(): String = when (this) {
         is MessageChain -> "MessageChain"
         is MessageSource -> "MessageSource"
+        is QuoteReply -> "QuoteReply"
+        is PlainText -> "PlainText"
+        is At -> "At"
+        is Image -> "Image"
+        is FlashImage -> "FlashImage"
+        is AtAll -> "AtAll"
+        is Face -> "Face"
+        is VipFace -> "VipFace"
+        is PokeMessage -> "PokeMessage"
+        is ForwardMessage -> "ForwardMessage"
+        is LightApp -> "LightApp"
+        is Voice -> "Voice"
+        is ServiceMessage -> "ServiceMessage"
         is ConstrainSingle -> this.key.toString()
         else -> this::class.simpleName ?: ""
     }
