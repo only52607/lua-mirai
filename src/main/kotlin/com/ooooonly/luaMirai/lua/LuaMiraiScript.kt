@@ -19,7 +19,7 @@ import java.io.InputStream
 import java.io.PrintStream
 import kotlin.coroutines.CoroutineContext
 
-@MiraiInternalApi
+@OptIn(MiraiInternalApi::class)
 class LuaMiraiScript(
     private var source: LuaSource,
     private val stdout: PrintStream? = System.out,
@@ -30,7 +30,7 @@ class LuaMiraiScript(
     override lateinit var coroutineContext: CoroutineContext
 
     private fun prepareCoroutineContext() {
-        coroutineContext = Dispatchers.Default + SupervisorJob()
+        coroutineContext = SupervisorJob() + Dispatchers.Default
     }
 
     private var luaGlobals: Globals? = null
@@ -47,6 +47,8 @@ class LuaMiraiScript(
         get() = source.getHeader()
 
     fun getSource() = source
+
+    fun getGlobal() = luaGlobals
 
     override fun onStop() {
         cancel()
