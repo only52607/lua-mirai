@@ -63,7 +63,7 @@ sealed class LuaSource {
         this[groupValues[1]] = groupValues[2]
     }
 
-    protected fun Sequence<String>.parseBotScriptHeader(): BotScriptHeader = mutableBotScriptHeaderOf {
+    protected fun Sequence<String>.parseBotScriptHeader(): MutableBotScriptHeader = mutableBotScriptHeaderOf {
         val iterator = this@parseBotScriptHeader.iterator()
         if (!iterator.hasNext() || !matchHeaderStart(iterator.next())) return@mutableBotScriptHeaderOf
         while (iterator.hasNext()) {
@@ -85,7 +85,11 @@ sealed class LuaSource {
         }
 
         private val _header: BotScriptHeader by lazy {
-            FileReader(file).useLines { it.parseBotScriptHeader() }
+            FileReader(file).useLines { it.parseBotScriptHeader() }.also {
+                if (it["name"] == null) {
+                    it["name"] = file.name
+                }
+            }
         }
 
         override fun getHeader(): BotScriptHeader {
