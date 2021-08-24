@@ -1,14 +1,13 @@
 package com.ooooonly.luaMirai.lua.lib
 
 import com.ooooonly.luakt.asLuaValue
+import com.ooooonly.luakt.buildLuaTable
 import com.ooooonly.luakt.edit
 import com.ooooonly.luakt.varArgFunctionOf
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
+import okhttp3.internal.http2.Header
 import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
 import java.net.HttpURLConnection
@@ -41,26 +40,19 @@ open class HttpLib : TwoArgFunction() {
         val httpTable = LuaTable()
         httpTable.edit {
             "get" to varArgFunctionOf { args: Varargs ->
-                val requestUrl = args.checkjstring(1)
-                val client: OkHttpClient = if (args.narg() >= 2)
-                    args.checktable(2).toOkHttpClient()
-                else defaultClient
-                val request: Request = if (args.narg() >= 3)
-                    Request.Builder().get().applyHeaderFromLuaTable(args.checktable(3)).url(requestUrl).build()
-                else Request.Builder().get().url(requestUrl).build()
-                client.newCall(request).execute().toVarargs()
+                defaultClient.newCall(args.toRequest("GET")).execute().toVarargs()
             }
             "post" to varArgFunctionOf { args: Varargs ->
-                val requestUrl = args.arg1().checkjstring()
-                val requestBody = args.arg(2).toRequestBody()
-                val client: OkHttpClient = if (args.narg() >= 3)
-                    args.checktable(3).toOkHttpClient()
-                else defaultClient
-                val request: Request = if (args.narg() >= 4)
-                    Request.Builder().post(requestBody).applyHeaderFromLuaTable(args.checktable(4)).url(requestUrl)
-                        .build()
-                else Request.Builder().post(requestBody).url(requestUrl).build()
-                client.newCall(request).execute().toVarargs()
+                defaultClient.newCall(args.toRequest("POST")).execute().toVarargs()
+            }
+            "delete" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("DELETE")).execute().toVarargs()
+            }
+            "put" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("PUT")).execute().toVarargs()
+            }
+            "patch" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("PATCH")).execute().toVarargs()
             }
             "getRedirectUrl" to varArgFunctionOf { args: Varargs ->
                 getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")).asLuaValue()
@@ -78,14 +70,8 @@ open class HttpLib : TwoArgFunction() {
         table.set("isSuccessful", LuaValue.valueOf(this.isSuccessful))
     }
 
-    private fun Response.toVarargs(): Varargs = LuaValue.varargsOf(
-        arrayOf(
-            LuaValue.valueOf(this.body?.bytes()),
-            LuaValue.valueOf(this.isSuccessful),
-            LuaValue.valueOf(this.code),
-            LuaValue.valueOf(this.message)
-        )
-    )
+
+    // HttpClient Builder
 
     private fun LuaTable.toOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
         this@toOkHttpClient.get("connectTimeout").takeIf { it is LuaInteger }?.let { connectTimeout ->
@@ -105,6 +91,22 @@ open class HttpLib : TwoArgFunction() {
         }
     }.build()
 
+    // Request Builder
+
+    private fun Varargs.toRequest(method: String, extra: Request.Builder.() -> Unit = {}): Request {
+        val builder = Request.Builder()
+        val requestUrl = arg1().checkjstring()
+        val requestBody =  if (narg() >= 2 && arg(2).istable()) arg(2).checktable().toRequestBody() else null
+        val params = if (narg() >= 3 && arg(3).istable()) arg(3).checktable() else null
+        builder.url(requestUrl)
+        builder.method(method, requestBody)
+        params?.get("headers")?.takeIf { it.istable() }?.checktable()?.let {
+            builder.headers(it.toHeaders())
+        }
+        builder.extra()
+        return builder.build()
+    }
+
     @Suppress("unused")
     private fun LuaTable.toRequest(): Request = Request.Builder().apply {
         this@toRequest.keys().forEach { key ->
@@ -112,16 +114,42 @@ open class HttpLib : TwoArgFunction() {
         }
     }.build()
 
-    private fun Request.Builder.applyHeaderFromLuaTable(table: LuaTable): Request.Builder {
-        table.keys().forEach { key ->
-            this.header(key.tojstring(), table.get(key).tojstring())
-        }
-        return this
-    }
-
     private fun LuaValue.toRequestBody(): RequestBody = when (this::class) {
         LuaTable::class -> this.get("data").optjstring("")
             .toRequestBody(this.get("type").optjstring("text/plain;charset=utf-8").toMediaTypeOrNull())
         else -> this.optjstring("").toRequestBody("text/plain;charset=utf-8".toMediaTypeOrNull())
+    }
+
+    private fun LuaTable.toHeaders(): Headers {
+        val builder = Headers.Builder()
+        keys().forEach { key ->
+            builder.add(key.tojstring(), get(key).tojstring())
+        }
+        return builder.build()
+    }
+
+    // Response Converter
+
+    private fun Headers.toLuaTable(): LuaTable = buildLuaTable {
+        this@toLuaTable.forEach { (key, value) ->
+            key to value
+        }
+    }
+
+    private fun Response.toVarargs(): Varargs = LuaValue.varargsOf(
+        arrayOf(
+            LuaValue.valueOf(this.body?.bytes()),
+            toDetailsLuaTable()
+        )
+    )
+
+    private fun Response.toDetailsLuaTable(): LuaTable = buildLuaTable {
+        "code" to this@toDetailsLuaTable.code
+        "headers" to this@toDetailsLuaTable.headers.toLuaTable()
+        "isRedirect" to this@toDetailsLuaTable.isRedirect
+        "isSuccessful" to this@toDetailsLuaTable.isSuccessful
+        "message" to this@toDetailsLuaTable.message
+        "receivedResponseAtMillis" to this@toDetailsLuaTable.receivedResponseAtMillis
+        "sentRequestAtMillis" to this@toDetailsLuaTable.sentRequestAtMillis
     }
 }
