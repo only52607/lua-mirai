@@ -4,7 +4,9 @@ import com.ooooonly.luaMirai.base.*
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LuaValue
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileReader
+import java.io.InputStreamReader
 import java.net.URL
 import java.nio.charset.Charset
 
@@ -85,7 +87,7 @@ sealed class LuaSource: BotScriptSource {
         }
 
         private val _header: BotScriptHeader by lazy {
-            val reader = FileReader(file, luaCharset)
+            val reader = InputStreamReader(FileInputStream(file), luaCharset)
             val botScriptHeader:MutableBotScriptHeader = reader.useLines { lines: Sequence<String> -> lines.parseBotScriptHeader() }
             if (botScriptHeader["name"] == null) {
                 botScriptHeader["name"] = file.name
