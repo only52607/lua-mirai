@@ -23,7 +23,7 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '2.2.3'
+version '2.3.0'
 
 repositories {
     maven { url 'https://jitpack.io' }
