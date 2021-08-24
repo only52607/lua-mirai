@@ -19,7 +19,7 @@ object LuaMiraiPlugin : KotlinPlugin(
         JvmPluginDescription(
             id = "com.ooooonly.luaMirai",
             name = "lua-mirai",
-            version = "<读取版本号失败>"
+            version = "0.0"
         )
     }
 ) {

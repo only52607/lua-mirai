@@ -28,6 +28,8 @@ sealed class LuaSource: BotScriptSource {
         val headerFieldRegx by lazy {
             Regex("^--\\s*([^:：]+)\\s*[:：]\\s*(.*)\\s*$")
         }
+
+        val luaCharset = Charsets.UTF_8
     }
 
     abstract val chunkName: String
@@ -83,7 +85,7 @@ sealed class LuaSource: BotScriptSource {
         }
 
         private val _header: BotScriptHeader by lazy {
-            FileReader(file).useLines { it.parseBotScriptHeader() }.also {
+            FileReader(file, luaCharset).useLines { it.parseBotScriptHeader() }.also {
                 if (it["name"] == null) {
                     it["name"] = file.name
                 }
@@ -120,7 +122,7 @@ sealed class LuaSource: BotScriptSource {
         }
     }
 
-    class LuaURLSource(override val url: URL, val charset: Charset = Charsets.UTF_8) : LuaSource(), BotScriptURLSource {
+    class LuaURLSource(override val url: URL, val charset: Charset = luaCharset) : LuaSource(), BotScriptURLSource {
         override val chunkName: String
             get() = url.path
 

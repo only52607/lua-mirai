@@ -3,6 +3,7 @@ package com.ooooonly.luaMirai.miraiconsole
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
 import com.ooooonly.luaMirai.lua.LuaMiraiScript
 import com.ooooonly.luaMirai.lua.LuaSource
+import kotlinx.io.charsets.Charsets
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.command.CompositeCommand
@@ -13,6 +14,7 @@ import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 import java.net.URL
+import java.nio.charset.Charset
 
 
 @Suppress("unused")
@@ -46,7 +48,9 @@ class LuaMiraiCommand(
         val list = manager.list()
         logger.info("已加载${list.size}个脚本：")
         list.forEachIndexed { i: Int, botScript: LuaMiraiScript ->
-            logger.info("[$i]\t${botScript.header.getOrDefault("name", botScript.header["name"]?: "未知脚本" ) }\t${if (botScript.isLoaded) "已启用" else "未启用"}")
+            logger.info(
+                "[$i]\t${botScript.header["name"] ?: "未知脚本"}\t${if (botScript.isLoaded) "已启用" else "未启用"}"
+            )
         }
     }
 
@@ -145,6 +149,7 @@ class LuaMiraiCommand(
             logger.error(e.message)
         }
     }
+
 
     @SubCommand
     @Description("查看脚本信息")
