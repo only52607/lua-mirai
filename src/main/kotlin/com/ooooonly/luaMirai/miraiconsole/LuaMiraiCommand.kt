@@ -46,7 +46,7 @@ class LuaMiraiCommand(
         val list = manager.list()
         logger.info("已加载${list.size}个脚本：")
         list.forEachIndexed { i: Int, botScript: LuaMiraiScript ->
-            logger.info("[$i]\t${botScript.header.getOrDefault("name", botScript.getSource().chunkName) }\t${if (botScript.isLoaded) "已启用" else "未启用"}")
+            logger.info("[$i]\t${botScript.header.getOrDefault("name", botScript.header["name"]?: "未知脚本" ) }\t${if (botScript.isLoaded) "已启用" else "未启用"}")
         }
     }
 
@@ -146,6 +146,20 @@ class LuaMiraiCommand(
         }
     }
 
+    @SubCommand
+    @Description("查看脚本信息")
+    fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
+        try {
+            val source = manager.getScript(scriptId).header
+            logger.info("名称：${source["name"]}")
+            logger.info("版本：${source["version"]}")
+            logger.info("作者：${source["author"]}")
+            logger.info("描述：${source["description"]}")
+        } catch (e: Exception) {
+            logger.error(e.message)
+        }
+    }
+
     fun loadScripts() {
         loadScriptsByConfigFile()
     }
@@ -193,7 +207,7 @@ class LuaMiraiCommand(
         val configArray = buildJsonArray {
             manager.list().forEach { script ->
                 add(buildJsonObject {
-                    when (val source = script.getSource()) {
+                    when (val source = script.source) {
                         is LuaSource.LuaFileSource -> {
                             this@buildJsonObject.put("type", "file")
                             this@buildJsonObject.put("file", source.file.path)

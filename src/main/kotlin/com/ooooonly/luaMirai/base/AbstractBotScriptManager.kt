@@ -9,12 +9,12 @@ import java.lang.IndexOutOfBoundsException
  * @author ooooonly
  * @version
  */
-abstract class AbstractBotScriptManager<Script : BotScript, Source> :
-    BotScriptManager<Script, Source> {
+abstract class AbstractBotScriptManager<S : BotScript, T: BotScriptSource> :
+    BotScriptManager<S, T> {
 
-    private val scripts: MutableList<Script> = mutableListOf()
+    private val scripts: MutableList<S> = mutableListOf()
 
-    protected fun appendScript(script: Script): Int {
+    protected fun appendScript(script: S): Int {
         scripts.add(script)
         return scripts.size - 1
     }
@@ -24,7 +24,7 @@ abstract class AbstractBotScriptManager<Script : BotScript, Source> :
     override fun getScript(index: Int) =
         scripts.getOrNull(index) ?: throw IndexOutOfBoundsException("Index $index out of script bounds!")
 
-    override fun load(source: Source): Int {
+    override fun load(source: T): Int {
         return add(source).also { getScript(it).load() }
     }
 

@@ -21,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 @OptIn(MiraiInternalApi::class)
 class LuaMiraiScript(
-    private var source: LuaSource,
+    override var source: LuaSource,
     private val stdout: PrintStream? = System.out,
     private val stderr: PrintStream? = System.err,
     private val stdin: InputStream? = null
@@ -45,8 +45,6 @@ class LuaMiraiScript(
 
     override val header: BotScriptHeader
         get() = source.getHeader()
-
-    fun getSource() = source
 
     fun getGlobal() = luaGlobals
 

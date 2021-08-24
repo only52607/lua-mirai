@@ -40,6 +40,11 @@ interface BotScript {
      * 脚本头部的附带信息
      */
     val header: BotScriptHeader
+
+    /**
+     * 脚本源
+     */
+    val source: BotScriptSource?
 }
 
 interface BotScriptHeader: Map<String, String>

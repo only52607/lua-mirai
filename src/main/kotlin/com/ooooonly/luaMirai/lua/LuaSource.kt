@@ -1,8 +1,6 @@
 package com.ooooonly.luaMirai.lua
 
-import com.ooooonly.luaMirai.base.BotScriptHeader
-import com.ooooonly.luaMirai.base.MutableBotScriptHeader
-import com.ooooonly.luaMirai.base.mutableBotScriptHeaderOf
+import com.ooooonly.luaMirai.base.*
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LuaValue
 import java.io.File
@@ -17,7 +15,7 @@ import java.nio.charset.Charset
  * @author ooooonly
  * @version
  */
-sealed class LuaSource {
+sealed class LuaSource: BotScriptSource {
     companion object {
         val headerStartRegx by lazy {
             Regex("^--\\s*LuaMiraiScript\\s*--$")
@@ -74,7 +72,7 @@ sealed class LuaSource {
         throw InvalidScriptHeaderException("Missing header end label!")
     }
 
-    class LuaFileSource(val file: File) : LuaSource() {
+    class LuaFileSource(override val file: File) : LuaSource(), BotScriptFileSource {
         constructor(filePath: String) : this(File(filePath))
 
         override val chunkName: String
@@ -101,7 +99,7 @@ sealed class LuaSource {
         }
     }
 
-    class LuaContentSource(val content: String) : LuaSource() {
+    class LuaContentSource(override val content: String) : LuaSource(), BotScriptContentSource {
         override val chunkName: String
             get() = "{ content }"
 
@@ -122,7 +120,7 @@ sealed class LuaSource {
         }
     }
 
-    class LuaURLSource(val url: URL, val charset: Charset = Charsets.UTF_8) : LuaSource() {
+    class LuaURLSource(override val url: URL, val charset: Charset = Charsets.UTF_8) : LuaSource(), BotScriptURLSource {
         override val chunkName: String
             get() = url.path
 
