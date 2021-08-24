@@ -85,11 +85,12 @@ sealed class LuaSource: BotScriptSource {
         }
 
         private val _header: BotScriptHeader by lazy {
-            FileReader(file, luaCharset).useLines { it.parseBotScriptHeader() }.also {
-                if (it["name"] == null) {
-                    it["name"] = file.name
-                }
+            val reader = FileReader(file, luaCharset)
+            val botScriptHeader:MutableBotScriptHeader = reader.useLines { lines: Sequence<String> -> lines.parseBotScriptHeader() }
+            if (botScriptHeader["name"] == null) {
+                botScriptHeader["name"] = file.name
             }
+            return@lazy botScriptHeader
         }
 
         override fun getHeader(): BotScriptHeader {
