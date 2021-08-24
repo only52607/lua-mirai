@@ -12,7 +12,6 @@ class JsoupLib : TwoArgFunction() {
             "Jsoup" to buildLuaTable {
                 "parse" to luaFunctionOf { content: String ->
                     val result = Jsoup.parse(content)
-//                    println("K:" + result.asLuaValue())
                     return@luaFunctionOf result
                 }
             }
