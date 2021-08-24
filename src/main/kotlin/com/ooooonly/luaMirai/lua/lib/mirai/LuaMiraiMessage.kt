@@ -1,9 +1,12 @@
 package com.ooooonly.luaMirai.lua.lib.mirai
 
 import com.ooooonly.luakt.asLuaValue
+import com.ooooonly.luakt.luaFunctionOf
 import com.ooooonly.luakt.mapper.userdata.KotlinInstanceWrapper
+import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.message.code.CodableMessage
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
@@ -47,8 +50,18 @@ class LuaMiraiMessage(val message: Message) : KotlinInstanceWrapper(message) {
         else -> throw LuaError("$message is not a MessageChain.")
     }
 
+    private fun getExtendFunction(name: String) = when(name) {
+        "recall" -> luaFunctionOf { message: MessageSource ->
+            runBlocking { message.recall() }
+        }
+        else -> null
+    }
+
     override fun get(key: LuaValue): LuaValue {
-        if (message !is MessageChain) return super.get(key)
+        if (message !is MessageChain) return when {
+            key.isstring() -> getExtendFunction(key.checkjstring())
+            else -> null
+        } ?: super.get(key)
         return when {
             key.isnumber() -> getMessageElement(key.checkint())
             key.isstring() -> getMessageElement(key.checkjstring())
