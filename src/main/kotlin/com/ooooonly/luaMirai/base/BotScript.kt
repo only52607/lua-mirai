@@ -5,31 +5,20 @@ package com.ooooonly.luaMirai.base
  */
 @Suppress("unused")
 interface BotScript {
-
-    /**
-     * 创建脚本，读取脚本内容，读取脚本头部，初始化资源的操作在这里执行
-     */
-    fun create()
-
     /**
      * 运行此脚本，进行注册各类监听器，启动线程等任务
      */
-    fun load()
+    suspend fun load()
 
     /**
      * 停止脚本，清除脚本内注册的监听器，清除脚本内启动的线程
      */
-    fun stop()
-
-    /**
-     * 销毁脚本，释放资源
-     */
-    fun destroy()
+    suspend fun stop()
 
     /**
      * 重启脚本，相当于stop后load
      */
-    fun reload()
+    suspend fun reload()
 
     /**
      * 脚本是否可用，当值为true时，代表脚本已经被运行，且脚本内注册的监听器处于活跃状态。

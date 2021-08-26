@@ -10,8 +10,6 @@ class LuaMiraiBotScriptManager : AbstractBotScriptManager<LuaMiraiScript, LuaSou
     override fun add(source: LuaSource): Int {
         if (source is LuaSource.LuaFileSource && !source.file.exists()) throw FileNotFoundException("文件 ${source.file.absolutePath} 不存在！")
         val script = LuaMiraiScript(source)
-        val index = appendScript(script)
-        script.create()
-        return index
+        return appendScript(script)
     }
 }

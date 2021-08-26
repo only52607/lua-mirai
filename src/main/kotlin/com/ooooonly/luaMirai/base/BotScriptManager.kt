@@ -21,40 +21,40 @@ interface BotScriptManager<S : BotScript, T: BotScriptSource> {
      * 读入并加载脚本
      * 返回脚本索引
      */
-    fun load(source: T): Int
+    suspend fun load(source: T): Int
 
     /**
      * 加载指定位置脚本
      */
-    fun execute(scriptId: Int)
+    suspend fun execute(scriptId: Int)
 
     /**
      * 重载指定位置脚本
      */
-    fun reload(scriptId: Int)
+    suspend fun reload(scriptId: Int)
 
     /**
      * 停止指定位置脚本
      */
-    fun stop(scriptId: Int)
+    suspend fun stop(scriptId: Int)
 
     /**
      * 删除指定位置脚本
      */
-    fun delete(scriptId: Int)
+    suspend fun delete(scriptId: Int)
 
     /**
      * 停止所有脚本
      */
-    fun stopAll()
+    suspend fun stopAll()
 
     /**
      * 重载所有脚本
      */
-    fun reloadAll()
+    suspend fun reloadAll()
 
     /**
      * 删除所有脚本
      */
-    fun deleteAll()
+    suspend fun deleteAll()
 }

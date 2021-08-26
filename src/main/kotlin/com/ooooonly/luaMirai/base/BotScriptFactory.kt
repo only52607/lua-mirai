@@ -2,6 +2,7 @@ package com.ooooonly.luaMirai.base
 
 import com.ooooonly.luaMirai.lua.LuaMiraiScript
 import com.ooooonly.luaMirai.lua.LuaSource
+import com.ooooonly.luaMirai.lua.LuaSourceFactory
 import java.io.File
 import java.io.InputStream
 import java.io.PrintStream
@@ -14,46 +15,64 @@ import java.net.URL
  * @author ooooonly
  * @version
  */
-class BotScriptFactory {
-    companion object {
-        enum class ScriptLang {
-            Lua
-        }
 
-        fun buildBotScriptFromFile(
-            lang: ScriptLang,
-            file: File,
-            stdout: PrintStream? = System.out,
-            stderr: PrintStream? = System.err,
-            stdin: InputStream? = null
-        ): BotScript = when(lang) {
-            ScriptLang.Lua -> {
-                LuaMiraiScript(LuaSource.LuaFileSource(file), stdout, stderr, stdin)
-            }
-        }
+enum class ScriptLang(val langName: String) {
+    Lua("lua")
+}
 
-        fun buildBotScriptFromContent(
-            lang: ScriptLang,
-            content: String,
-            stdout: PrintStream? = System.out,
-            stderr: PrintStream? = System.err,
-            stdin: InputStream? = null
-        ): BotScript = when(lang) {
-            ScriptLang.Lua -> {
-                LuaMiraiScript(LuaSource.LuaContentSource(content), stdout, stderr, stdin)
-            }
-        }
+fun ScriptLang.forName(name: String):ScriptLang = when(name) {
+    ScriptLang.Lua.langName -> ScriptLang.Lua
+    else -> throw ScriptLangNotFoundException("Script lang $name not found.")
+}
 
-        fun buildBotScriptFromURL(
-            lang: ScriptLang,
-            url: URL,
-            stdout: PrintStream? = System.out,
-            stderr: PrintStream? = System.err,
-            stdin: InputStream? = null
-        ): BotScript = when(lang) {
-            ScriptLang.Lua -> {
-                LuaMiraiScript(LuaSource.LuaURLSource(url), stdout, stderr, stdin)
-            }
+class ScriptLangNotFoundException(message: String?): RuntimeException(message)
+
+object BotScriptFactory {
+    suspend fun buildBotScript(
+        lang: ScriptLang,
+        file: File,
+        stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
+        stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
+        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+    ): BotScript = when(lang) {
+        ScriptLang.Lua -> {
+            LuaMiraiScript(LuaSourceFactory.buildSource(file), stdout, stderr, stdin)
+        }
+    }
+
+    suspend fun buildBotScript(
+        lang: ScriptLang,
+        url: URL,
+        stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
+        stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
+        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+    ): BotScript = when(lang) {
+        ScriptLang.Lua -> {
+            LuaMiraiScript(LuaSourceFactory.buildSource(url) as LuaSource, stdout, stderr, stdin)
+        }
+    }
+
+    suspend fun buildBotScript(
+        lang: ScriptLang,
+        content: String,
+        stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
+        stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
+        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+    ): BotScript = when(lang) {
+        ScriptLang.Lua -> {
+            LuaMiraiScript(LuaSourceFactory.buildSource(content) as LuaSource, stdout, stderr, stdin)
+        }
+    }
+
+    suspend fun buildBotScript(
+        lang: ScriptLang,
+        inputStream: InputStream,
+        stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
+        stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
+        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+    ): BotScript = when(lang) {
+        ScriptLang.Lua -> {
+            LuaMiraiScript(LuaSourceFactory.buildSource(inputStream) as LuaSource, stdout, stderr, stdin)
         }
     }
 }

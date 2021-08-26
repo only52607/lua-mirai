@@ -1,6 +1,7 @@
 package com.ooooonly.luaMirai.base
 
 import java.io.File
+import java.io.InputStream
 import java.net.URL
 
 /**
@@ -11,7 +12,10 @@ import java.net.URL
  * @version
  */
 
-interface BotScriptSource
+interface BotScriptSource {
+    val size: Long
+    val chunkName: String
+}
 
 interface BotScriptFileSource: BotScriptSource {
     val file: File
@@ -24,3 +28,8 @@ interface BotScriptURLSource: BotScriptSource {
 interface BotScriptContentSource: BotScriptSource {
     val content: String
 }
+
+interface BotScriptInputStreamSource: BotScriptSource {
+    val inputStream: InputStream
+}
+

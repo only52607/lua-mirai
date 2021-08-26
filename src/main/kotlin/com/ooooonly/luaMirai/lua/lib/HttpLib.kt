@@ -62,7 +62,7 @@ open class HttpLib : TwoArgFunction() {
         return LuaValue.NIL
     }
 
-    @Suppress("unused")
+
     private fun Response.toLuaTable(): LuaTable = LuaTable().also { table ->
         table.set("body", this.body?.string())
         table.set("code", this.code)

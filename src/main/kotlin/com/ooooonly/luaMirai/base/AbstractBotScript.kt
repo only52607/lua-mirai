@@ -14,37 +14,29 @@ abstract class AbstractBotScript : BotScript {
     override val isLoaded: Boolean
         get() = isLoaderInternal
 
-    override fun create() = onCreate()
-
-    protected open fun onCreate() {}
-
-    override fun stop() {
-        onStop()
-        isLoaderInternal = false
-    }
-
-    protected open fun onStop() {}
-
-    override fun destroy() {
-        stop()
-        onDestroy()
-    }
-
-    protected open fun onDestroy() {}
-
-    override fun load() {
+    override suspend fun load() {
+        if (isLoaded) throw BotScriptLoadedException("Script has been loaded.")
         onLoad()
         isLoaderInternal = true
     }
 
-    protected open fun onLoad() {}
+    protected open suspend fun onLoad() {}
 
-    override fun reload() {
+    override suspend fun stop() {
+        onStop()
+        isLoaderInternal = false
+    }
+
+    protected open suspend fun onStop() {}
+
+    override suspend fun reload() {
         onReload()
     }
 
-    protected open fun onReload() {
-        destroy()
+    protected open suspend fun onReload() {
+        stop()
         load()
     }
 }
+
+class BotScriptLoadedException(message: String): RuntimeException(message)

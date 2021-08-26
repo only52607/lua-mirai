@@ -1,6 +1,9 @@
 package com.ooooonly.luaMirai.miraiconsole
 
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -12,7 +15,7 @@ import net.mamoe.mirai.utils.info
 @Suppress("unused")
 @ConsoleExperimentalApi
 @MiraiInternalApi
-object LuaMiraiPlugin : KotlinPlugin(
+object LuaMiraiPlugin: KotlinPlugin(
     try {
         JvmPluginDescription.loadFromResource()
     } catch (e: Exception) {
@@ -22,7 +25,7 @@ object LuaMiraiPlugin : KotlinPlugin(
             version = "0.0"
         )
     }
-) {
+){
     private val manager: LuaMiraiBotScriptManager by lazy {
         LuaMiraiBotScriptManager()
     }
@@ -37,7 +40,9 @@ object LuaMiraiPlugin : KotlinPlugin(
     @MiraiExperimentalApi
     override fun onEnable() {
         try {
-            command.loadScripts()
+            launch {
+                command.loadScripts()
+            }
         } catch (e: Exception) {
             logger.error("配置文件加载失败！")
             e.printStackTrace()
@@ -47,7 +52,9 @@ object LuaMiraiPlugin : KotlinPlugin(
     }
 
     override fun onDisable() {
-        manager.deleteAll()
+        launch {
+            manager.deleteAll()
+        }
         logger.info { "lua-mirai 已停用" }
     }
 }

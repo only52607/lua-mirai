@@ -24,36 +24,36 @@ abstract class AbstractBotScriptManager<S : BotScript, T: BotScriptSource> :
     override fun getScript(index: Int) =
         scripts.getOrNull(index) ?: throw IndexOutOfBoundsException("Index $index out of script bounds!")
 
-    override fun load(source: T): Int {
+    override suspend fun load(source: T): Int {
         return add(source).also { getScript(it).load() }
     }
 
-    override fun execute(scriptId: Int) {
+    override suspend fun execute(scriptId: Int) {
         getScript(scriptId).load()
     }
 
-    override fun reload(scriptId: Int) {
+    override suspend fun reload(scriptId: Int) {
         getScript(scriptId).reload()
     }
 
-    override fun stop(scriptId: Int) {
+    override suspend fun stop(scriptId: Int) {
         getScript(scriptId).stop()
     }
 
-    override fun delete(scriptId: Int) {
-        getScript(scriptId).destroy()
+    override suspend fun delete(scriptId: Int) {
+        getScript(scriptId).stop()
         scripts.removeAt(scriptId)
     }
 
-    override fun stopAll() {
+    override suspend fun stopAll() {
         scripts.forEach { it.stop() }
     }
 
-    override fun reloadAll() {
+    override suspend fun reloadAll() {
         scripts.forEach { it.reload() }
     }
 
-    override fun deleteAll() {
+    override suspend fun deleteAll() {
         stopAll()
         scripts.clear()
     }
