@@ -1,6 +1,8 @@
 package com.ooooonly.luaMirai.lua.lib.mirai
 
+import com.ooooonly.luakt.set
 import kotlinx.coroutines.CoroutineScope
+import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.luaj.vm2.LuaValue
@@ -13,6 +15,7 @@ open class MiraiLib(private val coroutineScope: CoroutineScope) : TwoArgFunction
         globals.load(BotLib(coroutineScope))
         globals.load(MessageLib)
         globals.load(EventLib(coroutineScope))
+        globals["Mirai"] = Mirai
         return LuaValue.NIL
     }
 }
