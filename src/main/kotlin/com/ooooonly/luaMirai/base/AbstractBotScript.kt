@@ -34,8 +34,10 @@ abstract class AbstractBotScript : BotScript {
     }
 
     protected open suspend fun onReload() {
-        stop()
-        load()
+        if (isLoaderInternal) {
+            stop()
+            load()
+        }
     }
 }
 
