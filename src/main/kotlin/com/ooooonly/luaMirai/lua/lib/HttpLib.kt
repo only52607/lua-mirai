@@ -62,15 +62,6 @@ open class HttpLib : TwoArgFunction() {
         return LuaValue.NIL
     }
 
-
-    private fun Response.toLuaTable(): LuaTable = LuaTable().also { table ->
-        table.set("body", this.body?.string())
-        table.set("code", this.code)
-        table.set("message", this.message)
-        table.set("isSuccessful", LuaValue.valueOf(this.isSuccessful))
-    }
-
-
     // HttpClient Builder
 
     private fun LuaTable.toOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
@@ -106,13 +97,6 @@ open class HttpLib : TwoArgFunction() {
         builder.extra()
         return builder.build()
     }
-
-    @Suppress("unused")
-    private fun LuaTable.toRequest(): Request = Request.Builder().apply {
-        this@toRequest.keys().forEach { key ->
-            this.header(key.tojstring(), this@toRequest.get(key).tojstring())
-        }
-    }.build()
 
     private fun LuaValue.toRequestBody(): RequestBody = when (this::class) {
         LuaTable::class -> this.get("data").optjstring("")

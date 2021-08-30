@@ -46,7 +46,6 @@ class LuaMiraiScript(
         }
     }
 
-
     private fun prepareCoroutineContext() {
         coroutineContext = extraCoroutineContext + SupervisorJob()
         if (coroutineContext[ContinuationInterceptor] == null) {
