@@ -7,7 +7,7 @@ buildscript{
     ext.sqlite_jdbc_version = "3.7.2"
     ext.shadow_version = "6.1.0"
     ext.auto_service_version = "1.0-rc7"
-    ext.lua_mirai_version = "2.0.12"
+    ext.lua_kt_version = "2.0.12"
     repositories {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/public' }
@@ -23,7 +23,7 @@ plugins {
 }
 
 group 'com.ooooonly'
-version '2.3.1'
+version '2.3.3'
 
 repositories {
     maven { url 'https://jitpack.io' }
@@ -45,7 +45,7 @@ dependencies {
     runtimeOnly "net.mamoe:mirai-core:$mirai_core_version"
     compileOnly "net.mamoe:mirai-console:$mirai_console_version"
     testImplementation "net.mamoe:mirai-console-terminal:$mirai_console_version"
-    implementation "com.github.only52607:luakt:$lua_mirai_version"
+    implementation "com.github.only52607:luakt:$lua_kt_version"
 
     implementation "com.github.ajalt.clikt:clikt:3.2.0"
     // kapt "com.google.auto.service:auto-service:$auto_service_version"
