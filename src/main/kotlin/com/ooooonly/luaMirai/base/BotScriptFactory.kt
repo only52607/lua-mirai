@@ -7,6 +7,8 @@ import java.io.File
 import java.io.InputStream
 import java.io.PrintStream
 import java.net.URL
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * ClassName: BotScriptFactory
@@ -33,10 +35,11 @@ object BotScriptFactory {
         file: File,
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
-        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+        stdin: (LuaMiraiScript) -> InputStream? =  { null },
+        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
-            LuaMiraiScript(LuaSourceFactory.buildSource(file), stdout, stderr, stdin)
+            LuaMiraiScript(LuaSourceFactory.buildSource(file), stdout, stderr, stdin, extraCoroutineContext)
         }
     }
 
@@ -45,10 +48,11 @@ object BotScriptFactory {
         url: URL,
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
-        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+        stdin: (LuaMiraiScript) -> InputStream? =  { null },
+        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
-            LuaMiraiScript(LuaSourceFactory.buildSource(url) as LuaSource, stdout, stderr, stdin)
+            LuaMiraiScript(LuaSourceFactory.buildSource(url) as LuaSource, stdout, stderr, stdin, extraCoroutineContext)
         }
     }
 
@@ -57,10 +61,11 @@ object BotScriptFactory {
         content: String,
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
-        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+        stdin: (LuaMiraiScript) -> InputStream? =  { null },
+        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
-            LuaMiraiScript(LuaSourceFactory.buildSource(content) as LuaSource, stdout, stderr, stdin)
+            LuaMiraiScript(LuaSourceFactory.buildSource(content) as LuaSource, stdout, stderr, stdin, extraCoroutineContext)
         }
     }
 
@@ -69,12 +74,11 @@ object BotScriptFactory {
         inputStream: InputStream,
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
-        stdin: (LuaMiraiScript) -> InputStream? =  { null }
+        stdin: (LuaMiraiScript) -> InputStream? =  { null },
+        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
-            LuaMiraiScript(LuaSourceFactory.buildSource(inputStream) as LuaSource, stdout, stderr, stdin)
+            LuaMiraiScript(LuaSourceFactory.buildSource(inputStream) as LuaSource, stdout, stderr, stdin, extraCoroutineContext)
         }
     }
 }
-
-class UnknownScriptTypeException(override val message: String?):RuntimeException(message)

@@ -18,14 +18,17 @@ import org.luaj.vm2.lib.jse.*
 import java.io.InputStream
 import java.io.PrintStream
 import java.lang.RuntimeException
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(MiraiInternalApi::class, MiraiExperimentalApi::class)
 class LuaMiraiScript(
     override var source: LuaSource,
     private val stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
     private val stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
-    private val stdin: (LuaMiraiScript) -> InputStream? =  { null }
+    private val stdin: (LuaMiraiScript) -> InputStream? =  { null },
+    private val extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
 ) : AbstractBotScript(), CoroutineScope {
     override lateinit var coroutineContext: CoroutineContext
 
@@ -43,8 +46,12 @@ class LuaMiraiScript(
         }
     }
 
+
     private fun prepareCoroutineContext() {
-        coroutineContext = SupervisorJob() + Dispatchers.Default
+        coroutineContext = extraCoroutineContext + SupervisorJob()
+        if (coroutineContext[ContinuationInterceptor] == null) {
+            coroutineContext += Dispatchers.Default
+        }
     }
 
     override suspend fun onLoad() {
