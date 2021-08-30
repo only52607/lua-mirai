@@ -36,7 +36,7 @@ object BotScriptFactory {
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
         stdin: (LuaMiraiScript) -> InputStream? =  { null },
-        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
+        extraCoroutineContext: (LuaMiraiScript) -> CoroutineContext =  { EmptyCoroutineContext }
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
             LuaMiraiScript(LuaSourceFactory.buildSource(file), stdout, stderr, stdin, extraCoroutineContext)
@@ -49,7 +49,7 @@ object BotScriptFactory {
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
         stdin: (LuaMiraiScript) -> InputStream? =  { null },
-        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
+        extraCoroutineContext: (LuaMiraiScript) -> CoroutineContext =  { EmptyCoroutineContext }
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
             LuaMiraiScript(LuaSourceFactory.buildSource(url) as LuaSource, stdout, stderr, stdin, extraCoroutineContext)
@@ -62,7 +62,7 @@ object BotScriptFactory {
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
         stdin: (LuaMiraiScript) -> InputStream? =  { null },
-        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
+        extraCoroutineContext: (LuaMiraiScript) -> CoroutineContext =  { EmptyCoroutineContext }
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
             LuaMiraiScript(LuaSourceFactory.buildSource(content) as LuaSource, stdout, stderr, stdin, extraCoroutineContext)
@@ -75,7 +75,7 @@ object BotScriptFactory {
         stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
         stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
         stdin: (LuaMiraiScript) -> InputStream? =  { null },
-        extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
+        extraCoroutineContext: (LuaMiraiScript) -> CoroutineContext =  { EmptyCoroutineContext }
     ): BotScript = when(lang) {
         ScriptLang.Lua -> {
             LuaMiraiScript(LuaSourceFactory.buildSource(inputStream) as LuaSource, stdout, stderr, stdin, extraCoroutineContext)

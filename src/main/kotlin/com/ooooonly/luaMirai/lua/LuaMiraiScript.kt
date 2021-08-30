@@ -28,7 +28,7 @@ class LuaMiraiScript(
     private val stdout: (LuaMiraiScript) -> PrintStream? = { System.out },
     private val stderr: (LuaMiraiScript) -> PrintStream? =  { System.err },
     private val stdin: (LuaMiraiScript) -> InputStream? =  { null },
-    private val extraCoroutineContext: CoroutineContext = EmptyCoroutineContext
+    private val extraCoroutineContext: (LuaMiraiScript) -> CoroutineContext = { EmptyCoroutineContext }
 ) : AbstractBotScript(), CoroutineScope {
     override lateinit var coroutineContext: CoroutineContext
 
@@ -47,7 +47,7 @@ class LuaMiraiScript(
     }
 
     private fun prepareCoroutineContext() {
-        coroutineContext = extraCoroutineContext + SupervisorJob()
+        coroutineContext = extraCoroutineContext(this) + SupervisorJob()
         if (coroutineContext[ContinuationInterceptor] == null) {
             coroutineContext += Dispatchers.Default
         }
