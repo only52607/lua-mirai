@@ -1,8 +1,6 @@
-package com.ooooonly.luaMirai.miraiconsole
+package com.ooooonly.luaMirai.console
 
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription

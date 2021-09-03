@@ -1,13 +1,10 @@
-package com.ooooonly.luaMirai.miraiconsole
+package com.ooooonly.luaMirai.console
 
 import com.ooooonly.luaMirai.lua.LuaMiraiBotScriptManager
 import com.ooooonly.luaMirai.lua.LuaMiraiScript
 import com.ooooonly.luaMirai.lua.LuaSource
 import com.ooooonly.luaMirai.lua.LuaSourceFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.io.charsets.Charsets
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.command.CompositeCommand
@@ -16,11 +13,8 @@ import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
-import org.luaj.vm2.Lua
 import java.io.File
 import java.net.URL
-import java.nio.charset.Charset
-import kotlin.coroutines.CoroutineContext
 
 
 @Suppress("unused")
