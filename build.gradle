@@ -1,5 +1,5 @@
 buildscript{
-    ext.kotlin_version = "1.4.21"
+    ext.kotlin_version = "1.5.20"
     ext.mirai_core_version = "2.7.0"
     ext.mirai_console_version = "2.0.0"
     ext.okhttp3_version = "4.7.2"
@@ -8,6 +8,8 @@ buildscript{
     ext.shadow_version = "6.1.0"
     ext.auto_service_version = "1.0-rc7"
     ext.lua_kt_version = "2.0.12"
+    ext.org_json_version = "20210307"
+    ext.serialization_json_version = "1.2.2"
     repositories {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/public' }
@@ -37,10 +39,11 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
-    implementation 'org.json:json:20160212'
+    compileOnly "org.json:json:$org_json_version"
     implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
     implementation "org.jsoup:jsoup:$jsoup_version"
-
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_json_version"
+    
     implementation "net.mamoe:mirai-core-api:$mirai_core_version"
     runtimeOnly "net.mamoe:mirai-core:$mirai_core_version"
     compileOnly "net.mamoe:mirai-console:$mirai_console_version"
