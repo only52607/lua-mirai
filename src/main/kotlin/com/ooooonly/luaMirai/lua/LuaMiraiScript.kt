@@ -112,7 +112,7 @@ class LuaMiraiScript(
     private fun loadExtendLibs() {
         luaGlobals?.apply {
             load(HttpLib())
-            load(JsonLib())
+            load(KtxJsonLib())
             load(JDBCLib())
             load(JsoupLib())
         }
