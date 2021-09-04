@@ -19,15 +19,15 @@ import java.nio.charset.Charset
 sealed class LuaSource: BotScriptSource {
     companion object {
         private val headerStartRegx by lazy {
-            Regex("^--\\s*LuaMiraiScript\\s*--$")
+            Regex("^\\s*--\\s*LuaMiraiScript\\s*--\\s*$")
         }
 
         private val headerEndRegx by lazy {
-            Regex("^--\\s*/LuaMiraiScript\\s*--$")
+            Regex("^\\s*--\\s*/LuaMiraiScript\\s*--\\s*$")
         }
 
         private val headerFieldRegx by lazy {
-            Regex("^--\\s*([^:：]+)\\s*[:：]\\s*(.*)\\s*$")
+            Regex("^\\s*--\\s*([^:：]+)\\s*[:：]\\s*(.*)\\s*$")
         }
 
         val luaCharset = Charsets.UTF_8
