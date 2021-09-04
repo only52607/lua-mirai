@@ -63,6 +63,7 @@ class LuaMiraiScript(
 
     override suspend fun onReload() {
         source = source.copy()
+        source.init()
         super.onReload()
     }
 
