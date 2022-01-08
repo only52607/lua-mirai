@@ -88,6 +88,7 @@ val miraiEvents by lazy {
         set("ImageUploadEvent.Failed", ImageUploadEvent.Failed::class)  //图片上传失败
         set("FriendMessageEvent", FriendMessageEvent::class)  //机器人收到的好友消息的事件
         set("GroupMessageEvent", GroupMessageEvent::class)  //机器人收到的群消息的事件
+        set("GroupTempMessageEvent", GroupTempMessageEvent::class)  //机器人收到的群消息的事件
     }
 }
 
