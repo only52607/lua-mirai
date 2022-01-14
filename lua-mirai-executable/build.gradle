@@ -1,0 +1,18 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'com.github.johnrengelman.shadow' version "5.2.0"
+}
+
+dependencies {
+    implementation project(":lua-mirai-core")
+    runtimeOnly project(":lua-mirai-adapter-luakt")
+    implementation "com.github.ajalt.clikt:clikt:3.2.0"
+}
+
+shadowJar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.github.only52607.luamirai.MainKt'
+        )
+    }
+}

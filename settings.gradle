@@ -1,2 +1,6 @@
 rootProject.name = 'lua-mirai'
-
+include ':lua-mirai-core'
+include ':lua-mirai-adapter-luakt'
+include ':lua-mirai-mcl-plugin'
+include ':lua-mirai-executable'
+include ':lua-mirai-executable-mcl'

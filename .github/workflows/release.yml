@@ -50,4 +50,4 @@ jobs:
           draft: true
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "./build/libs/*.jar"
+          artifacts: "./lua-mirai-executable/build/libs/*all.jar,./lua-mirai-executable-mcl/build/libs/*all.jar,./lua-mirai-mcl-plugin/build/libs/*all.jar"

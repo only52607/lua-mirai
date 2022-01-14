@@ -1,15 +1,5 @@
-buildscript{
-    ext.kotlin_version = "1.5.20"
-    ext.mirai_core_version = "2.7.0"
-    ext.mirai_console_version = "2.0.0"
-    ext.okhttp3_version = "4.7.2"
-    ext.jsoup_version = "1.7.3"
-    ext.sqlite_jdbc_version = "3.7.2"
-    ext.shadow_version = "6.1.0"
-    ext.auto_service_version = "1.0-rc7"
-    ext.lua_kt_version = "2.0.12"
-    ext.org_json_version = "20210307"
-    ext.serialization_json_version = "1.2.2"
+buildscript {
+    ext.mirai_core_version = "2.9.2"
     repositories {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/public' }
@@ -19,78 +9,81 @@ buildscript{
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version "1.5.20"
-    id 'com.github.johnrengelman.shadow' version "5.2.0"
+    id 'org.jetbrains.kotlin.jvm' version "1.6.10"
     id 'maven-publish'
 }
 
-group 'com.ooooonly'
-version '2.3.8'
-
-repositories {
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.aliyun.com/repository/public' }
-    maven { url 'https://maven.aliyun.com/repository/google' }
-    mavenCentral()
-}
-
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
-    implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
-    compileOnly "org.json:json:$org_json_version"
-    implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
-    implementation "org.jsoup:jsoup:$jsoup_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_json_version"
-    
-    implementation "net.mamoe:mirai-core-api:$mirai_core_version"
-    runtimeOnly "net.mamoe:mirai-core:$mirai_core_version"
-    compileOnly "net.mamoe:mirai-console:$mirai_console_version"
-    testImplementation "net.mamoe:mirai-console-terminal:$mirai_console_version"
-    implementation "com.github.only52607:luakt:$lua_kt_version"
-
-    implementation "com.github.ajalt.clikt:clikt:3.2.0"
-    // kapt "com.google.auto.service:auto-service:$auto_service_version"
-    // compileOnly "com.google.auto.service:auto-service-annotations:$auto_service_version"
-
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+configurations.all {
+    resolutionStrategy {
+        cacheChangingModulesFor 0, 'seconds'
+    }
 }
 
 allprojects {
+    group 'com.ooooonly'
+    version '2.4.0'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn']
             jvmTarget = "1.8"
         }
     }
-}
-
-shadowJar {
-    manifest {
-        attributes(
-                'Main-Class': 'com.ooooonly.luaMirai.MainKt'
-        )
+    repositories {
+        mavenLocal()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        mavenCentral()
     }
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier = 'sources'
+subprojects {
+    apply plugin: 'java'
+    dependencies {
+        implementation fileTree(dir: 'libs', include: ['*.jar'])
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        implementation "net.mamoe:mirai-core-api:$mirai_core_version"
+        runtimeOnly "net.mamoe:mirai-core:$mirai_core_version"
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
 }
 
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier = 'javadoc'
+project(':lua-mirai-core') {
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        archiveClassifier.set('sources')
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        archiveClassifier.set('javadoc')
+    }
+
+    publishing {
+        publications {
+            core(MavenPublication) {
+                from components.java
+            }
+        }
+    }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = group
-            artifactId = 'lua-mirai'
-            version = version
-            from components.java
+project(':lua-mirai-adapter-luakt') {
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        archiveClassifier.set('sources')
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        archiveClassifier.set('javadoc')
+    }
+
+    publishing {
+        publications {
+            luaktAdapter(MavenPublication) {
+                from components.java
+            }
         }
     }
 }

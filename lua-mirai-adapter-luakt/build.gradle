@@ -1,0 +1,13 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+dependencies {
+    implementation project(":lua-mirai-core")
+    implementation "com.squareup.okhttp3:okhttp:4.7.2"
+    compileOnly "org.json:json:20210307"
+    implementation "org.xerial:sqlite-jdbc:3.7.2"
+    implementation "org.jsoup:jsoup:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    implementation "com.github.only52607:luakt:2.1.+"
+}
