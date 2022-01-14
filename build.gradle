@@ -20,7 +20,7 @@ configurations.all {
 }
 
 allprojects {
-    group 'com.ooooonly'
+    group 'com.github.only52607'
     version '2.4.0'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
@@ -63,6 +63,8 @@ project(':lua-mirai-core') {
         publications {
             core(MavenPublication) {
                 from components.java
+                artifact sourcesJar
+                artifact javadocJar
             }
         }
     }
@@ -83,6 +85,8 @@ project(':lua-mirai-adapter-luakt') {
         publications {
             luaktAdapter(MavenPublication) {
                 from components.java
+                artifact sourcesJar
+                artifact javadocJar
             }
         }
     }
