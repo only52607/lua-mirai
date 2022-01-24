@@ -1,4 +1,4 @@
-package com.github.only52607.luamirai.lua.utils
+package com.github.only52607.luamirai.lua.mirai.event
 
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.events.*

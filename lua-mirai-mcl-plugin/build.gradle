@@ -13,8 +13,9 @@ dependencies {
 task createPluginYml(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/plugin.yml").withWriter { w ->
+
             w.writeLine('id: "com.github.only52607.luamirai"')
-            w.writeLine('name: "lua-mirai"')
+            w.writeLine("name: \"${rootProject.name}\"")
             w.writeLine('main: ""')
             w.writeLine("version: \"${project.version.toString()}\"")
         }

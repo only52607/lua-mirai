@@ -7,10 +7,11 @@ package com.github.only52607.luamirai.lua.mirai.message
  * @author ooooonly
  * @version
  */
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.mapper.userdata.*
-import com.ooooonly.luakt.utils.asLuaValue
-import com.ooooonly.luakt.utils.luaFunctionOf
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.userdata.LuaKotlinObject
+import com.github.only52607.luakt.userdata.classes.LuaKotlinClass
+import com.github.only52607.luakt.utils.asLuaValue
+import com.github.only52607.luakt.utils.luaFunctionOf
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.message.code.CodableMessage
 import net.mamoe.mirai.message.data.*

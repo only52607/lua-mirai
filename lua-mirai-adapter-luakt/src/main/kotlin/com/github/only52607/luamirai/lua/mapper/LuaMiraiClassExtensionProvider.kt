@@ -1,6 +1,6 @@
 package com.github.only52607.luamirai.lua.mapper
 
-import com.ooooonly.luakt.mapper.userdata.KClassExtensionProvider
+import com.github.only52607.luakt.userdata.KClassExtensionProvider
 import net.mamoe.mirai.message.data.MessageSource
 import net.mamoe.mirai.message.data.MessageSource.Key.recall as __recall
 import net.mamoe.mirai.message.data.MessageSource.Key.recallIn as __recallIn

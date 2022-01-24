@@ -1,13 +1,10 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.buildLuaTable
-import com.ooooonly.luakt.utils.luaFunctionOf
-import com.ooooonly.luakt.utils.provideScope
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.luaFunctionOf
 import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
 import java.net.ServerSocket
-import java.net.Socket
 
 class SocketLib(
     private val valueMapper: ValueMapper

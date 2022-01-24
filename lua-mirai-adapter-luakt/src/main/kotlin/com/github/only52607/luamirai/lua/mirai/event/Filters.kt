@@ -1,8 +1,7 @@
 package com.github.only52607.luamirai.lua.mirai.event
 
-import com.github.only52607.luamirai.lua.utils.miraiEventNames
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.asLuaValue
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.asLuaValue
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.event.EventChannel

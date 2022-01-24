@@ -1,10 +1,10 @@
 package com.github.only52607.luamirai.lua.mapper
 
+import com.github.only52607.luakt.KValueMapper
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.mappers.AbstractKValueMapper
+import com.github.only52607.luakt.userdata.classes.LuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mirai.message.LuaKotlinMessage
-import com.ooooonly.luakt.mapper.AbstractKValueMapper
-import com.ooooonly.luakt.mapper.KValueMapper
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.mapper.userdata.LuaKotlinClassRegistry
 import net.mamoe.mirai.message.data.Message
 import org.luaj.vm2.LuaValue
 

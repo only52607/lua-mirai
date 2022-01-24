@@ -1,11 +1,11 @@
 package com.github.only52607.luamirai.lua.lib
 
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.setFrom
 import com.github.only52607.luamirai.lua.mirai.bot.BotBuilderFunction
 import com.github.only52607.luamirai.lua.mirai.bot.BotStoreTable
 import com.github.only52607.luamirai.lua.mirai.event.EventTable
 import com.github.only52607.luamirai.lua.mirai.message.MessageConstructorsTable
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.setFrom
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.utils.MiraiExperimentalApi

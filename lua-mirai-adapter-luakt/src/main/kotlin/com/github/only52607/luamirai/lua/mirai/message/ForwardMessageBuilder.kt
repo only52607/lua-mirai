@@ -1,8 +1,8 @@
 package com.github.only52607.luamirai.lua.mirai.message
 
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.provideScope
-import com.ooooonly.luakt.utils.toList
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.provideScope
+import com.github.only52607.luakt.utils.toLuaValueList
 import net.mamoe.mirai.message.data.EmptyMessageChain
 import net.mamoe.mirai.message.data.ForwardMessage
 import org.luaj.vm2.LuaTable
@@ -16,14 +16,14 @@ import org.luaj.vm2.LuaTable
  */
 
 fun LuaTable.buildForwardMsg(valueMapper: ValueMapper): ForwardMessage = valueMapper.provideScope {
-    val title by entry(defaultValue = "群聊的聊天记录")
-    val brief by entry(defaultValue = "[聊天记录]")
-    val source by entry(defaultValue = "聊天记录")
-    val previewTable by entry(defaultValue = LuaTable())
-    val summary by entry(defaultValue = "群聊的聊天记录")
-    val nodeListTable by entry(defaultValue = LuaTable())
-    val nodeList = nodeListTable!!.toList().map { it.checktable().buildNode(valueMapper) }
-    val preview = previewTable!!.toList().map { it.tojstring() }
+    val title by field(defaultValue = "群聊的聊天记录")
+    val brief by field(defaultValue = "[聊天记录]")
+    val source by field(defaultValue = "聊天记录")
+    val previewTable by field(defaultValue = LuaTable())
+    val summary by field(defaultValue = "群聊的聊天记录")
+    val nodeListTable by field(defaultValue = LuaTable())
+    val nodeList = nodeListTable!!.toLuaValueList().map { it.checktable().buildNode(valueMapper) }
+    val preview = previewTable!!.toLuaValueList().map { it.tojstring() }
     ForwardMessage(preview, title!!, brief!!, source!!, summary!!, nodeList)
 }
 

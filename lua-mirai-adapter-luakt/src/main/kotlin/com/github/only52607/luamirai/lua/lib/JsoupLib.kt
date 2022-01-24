@@ -1,8 +1,7 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.ooooonly.luakt.*
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.provideScope
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.provideScope
 import org.jsoup.Jsoup
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction

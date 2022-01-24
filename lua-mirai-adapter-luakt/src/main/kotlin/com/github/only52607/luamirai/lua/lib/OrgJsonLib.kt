@@ -1,6 +1,6 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.ooooonly.luakt.mapper.ValueMapper
+import com.github.only52607.luakt.ValueMapper
 import org.json.JSONArray
 import org.json.JSONObject
 import org.luaj.vm2.*

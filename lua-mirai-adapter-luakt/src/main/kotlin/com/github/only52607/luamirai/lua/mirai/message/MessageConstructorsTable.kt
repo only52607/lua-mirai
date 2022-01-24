@@ -1,7 +1,7 @@
 package com.github.only52607.luamirai.lua.mirai.message
 
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.provideScope
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.provideScope
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Contact.Companion.uploadImage

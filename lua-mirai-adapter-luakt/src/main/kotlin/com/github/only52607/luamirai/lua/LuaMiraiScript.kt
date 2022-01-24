@@ -1,5 +1,7 @@
 package com.github.only52607.luamirai.lua
 
+import com.github.only52607.luakt.lib.KotlinCoroutineLib
+import com.github.only52607.luakt.lib.LuaKotlinLib
 import com.github.only52607.luamirai.core.script.AbstractBotScript
 import com.github.only52607.luamirai.core.script.BotScriptHeader
 import com.github.only52607.luamirai.core.script.BotScriptSource
@@ -7,8 +9,6 @@ import com.github.only52607.luamirai.lua.lib.*
 import com.github.only52607.luamirai.lua.lib.MiraiLib
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
-import com.ooooonly.luakt.lib.KotlinCoroutineLib
-import com.ooooonly.luakt.lib.LuaKotlinLib
 import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi

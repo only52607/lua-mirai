@@ -1,8 +1,8 @@
 package com.github.only52607.luamirai.lua.mirai.bot
 
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.get
-import com.ooooonly.luakt.utils.provideScope
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.get
+import com.github.only52607.luakt.utils.provideScope
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory

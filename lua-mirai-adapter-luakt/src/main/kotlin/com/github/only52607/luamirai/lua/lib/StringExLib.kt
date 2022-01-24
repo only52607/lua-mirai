@@ -1,8 +1,9 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.ooooonly.luakt.*
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.*
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.get
+import com.github.only52607.luakt.utils.provideScope
+import com.github.only52607.luakt.utils.varArgFunctionOf
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue

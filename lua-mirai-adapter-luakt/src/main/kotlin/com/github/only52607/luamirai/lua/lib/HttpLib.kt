@@ -1,7 +1,7 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.ooooonly.luakt.mapper.ValueMapper
-import com.ooooonly.luakt.utils.*
+import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
