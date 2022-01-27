@@ -1,11 +1,9 @@
 package com.github.only52607.luamirai.console
 
-import com.github.only52607.luamirai.core.manager.BotScriptManager
-import com.github.only52607.luamirai.core.script.BotScript
-import com.github.only52607.luamirai.core.script.BotScriptContentSource
-import com.github.only52607.luamirai.core.script.BotScriptFileSource
-import com.github.only52607.luamirai.core.script.BotScriptURLSource
-import kotlinx.coroutines.launch
+import com.github.only52607.luamirai.core.integration.BotScriptList
+import com.github.only52607.luamirai.core.integration.BotScriptSourceList
+import com.github.only52607.luamirai.core.script.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.command.CompositeCommand
@@ -25,8 +23,8 @@ private const val LUA = "lua"
     MiraiInternalApi::class,
     kotlinx.serialization.ExperimentalSerializationApi::class
 )
+@Suppress("UNUSED")
 class LuaMiraiCommand(
-    private val manager: BotScriptManager,
     private val logger: MiraiLogger,
     private val configFile: File?
 ): CompositeCommand(
@@ -34,6 +32,21 @@ class LuaMiraiCommand(
         primaryName = "lua",
         description = "lua mirai 指令集"
     ) {
+    private val scriptList = BotScriptList()
+
+    private val sourceList = BotScriptSourceList()
+
+    private val sourceAutoStart = mutableMapOf<BotScriptSource, Boolean>()
+
+    fun enable() {
+        runBlocking { loadScriptsByConfigFile() }
+    }
+
+    fun disable() {
+        runBlocking {
+            scriptList.forEach { if (it.running) it.stop() }
+        }
+    }
 
     @SubCommand
     @Description("打开lua mirai开发文档")
@@ -45,152 +58,68 @@ class LuaMiraiCommand(
         logger.info(website)
     }
 
-    @SubCommand
-    @Description("以 '[脚本编号] 文件名' 的形式列出所有已加载脚本")
+    // Source Commands
+
+    @SubCommand("source list")
+    @Description("列出所有脚本源")
     fun ConsoleCommandSender.list() {
-        val list = manager.list()
-        logger.info("已加载${list.size}个脚本：")
-        list.forEachIndexed { i: Int, botScript: BotScript ->
-            logger.info(
-                "[$i]\t${botScript.header?.get("name") ?: "未知脚本"}\t${if (botScript.running) "运行中" else "未运行"}"
-            )
+        sourceList.forEachIndexed { index, botScriptSource ->
+            logger.info("[$index] $botScriptSource")
         }
     }
 
-    @SubCommand
-    @Description("载入一个脚本，但不执行")
-    suspend fun ConsoleCommandSender.add(@Name("文件名") fileName: String) {
-        try {
-            val index = manager.add(LUA, File(fileName))
-            logger.info("添加脚本[$index] $fileName 成功")
-            updateConfig()
-        } catch (e: Exception) {
-            logger.error(e.message)
+    @SubCommand("source add")
+    @Description("新增脚本源")
+    suspend fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String, @Name("立即执行") execute: Boolean = false) {
+        val source = if (fileName.contains(":/")) {
+            BotScriptSource.FileSource(File(fileName), LUA)
+        } else {
+            BotScriptSource.URLSource(URL(fileName), LUA)
+        }
+        sourceList.add(source)
+        logger.info("添加脚本源[${sourceList.size - 1}] $fileName 成功")
+        if (execute) {
+            scriptList.addFromSource(source)
+        }
+        updateConfig()
+    }
+
+    @SubCommand("source remove")
+    @Description("删除指定位置上的脚本源")
+    fun ConsoleCommandSender.remove(@Name("索引") index: Int) {
+        sourceList.removeAt(index)
+        updateConfig()
+    }
+
+    // Script Commands
+
+    @SubCommand("script list")
+    @Description("列出正在运行的脚本")
+    suspend fun ConsoleCommandSender.listScript() {
+        scriptList.forEachIndexed { index, botScript ->
+            logger.info("[$index] $botScript 来自 ${botScript.source}")
         }
     }
 
-    @SubCommand
-    @Description("载入一个远程脚本，但不执行")
-    suspend fun ConsoleCommandSender.addRemote(@Name("脚本URL") path: String) {
-        try {
-            launch {
-                val index = manager.add(LUA, URL(path))
-                logger.info("添加脚本[$index] $path 成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
-    }
-
-    @SubCommand
-    @Description("载入一个脚本，并且执行")
-    suspend fun ConsoleCommandSender.load(@Name("文件名") fileName: String) {
-        try {
-            launch {
-                val index = manager.add(LUA, File(fileName))
-                manager.start(index)
-                logger.info("加载脚本[$index] $fileName 成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
-    }
-
-    @SubCommand
-    @Description("载入一个远程脚本，并且执行")
-    suspend fun ConsoleCommandSender.loadRemote(@Name("脚本URL") path: String) {
-        try {
-            launch {
-                val index = manager.add(LUA, URL(path))
-                manager.start(index)
-                logger.info("加载脚本[$index] $path 成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
-    }
-
-    @SubCommand
-    @Description("执行一个已经载入的脚本（如果已经被执行过，则忽略）")
-    suspend fun ConsoleCommandSender.execute(@Name("脚本编号") scriptId: Int) {
-        try {
-            launch {
-                manager.start(scriptId)
-                logger.info("执行脚本[$scriptId]成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
-    }
-
-    @SubCommand
-    @Description("重新执行一个脚本（该操作会先停用脚本并重新从文件中读取内容并执行）")
-    suspend fun ConsoleCommandSender.reload(@Name("脚本编号") scriptId: Int) {
-        try {
-            launch {
-                manager.restart(scriptId)
-                logger.info("重载脚本[$scriptId]成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
-    }
-
-    @SubCommand
+    @SubCommand("script stop")
     @Description("停用一个脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
     suspend fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
-        try {
-            launch {
-                manager.stop(scriptId)
-                logger.info("停用脚本[$scriptId]成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
+        scriptList[scriptId].stop()
+        logger.info("停用脚本[${scriptList[scriptId]}]成功")
+        scriptList.removeAt(scriptId)
     }
 
-    @SubCommand
-    @Description("删除一个脚本（仅移出脚本列表，不删除文件）")
-    fun ConsoleCommandSender.delete(@Name("脚本编号") scriptId: Int) {
-        try {
-            launch {
-                manager.remove(scriptId)
-                logger.info("删除脚本[$scriptId]成功")
-                updateConfig()
-            }
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
-    }
-
-
-    @SubCommand
+    @SubCommand("script info")
     @Description("查看脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        try {
-            val source = manager.get(scriptId).header
-            if (source == null) {
-                logger.info("无信息")
-                return
-            }
-            logger.info("名称：${source["name"]}")
-            logger.info("版本：${source["version"]}")
-            logger.info("作者：${source["author"]}")
-            logger.info("描述：${source["description"]}")
-        } catch (e: Exception) {
-            logger.error(e.message)
-        }
+        val source = scriptList[scriptId].header
+        source ?: return
+        logger.info("名称：${source["name"]}")
+        logger.info("版本：${source["version"]}")
+        logger.info("作者：${source["author"]}")
+        logger.info("描述：${source["description"]}")
     }
 
-    suspend fun loadScripts() {
-        loadScriptsByConfigFile()
-    }
 
     /**
      * 从配置文件读取已加载脚本信息
@@ -201,23 +130,14 @@ class LuaMiraiCommand(
         jsonConfigArray.forEachIndexed { _, itemElement ->
             kotlin.runCatching {
                 val item = itemElement.jsonObject
-                val index: Int = when (item["type"]?.jsonPrimitive?.contentOrNull) {
-                    "file" -> {
-                        val fileName = item["file"]?.jsonPrimitive?.contentOrNull!!
-                        manager.add(LUA, File(fileName))
-                    }
-                    "content" -> {
-                        val content = item["content"]?.jsonPrimitive?.contentOrNull!!
-                        manager.add(LUA, content)
-                    }
-                    "url" -> {
-                        val urlString = item["url"]?.jsonPrimitive?.contentOrNull!!
-                        manager.add(LUA, URL(urlString))
-                    }
-                    else -> throw IllegalArgumentException("Illegal script type.")
+                val source: BotScriptSource = when (val typeName = item["type"]?.jsonPrimitive?.contentOrNull) {
+                    "file" -> BotScriptSource.FileSource(File(item["file"]?.jsonPrimitive?.contentOrNull!!), LUA)
+                    "content" -> BotScriptSource.StringSource(item["content"]?.jsonPrimitive?.contentOrNull!!, LUA)
+                    "url" -> BotScriptSource.URLSource(URL(item["url"]?.jsonPrimitive?.contentOrNull!!), LUA)
+                    else -> throw IllegalArgumentException("Unsupported script type $typeName")
                 }
                 if (item["enable"]?.jsonPrimitive?.booleanOrNull == true) {
-                    manager.get(index).start()
+                    scriptList.addFromSource(source)
                 }
             }
         }
@@ -231,25 +151,26 @@ class LuaMiraiCommand(
      * 写出脚本信息到配置文件
      */
     private fun updateConfig() {
-        if (configFile == null) return
+        configFile ?: return
         val configArray = buildJsonArray {
-            manager.list().forEach { script ->
+            sourceList.forEach { source: BotScriptSource ->
                 add(buildJsonObject {
-                    when (val source = script.source) {
-                        is BotScriptFileSource -> {
+                    when (source) {
+                        is BotScriptSource.FileSource -> {
                             this@buildJsonObject.put("type", "file")
                             this@buildJsonObject.put("file", source.file.path)
                         }
-                        is BotScriptContentSource -> {
+                        is BotScriptSource.StringSource -> {
                             this@buildJsonObject.put("type", "content")
                             this@buildJsonObject.put("content", source.content)
                         }
-                        is BotScriptURLSource -> {
+                        is BotScriptSource.URLSource -> {
                             this@buildJsonObject.put("type", "url")
                             this@buildJsonObject.put("url", source.url.toString())
                         }
+                        else -> {}
                     }
-                    this@buildJsonObject.put("enable", script.running)
+                    this@buildJsonObject.put("enable", sourceAutoStart[source] == true)
                 })
             }
         }

@@ -1,5 +1,7 @@
 package com.github.only52607.luamirai.core.factory
 
+import com.github.only52607.luamirai.core.script.BotScript
+import com.github.only52607.luamirai.core.script.BotScriptSource
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -22,5 +24,8 @@ class BotScriptBuilderRegistry {
         }
     }
 }
+
+suspend fun BotScriptSource.buildBotScript(): BotScript =
+    BotScriptBuilderRegistry.getBotScriptBuilder(this.scriptLang).buildBotScript(this)
 
 class ScriptLangNotFoundException(lang: String) : Exception("Script lang for $lang has not been register")

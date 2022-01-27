@@ -11,33 +11,43 @@ abstract class AbstractBotScript : BotScript {
 
     private var _running = false
 
+    private var _completed = false
+
+    private var _stopped = false
+
     override val running: Boolean
         get() = _running
 
+    override val completed: Boolean
+        get() = _completed
+
+    override val stopped: Boolean
+        get() = _stopped
+
     override suspend fun start() {
-        if (_running) throw BotScriptLoadedException("Script is running")
+        if (_completed) throw BotScriptException("Script is completed")
+        if (_stopped) throw BotScriptException("Script is stopped")
+        if (_running) throw BotScriptException("Script is running")
         onStart()
         _running = true
     }
 
-    protected open suspend fun onStart() {}
+    abstract suspend fun onStart()
 
     override suspend fun stop() {
-        if (!_running) throw BotScriptLoadedException("Script is not running")
+        if (_completed) throw BotScriptException("Script is completed")
+        if (_stopped) throw BotScriptException("Script is stopped")
+        if (!_running) throw BotScriptException("Script is not running")
         onStop()
         _running = false
+        _stopped = true
     }
 
-    protected open suspend fun onStop() {}
+    abstract suspend fun onStop()
 
-    override suspend fun restart() {
-        onRestart()
-    }
-
-    protected open suspend fun onRestart() {
-        stop()
-        start()
+    protected fun onScriptCompleted() {
+        _completed = true
     }
 }
 
-class BotScriptLoadedException(message: String): RuntimeException(message)
+class BotScriptException(message: String) : RuntimeException(message)

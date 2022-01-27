@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import java.io.InputStream
 import java.io.OutputStream
-import java.io.PrintStream
 
 /**
  * Bot脚本接口，代表一个可以执行的脚本
@@ -23,14 +22,19 @@ interface BotScript : Closeable, CoroutineScope {
     suspend fun stop()
 
     /**
-     * 重启脚本，相当于start后stop
-     */
-    suspend fun restart()
-
-    /**
-     * 脚本是否可用，当值为true时，代表脚本已经被运行，且脚本内注册的监听器处于活跃状态。
+     * 脚本是否正在运行，当值为true时，代表脚本已经被运行，且脚本内注册的监听器处于活跃状态。
      */
     val running: Boolean
+
+    /**
+     * 脚本是否正常结束
+     */
+    val completed: Boolean
+
+    /**
+     * 脚本是否被停止
+     */
+    val stopped: Boolean
 
     /**
      * 脚本语言
@@ -40,12 +44,12 @@ interface BotScript : Closeable, CoroutineScope {
     /**
      * 脚本头部的附带信息
      */
-    var header: BotScriptHeader?
+    val header: BotScriptHeader?
 
     /**
      * 脚本源
      */
-    var source: BotScriptSource?
+    val source: BotScriptSource
 
     /**
      * 脚本标准输出流

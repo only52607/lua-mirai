@@ -3,6 +3,7 @@ package com.github.only52607.luamirai.core.script
 import java.io.File
 import java.io.InputStream
 import java.net.URL
+import java.nio.charset.Charset
 
 /**
  * ClassName: BotScriptSource
@@ -12,24 +13,61 @@ import java.net.URL
  * @version
  */
 
-interface BotScriptSource {
-    val size: Long
-    val chunkName: String
-}
+sealed class BotScriptSource(
+    val scriptLang: String,
+    var name: String,
+    var size: Long?,
+    var charset: Charset?
+) {
 
-interface BotScriptFileSource: BotScriptSource {
-    val file: File
-}
+    class FileSource(
+        val file: File,
+        scriptLang: String,
+        name: String = file.name,
+        charset: Charset = Charsets.UTF_8
+    ) : BotScriptSource(scriptLang, name, file.length(), charset) {
+        override fun toString(): String {
+            return "FileSource(name=$name, file=$file, lang=$scriptLang)"
+        }
+    }
 
-interface BotScriptURLSource: BotScriptSource {
-    val url: URL
-}
+    class StringSource(
+        val content: String,
+        scriptLang: String,
+        name: String = content,
+        charset: Charset = Charsets.UTF_8
+    ) : BotScriptSource(scriptLang, name, content.length.toLong(), charset) {
+        override fun toString(): String {
+            return "StringSource(name=$name, content=${content.hashCode()}, lang=$scriptLang)"
+        }
+    }
 
-interface BotScriptContentSource: BotScriptSource {
-    val content: String
-}
+    class URLSource(
+        val url: URL,
+        scriptLang: String,
+        name: String = url.toString(),
+        charset: Charset = Charsets.UTF_8
+    ) : BotScriptSource(scriptLang, name, null, charset) {
+        override fun toString(): String {
+            return "URLSource(name=$name, url=$url, lang=$scriptLang)"
+        }
+    }
 
-interface BotScriptInputStreamSource: BotScriptSource {
-    val inputStream: InputStream
-}
+    class InputStreamSource(
+        val inputStream: InputStream,
+        scriptLang: String,
+        name: String = inputStream.toString(),
+        charset: Charset = Charsets.UTF_8
+    ) : BotScriptSource(scriptLang, name, null, charset) {
+        override fun toString(): String {
+            return "InputStreamSource(name=$name, inputStream=$inputStream, lang=$scriptLang)"
+        }
+    }
 
+    abstract class CustomSource(
+        val file: File,
+        scriptLang: String,
+        name: String = file.name,
+        charset: Charset = Charsets.UTF_8
+    ) : BotScriptSource(scriptLang, name, file.length(), charset)
+}

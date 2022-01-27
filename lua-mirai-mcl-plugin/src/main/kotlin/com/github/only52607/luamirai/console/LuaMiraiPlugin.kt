@@ -1,7 +1,5 @@
 package com.github.only52607.luamirai.console
 
-import com.github.only52607.luamirai.core.manager.BotScriptManager
-import kotlinx.coroutines.launch
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
@@ -20,34 +18,20 @@ object LuaMiraiPlugin : KotlinPlugin(LuaMiraiPluginDescription) {
         Class.forName("com.github.only52607.luamirai.lua.LuaMiraiScriptBuilder")
     }
 
-    private val manager: BotScriptManager by lazy {
-        BotScriptManager()
-    }
-
-    @MiraiExperimentalApi
-    private val command: LuaMiraiCommand by lazy {
-        LuaMiraiCommand(manager, logger, resolveConfigFile(scriptConfigFile))
-    }
-
     private const val scriptConfigFile = "scripts.json"
 
+    private val command: LuaMiraiCommand by lazy {
+        LuaMiraiCommand(logger, resolveConfigFile(scriptConfigFile))
+    }
+
     override fun onEnable() {
-        try {
-            launch {
-                command.loadScripts()
-            }
-        } catch (e: Exception) {
-            logger.error("配置文件加载失败！")
-            e.printStackTrace()
-        }
+        command.enable()
         command.register()
         logger.info { "lua-mirai 加载成功，当前版本：${description.version}" }
     }
 
     override fun onDisable() {
-        launch {
-            manager.removeAll()
-        }
+        command.disable()
         logger.info { "lua-mirai 已停用" }
     }
 }

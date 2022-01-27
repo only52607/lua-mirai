@@ -1,6 +1,8 @@
 package com.github.only52607.luamirai.core.factory
 
 import com.github.only52607.luamirai.core.script.BotScript
+import com.github.only52607.luamirai.core.script.BotScriptSource
+import kotlinx.coroutines.Job
 import java.io.File
 import java.io.InputStream
 import java.net.URL
@@ -13,28 +15,5 @@ import java.net.URL
  * @version
  */
 interface BotScriptBuilder {
-
-    suspend fun buildBotScript(file: File, chunkName: String): BotScript {
-        throw NotImplementedError()
-    }
-
-    suspend fun buildBotScript(file: File): BotScript = buildBotScript(file, file.name)
-
-    suspend fun buildBotScript(url: URL, chunkName: String): BotScript {
-        throw NotImplementedError()
-    }
-
-    suspend fun buildBotScript(url: URL): BotScript = buildBotScript(url, "$url")
-
-    suspend fun buildBotScript(content: String, chunkName: String): BotScript {
-        throw NotImplementedError()
-    }
-
-    suspend fun buildBotScript(content: String): BotScript = buildBotScript(content, content)
-
-    suspend fun buildBotScript(inputStream: InputStream, chunkName: String): BotScript {
-        throw NotImplementedError()
-    }
-
-    suspend fun buildBotScript(inputStream: InputStream): BotScript = buildBotScript(inputStream, "[From InputStream]")
+    suspend fun buildBotScript(source: BotScriptSource): BotScript
 }

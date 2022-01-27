@@ -14,6 +14,7 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
+import org.luaj.vm2.LuaValue
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
@@ -26,85 +27,65 @@ import kotlin.coroutines.CoroutineContext
 
 @OptIn(MiraiInternalApi::class, MiraiExperimentalApi::class)
 class LuaMiraiScript(
-    private var luaSource: LuaSource
+    override var source: BotScriptSource
 ) : AbstractBotScript(), CoroutineScope {
-    override lateinit var coroutineContext: CoroutineContext
+    override var coroutineContext: CoroutineContext = SupervisorJob()
 
-    private var taskLib: TaskLib? = null
+    private var taskLib = TaskLib(LuaMiraiValueMapper)
+
+    private var sourceCache: String? = null
+
+    private val _header by lazy { LuaHeaderReader.readHeader(source) { sourceCache = it } }
+
+    override val header: BotScriptHeader = _header
 
     override val lang: String
         get() = "lua"
 
-    override var source: BotScriptSource?
-        get() = luaSource
-        set(value) {}
-
     override var stdout: OutputStream? = System.out
         set(value) {
-            globals?.let { it.STDOUT = value?.let(::PrintStream) }
+            globals.STDOUT = value?.let(::PrintStream)
             field = value
         }
 
     override var stderr: OutputStream? = System.err
         set(value) {
-            globals?.let { it.STDERR = value?.let(::PrintStream) }
+            globals.STDERR = value?.let(::PrintStream)
             field = value
         }
 
     override var stdin: InputStream? = System.`in`
         set(value) {
-            globals?.let { it.STDIN = value }
+            globals.STDIN = value
             field = value
         }
 
-    override var header: BotScriptHeader?
-        get() = luaSource.header
-        set(value) {}
-
-    private var globals: Globals? = null
-
-    override suspend fun onStart() {
-        super.onStart()
-        prepareTaskLib()
-        prepareCoroutineContext()
-        prepareGlobals()
-        initGlobals()
-        loadAndExecuteSource()
+    private var globals = Globals().apply {
+        STDOUT = stdout?.let(::PrintStream)
+        STDERR = stderr?.let(::PrintStream)
+        STDIN = stdin
     }
 
-    override suspend fun onRestart() {
-        luaSource = luaSource.copy()
-        luaSource.init()
-        super.onRestart()
+    override suspend fun onStart() {
+        _header     // read header first
+        if (coroutineContext[ContinuationInterceptor] == null) {
+            coroutineContext += taskLib.asCoroutineDispatcher()
+        }
+        initGlobals()
+        val func = globals.loadSource(source, sourceCache)
+        coroutineScope {
+            launch {
+                func.invoke()
+            }
+        }
     }
 
     override suspend fun onStop() {
-        super.onStop()
         coroutineContext.cancel()
-        taskLib?.shutdown()
-    }
-
-    private fun prepareGlobals() {
-        globals = Globals().apply {
-            STDOUT = stdout?.let(::PrintStream)
-            STDERR = stderr?.let(::PrintStream)
-            STDIN = stdin
-        }
-    }
-
-    private fun prepareCoroutineContext() {
-        coroutineContext = SupervisorJob()
-        if (coroutineContext[ContinuationInterceptor] == null) {
-            coroutineContext += taskLib?.asCoroutineDispatcher() ?: Dispatchers.Default
-        }
-    }
-
-    private fun prepareTaskLib() {
-        taskLib = TaskLib(LuaMiraiValueMapper)
+        taskLib.shutdown()
     }
 
     private fun initGlobals() {
-        if (globals == null) throw Exception("Lua Globals not prepared!")
         installLibs()
         LoadState.install(globals)
         LuaC.install(globals)
@@ -116,7 +97,7 @@ class LuaMiraiScript(
         loadExtendLibs()
     }
 
-    private fun loadBaseLibs() = globals?.apply {
+    private fun loadBaseLibs() = globals.apply {
         load(JseBaseLib())
         load(PackageLib())
         load(Bit32Lib())
@@ -130,14 +111,14 @@ class LuaMiraiScript(
         load(taskLib)
     }
 
-    private fun loadMiraiLibs() = globals?.apply {
+    private fun loadMiraiLibs() = globals.apply {
         load(StringExLib(LuaMiraiValueMapper))
         load(MiraiLib(this@LuaMiraiScript, LuaMiraiValueMapper))
         load(LuaKotlinLib(this@LuaMiraiScript, LuaMiraiValueMapper, LuaMiraiLuaKotlinClassRegistry))
         load(KotlinCoroutineLib(this@LuaMiraiScript, LuaMiraiValueMapper))
     }
 
-    private fun loadExtendLibs() = globals?.apply {
+    private fun loadExtendLibs() = globals.apply {
         load(HttpLib(LuaMiraiValueMapper))
         load(KtxJsonLib(LuaMiraiValueMapper))
         load(JDBCLib(LuaMiraiValueMapper))
@@ -145,11 +126,14 @@ class LuaMiraiScript(
         load(SocketLib(LuaMiraiValueMapper))
     }
 
-    private suspend fun loadAndExecuteSource(dispatcher: CoroutineDispatcher? = null) {
-        val globals = globals ?: throw GlobalsNotInitializeException("Globals have not been initialize")
-        val func = luaSource.load(globals)
-        withContext(dispatcher ?: taskLib?.asCoroutineDispatcher() ?: Dispatchers.Default) {
-            func.invoke()
+    private fun Globals.loadSource(source: BotScriptSource, cached: String? = null): LuaValue {
+        if (cached != null) {
+            return load(cached)
+        }
+        return when (source) {
+            is BotScriptSource.FileSource -> loadfile(source.file.absolutePath)
+            is BotScriptSource.StringSource -> load(source.content)
+            else -> throw Exception("Unsupported BotScriptSource $source")
         }
     }
 }
