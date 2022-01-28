@@ -70,17 +70,20 @@ class LuaMiraiCommand(
 
     @SubCommand("source add")
     @Description("新增脚本源")
-    suspend fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String, @Name("立即执行") execute: Boolean = false) {
-        val source = if (fileName.contains(":/")) {
-            BotScriptSource.FileSource(File(fileName), LUA)
+    suspend fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String) {
+        val source = if (!fileName.contains("://")) {
+            val file = File(fileName)
+            if (!file.exists()) {
+                logger.error("文件${file.absolutePath}不存在")
+                return
+            }
+            BotScriptSource.FileSource(file, LUA)
         } else {
             BotScriptSource.URLSource(URL(fileName), LUA)
         }
         sourceList.add(source)
         logger.info("添加脚本源[${sourceList.size - 1}] $fileName 成功")
-        if (execute) {
-            scriptList.addFromSource(source)
-        }
+        scriptList.addFromSource(source)
         updateConfig()
     }
 
@@ -94,23 +97,38 @@ class LuaMiraiCommand(
     // Script Commands
 
     @SubCommand("script list")
-    @Description("列出正在运行的脚本")
+    @Description("列出运行中的脚本")
     fun ConsoleCommandSender.listScript() {
         scriptList.forEachIndexed { index, botScript ->
-            logger.info("[$index] $botScript 来自 ${botScript.source}")
+            logger.info("[$index] $botScript")
         }
     }
 
     @SubCommand("script stop")
-    @Description("停用一个脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
+    @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
     suspend fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
         scriptList[scriptId].stop()
         logger.info("停用脚本[${scriptList[scriptId]}]成功")
         scriptList.removeAt(scriptId)
     }
 
+    @SubCommand("script start")
+    @Description("使用脚本源启动一个新脚本")
+    suspend fun ConsoleCommandSender.start(@Name("脚本源编号") sourceId: Int) {
+        scriptList.addFromSource(sourceList[sourceId]).start()
+    }
+
+    @SubCommand("script restart")
+    @Description("重新读入脚本源以启动脚本")
+    suspend fun ConsoleCommandSender.restart(@Name("脚本编号") scriptId: Int) {
+        val source = scriptList[scriptId].source
+        scriptList[scriptId].stop()
+        scriptList.removeAt(scriptId)
+        scriptList.addFromSource(source).start()
+    }
+
     @SubCommand("script info")
-    @Description("查看脚本信息")
+    @Description("查看运行中的脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
         val source = scriptList[scriptId].header
         source ?: return
@@ -136,8 +154,9 @@ class LuaMiraiCommand(
                     "url" -> BotScriptSource.URLSource(URL(item["url"]?.jsonPrimitive?.contentOrNull!!), LUA)
                     else -> throw IllegalArgumentException("Unsupported script type $typeName")
                 }
+                sourceList.add(source)
                 if (item["enable"]?.jsonPrimitive?.booleanOrNull == true) {
-                    scriptList.addFromSource(source)
+                    scriptList.addFromSource(source).start()
                 }
             }
         }
