@@ -39,7 +39,7 @@ val miraiEvents by lazy {
         set("MemberUnmuteEvent", MemberUnmuteEvent::class)  //群成员被取消禁言事件. 被禁言的成员都不可能是机器人本人
         set("GroupOperableEvent", GroupOperableEvent::class)  //可由 [Member] 或 [Bot] 操作的事件
         set("MemberSpecialTitleChangeEvent", MemberSpecialTitleChangeEvent::class)  //成员群头衔改动. 一定为群主操作
-        set("GroupSettingChangeEvent<T>", GroupSettingChangeEvent::class)  //群设置改变. 此事件广播前修改就已经完成.
+        set("GroupSettingChangeEvent", GroupSettingChangeEvent::class)  //群设置改变. 此事件广播前修改就已经完成.
         set("GroupNameChangeEvent", GroupNameChangeEvent::class)  //群名改变. 此事件广播前修改就已经完成.
         set(
             "GroupEntranceAnnouncementChangeEvent",
