@@ -9,45 +9,34 @@ package com.github.only52607.luamirai.core.script
  */
 abstract class AbstractBotScript : BotScript {
 
-    private var _running = false
-
-    private var _completed = false
+    private var _active = false
 
     private var _stopped = false
 
-    override val running: Boolean
-        get() = _running
+    override val isActive: Boolean
+        get() = _active
 
-    override val completed: Boolean
-        get() = _completed
-
-    override val stopped: Boolean
+    override val isStopped: Boolean
         get() = _stopped
 
     override suspend fun start() {
-        if (_completed) throw BotScriptException("Script is completed")
-        if (_stopped) throw BotScriptException("Script is stopped")
-        if (_running) throw BotScriptException("Script is running")
+        if (_stopped) throw BotScriptException("Stopped script could not be start again")
+        if (_active) throw BotScriptException("Script has already been started")
         onStart()
-        _running = true
+        _active = true
     }
 
     abstract suspend fun onStart()
 
     override suspend fun stop() {
-        if (_completed) throw BotScriptException("Script is completed")
-        if (_stopped) throw BotScriptException("Script is stopped")
-        if (!_running) throw BotScriptException("Script is not running")
+        if (_stopped) throw BotScriptException("Script has already stopped")
+        if (!_active) throw BotScriptException("Script has not been started")
         onStop()
-        _running = false
+        _active = false
         _stopped = true
     }
 
     abstract suspend fun onStop()
-
-    protected fun onScriptCompleted() {
-        _completed = true
-    }
 }
 
 class BotScriptException(message: String) : RuntimeException(message)

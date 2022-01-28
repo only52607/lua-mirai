@@ -44,7 +44,7 @@ class LuaMiraiCommand(
 
     fun disable() {
         runBlocking {
-            scriptList.forEach { if (it.running) it.stop() }
+            scriptList.forEach { if (it.isActive) it.stop() }
         }
     }
 
@@ -95,7 +95,7 @@ class LuaMiraiCommand(
 
     @SubCommand("script list")
     @Description("列出正在运行的脚本")
-    suspend fun ConsoleCommandSender.listScript() {
+    fun ConsoleCommandSender.listScript() {
         scriptList.forEachIndexed { index, botScript ->
             logger.info("[$index] $botScript 来自 ${botScript.source}")
         }

@@ -24,17 +24,12 @@ interface BotScript : Closeable, CoroutineScope {
     /**
      * 脚本是否正在运行，当值为true时，代表脚本已经被运行，且脚本内注册的监听器处于活跃状态。
      */
-    val running: Boolean
-
-    /**
-     * 脚本是否正常结束
-     */
-    val completed: Boolean
+    val isActive: Boolean
 
     /**
      * 脚本是否被停止
      */
-    val stopped: Boolean
+    val isStopped: Boolean
 
     /**
      * 脚本语言

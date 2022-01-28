@@ -39,8 +39,7 @@ class LuaMiraiScript(
 
     override val header: BotScriptHeader = _header
 
-    override val lang: String
-        get() = "lua"
+    override val lang: String = "lua"
 
     override var stdout: OutputStream? = System.out
         set(value) {
@@ -60,7 +59,7 @@ class LuaMiraiScript(
             field = value
         }
 
-    private var globals = Globals().apply {
+    private val globals = Globals().apply {
         STDOUT = stdout?.let(::PrintStream)
         STDERR = stderr?.let(::PrintStream)
         STDIN = stdin
@@ -137,5 +136,3 @@ class LuaMiraiScript(
         }
     }
 }
-
-class GlobalsNotInitializeException(message: String): RuntimeException(message)
