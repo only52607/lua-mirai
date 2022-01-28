@@ -28,15 +28,16 @@ val LuaMiraiLuaKotlinClassRegistry: LuaKotlinClassRegistry by lazy {
 
 val LuaMiraiValueMapper: ValueMapper by lazy {
     rootLuaValueMapper.append(
+        LuaValueToLuaMiraiMessageMapper(),
         UserDataLuaValueMapper(),
         BaseLuaValueMapper(),
-        CollectionLuaValueMapper(),
+        // CollectionLuaValueMapper(),
         OriginalLuaValueMapper()
     )
 
     rootKValueMapper.append(
         BaseKValueMapper(),
-        CollectionKValueMapper(),
+        // CollectionKValueMapper(),
         LuaMiraiMessageMapper(LuaMiraiLuaKotlinClassRegistry, combinedValueMapper),
         UserDataKValueMapper(LuaMiraiLuaKotlinClassRegistry)
     )
