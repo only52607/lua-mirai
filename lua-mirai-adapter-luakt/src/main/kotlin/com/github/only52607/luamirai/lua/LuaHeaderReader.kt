@@ -36,7 +36,10 @@ object LuaHeaderReader {
 
     fun readHeader(source: BotScriptSource, readSourceString: (String) -> Unit): BotScriptHeader = when (source) {
         is BotScriptSource.FileSource -> source.file
-            .useLines(charset = source.charset ?: Charsets.UTF_8, block = ::parseBotScriptHeader)
+            .readText(source.charset ?: Charsets.UTF_8)
+            .also(readSourceString)
+            .splitToSequence("\n")
+            .let(::parseBotScriptHeader)
         is BotScriptSource.StringSource -> source.content
             .splitToSequence("\n")
             .let(::parseBotScriptHeader)
