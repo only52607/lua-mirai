@@ -29,6 +29,5 @@ class Executor : CliktCommand(help = "运行脚本", name = "exec") {
             println(script)
             script.start()
         }
-        println("----------Script exited----------")
     }
 }
