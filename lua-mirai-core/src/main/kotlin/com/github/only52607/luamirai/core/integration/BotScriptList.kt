@@ -9,7 +9,7 @@ interface BotScriptList : MutableList<BotScript> {
      * 创建脚本
      * 返回脚本索引
      */
-    suspend fun addFromSource(source: BotScriptSource)
+    suspend fun addFromSource(source: BotScriptSource): BotScript
 }
 
 fun BotScriptList(): BotScriptList = BotScriptListImpl()

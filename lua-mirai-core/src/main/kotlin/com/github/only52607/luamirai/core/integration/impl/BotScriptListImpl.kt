@@ -13,7 +13,9 @@ import com.github.only52607.luamirai.core.script.BotScriptSource
  * @version
  */
 internal class BotScriptListImpl : BotScriptList, MutableList<BotScript> by mutableListOf() {
-    override suspend fun addFromSource(source: BotScriptSource) {
-        add(source.buildBotScript())
+    override suspend fun addFromSource(source: BotScriptSource): BotScript {
+        val script = source.buildBotScript()
+        add(script)
+        return script
     }
 }
