@@ -3,8 +3,8 @@ package com.github.only52607.luamirai.lua.mirai.event
 import com.github.only52607.luakt.ValueMapper
 import com.github.only52607.luakt.utils.asLuaValue
 import com.github.only52607.luakt.utils.provideScope
-import com.github.only52607.luakt.utils.toLuaValueList
 import com.github.only52607.luakt.utils.varArgFunctionOf
+import com.github.only52607.luakt.utils.varargsToLuaValueList
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -37,7 +37,7 @@ class EventTable(
     private val subscriberFunction
         get() = varArgFunctionOf { varargs ->
             var channel = GlobalEventChannel.parentScope(coroutineScope)
-            val varargsList = varargs.toLuaValueList()
+            val varargsList = varargs.varargsToLuaValueList()
             varargsList.take(varargs.narg() - 1).forEachIndexed { i, rule ->
                 channel = when {
                     rule.isfunction() -> channel.filterByLuaFunction(rule.checkfunction(), valueMapper)
