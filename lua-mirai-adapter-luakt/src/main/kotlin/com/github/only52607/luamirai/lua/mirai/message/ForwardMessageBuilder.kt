@@ -1,8 +1,8 @@
 package com.github.only52607.luamirai.lua.mirai.message
 
 import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.utils.forEach
 import com.github.only52607.luakt.utils.provideScope
-import com.github.only52607.luakt.utils.toLuaValueList
 import net.mamoe.mirai.message.data.EmptyMessageChain
 import net.mamoe.mirai.message.data.ForwardMessage
 import org.luaj.vm2.LuaTable
@@ -16,18 +16,25 @@ import org.luaj.vm2.LuaTable
  */
 
 fun LuaTable.buildForwardMsg(valueMapper: ValueMapper): ForwardMessage = valueMapper.provideScope {
-    val title by field(defaultValue = "群聊的聊天记录")
-    val brief by field(defaultValue = "[聊天记录]")
-    val source by field(defaultValue = "聊天记录")
-    val previewTable by field(defaultValue = LuaTable())
-    val summary by field(defaultValue = "群聊的聊天记录")
-    val nodeListTable by field(defaultValue = LuaTable())
-    val nodeList = nodeListTable!!.toLuaValueList().map { it.checktable().buildNode(valueMapper) }
-    val preview = previewTable!!.toLuaValueList().map { it.tojstring() }
-    ForwardMessage(preview, title!!, brief!!, source!!, summary!!, nodeList)
+    ForwardMessage(
+        title = get("title").optjstring("群聊的聊天记录"),
+        brief = get("brief").optjstring("[聊天记录]"),
+        source = get("source").optjstring("聊天记录"),
+        preview = mutableListOf<String>().apply {
+            get("preview").opttable(LuaTable()).forEach { _, value ->
+                add(value.optjstring(""))
+            }
+        },
+        summary = get("summary").optjstring("群聊的聊天记录"),
+        nodeList = mutableListOf<ForwardMessage.Node>().apply {
+            get("content").opttable(LuaTable()).forEach { _, value ->
+                add(value.checktable().buildNode(valueMapper))
+            }
+        },
+    )
 }
 
-private fun LuaTable.buildNode(valueMapper: ValueMapper) = valueMapper.provideScope {
+private fun LuaTable.buildNode(valueMapper: ValueMapper): ForwardMessage.Node = valueMapper.provideScope {
     ForwardMessage.Node(
         getOrNull("senderId")?.tolong() ?: 0,
         getOrNull("time")?.toint() ?: 0,
