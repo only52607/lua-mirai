@@ -3,9 +3,9 @@ package com.github.only52607.luamirai.lua.mirai.message
 import com.github.only52607.luakt.ValueMapper
 import com.github.only52607.luakt.utils.provideScope
 import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.contact.AudioSupported
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Contact.Companion.uploadImage
-import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.UserOrBot
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
@@ -92,8 +92,11 @@ class MessageConstructorsTable(
                     return@luaFunctionOf LightApp(code)
                 }
 
-                listOf("Voice", "Audio") nto luaFunctionOf { group: Group, fileName: String, formatName: String ->
-                    return@luaFunctionOf runBlocking { group.uploadAudio(File(fileName).toExternalResource(formatName)) }
+                listOf(
+                    "Voice",
+                    "Audio"
+                ) nto luaFunctionOf { contact: AudioSupported, fileName: String, formatName: String ->
+                    return@luaFunctionOf runBlocking { contact.uploadAudio(File(fileName).toExternalResource(formatName)) }
                 }
 
                 listOf("SimpleServiceMessage", "Service") nto luaFunctionOf { serviceId: Int, content: String ->
