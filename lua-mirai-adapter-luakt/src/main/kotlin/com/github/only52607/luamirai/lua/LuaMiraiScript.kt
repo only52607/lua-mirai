@@ -29,6 +29,11 @@ import kotlin.coroutines.CoroutineContext
 class LuaMiraiScript(
     override var source: BotScriptSource
 ) : AbstractBotScript(), CoroutineScope {
+
+    override fun toString(): String {
+        return "LuaMiraiScript from $source"
+    }
+
     override var coroutineContext: CoroutineContext = SupervisorJob()
 
     private var taskLib = TaskLib(LuaMiraiValueMapper)
