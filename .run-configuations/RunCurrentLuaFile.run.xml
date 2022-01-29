@@ -2,12 +2,12 @@
     <configuration default="false" name="RunCurrentLuaFile" type="JetRunConfigurationType">
         <module name="lua-mirai.lua-mirai-executable.test"/>
         <option name="VM_PARAMETERS" value=""/>
-        <option name="PROGRAM_PARAMETERS" value="exec $/FileRelativePath$"/>
+        <option name="PROGRAM_PARAMETERS" value="exec $FilePath$"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
         <option name="ALTERNATIVE_JRE_PATH"/>
         <option name="PASS_PARENT_ENVS" value="true"/>
         <option name="MAIN_CLASS_NAME" value="com.github.only52607.luamirai.MainKt"/>
-        <option name="WORKING_DIRECTORY" value=""/>
+        <option name="WORKING_DIRECTORY" value="file://$FileDir$"/>
         <method v="2">
             <option name="Make" enabled="true"/>
         </method>

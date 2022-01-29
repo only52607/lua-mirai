@@ -1,12 +1,9 @@
 build
-out
-src/test
 .idea
 .gradle
 .settings
-doc
-docs
-logo
 local.properties
 hs_err_*
 replay_*
+mcl-data
+local-script
