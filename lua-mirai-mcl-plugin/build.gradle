@@ -1,5 +1,4 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
     id 'com.github.johnrengelman.shadow' version "5.2.0"
 }
 
@@ -13,7 +12,6 @@ dependencies {
 task createPluginYml(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/plugin.yml").withWriter { w ->
-
             w.writeLine('id: "com.github.only52607.luamirai"')
             w.writeLine("name: \"${rootProject.name}\"")
             w.writeLine('main: ""')

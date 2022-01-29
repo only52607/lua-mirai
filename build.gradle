@@ -1,5 +1,4 @@
 buildscript {
-    ext.mirai_core_version = "2.9.2"
     repositories {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/public' }
@@ -8,7 +7,6 @@ buildscript {
 }
 
 plugins {
-    id 'java'
     id 'org.jetbrains.kotlin.jvm' version "1.6.10"
     id 'maven-publish'
 }
@@ -21,7 +19,7 @@ configurations.all {
 
 allprojects {
     group 'com.github.only52607'
-    version '2.4.0'
+    version '2.4.0-alpha.1'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn']
@@ -39,16 +37,17 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+
     dependencies {
+        def mirai_core_version = "2.9.2"
         implementation fileTree(dir: 'libs', include: ['*.jar'])
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
         implementation "net.mamoe:mirai-core-api:$mirai_core_version"
         runtimeOnly "net.mamoe:mirai-core:$mirai_core_version"
         testCompile group: 'junit', name: 'junit', version: '4.12'
     }
-}
 
-project(':lua-mirai-core') {
     task sourcesJar(type: Jar) {
         from sourceSets.main.allJava
         archiveClassifier.set('sources')
@@ -58,36 +57,22 @@ project(':lua-mirai-core') {
         from javadoc
         archiveClassifier.set('javadoc')
     }
+}
 
-    publishing {
-        publications {
-            core(MavenPublication) {
-                from components.java
-                artifact sourcesJar
-                artifact javadocJar
-            }
+publishing {
+    publications {
+        luaMiraiCore(MavenPublication) {
+            def coreProject = project(':lua-mirai-core')
+            from coreProject.components.java
+            artifact coreProject.tasks.sourcesJar
+            artifact coreProject.tasks.javadocJar
         }
-    }
-}
 
-project(':lua-mirai-adapter-luakt') {
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allJava
-        archiveClassifier.set('sources')
-    }
-
-    task javadocJar(type: Jar) {
-        from javadoc
-        archiveClassifier.set('javadoc')
-    }
-
-    publishing {
-        publications {
-            luaktAdapter(MavenPublication) {
-                from components.java
-                artifact sourcesJar
-                artifact javadocJar
-            }
+        luaktAdapter(MavenPublication) {
+            def luaktAdapterProject = project(':lua-mirai-adapter-luakt')
+            from luaktAdapterProject.components.java
+            artifact luaktAdapterProject.tasks.sourcesJar
+            artifact luaktAdapterProject.tasks.javadocJar
         }
     }
 }
