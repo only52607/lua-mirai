@@ -60,6 +60,7 @@ class LuaKotlinMessage(
     }
 
     override fun get(key: LuaValue): LuaValue {
+        if (message !is MessageChain) return super.get(key)
         return when {
             key.isnumber() -> getMessageElement(key.checkint())
             key.isstring() -> getMessageElement(key.checkjstring())
