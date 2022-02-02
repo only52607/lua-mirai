@@ -6,7 +6,6 @@ import com.github.only52607.luamirai.core.script.AbstractBotScript
 import com.github.only52607.luamirai.core.script.BotScriptHeader
 import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.lua.lib.*
-import com.github.only52607.luamirai.lua.lib.MiraiLib
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
 import kotlinx.coroutines.*
@@ -21,7 +20,6 @@ import org.luaj.vm2.lib.jse.*
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PrintStream
-import java.lang.RuntimeException
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 

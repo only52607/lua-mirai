@@ -8,19 +8,16 @@ package com.github.only52607.luamirai.lua.mirai.message
  * @version
  */
 import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.userdata.LuaKotlinObject
 import com.github.only52607.luakt.userdata.classes.LuaKotlinClass
+import com.github.only52607.luakt.userdata.objects.LuaKotlinObject
 import com.github.only52607.luakt.utils.asLuaValue
-import com.github.only52607.luakt.utils.luaFunctionOf
-import kotlinx.coroutines.runBlocking
+import com.github.only52607.luakt.utils.nullable
 import net.mamoe.mirai.message.code.CodableMessage
 import net.mamoe.mirai.message.data.*
-import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaString
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
-
 
 @Suppress("unused")
 class LuaKotlinMessage(
@@ -28,7 +25,8 @@ class LuaKotlinMessage(
     luaKotlinMessageClass: LuaKotlinClass,
     val valueMapper: ValueMapper
 ) : LuaKotlinObject(message, luaKotlinMessageClass) {
-    private fun Message.typename(): String = when (this) {
+
+    override fun typename(): String = when (message) {
         is MessageChain -> "MessageChain"
         is MessageSource -> "MessageSource"
         is QuoteReply -> "QuoteReply"
@@ -44,42 +42,29 @@ class LuaKotlinMessage(
         is LightApp -> "LightApp"
         is Audio -> "Audio"
         is ServiceMessage -> "ServiceMessage"
-        is ConstrainSingle -> this.key.toString()
+        is ConstrainSingle -> message.key.toString()
         else -> this::class.simpleName ?: ""
     }
-
-    override fun typename(): String = message.typename()
 
     /**
      * 1-based
      */
     private fun getMessageElement(index: Int) = when (message) {
         is MessageChain -> message.getOrNull(index - 1)?.asLuaValue(valueMapper) ?: LuaValue.NIL
-        else -> throw LuaError("$message is not a MessageChain.")
+        else -> throw LuaError("$message is not a MessageChain")
     }
 
     private fun getMessageElement(type: String) = when (message) {
-        is MessageChain -> message.find { it.typename() == type }.asLuaValue(valueMapper)
-        else -> throw LuaError("$message is not a MessageChain.")
-    }
-
-    private fun getExtendFunction(name: String) = when(name) {
-        "recall" -> luaFunctionOf(valueMapper) { message: MessageSource ->
-            runBlocking { message.recall() }
-        }
-        else -> null
+        is MessageChain -> message.find { typename() == type }.asLuaValue(valueMapper)
+        else -> throw LuaError("$message is not a MessageChain")
     }
 
     override fun get(key: LuaValue): LuaValue {
-        if (message !is MessageChain) return when {
-            key.isstring() -> getExtendFunction(key.checkjstring())
-            else -> null
-        } ?: super.get(key)
         return when {
             key.isnumber() -> getMessageElement(key.checkint())
             key.isstring() -> getMessageElement(key.checkjstring())
             else -> NIL
-        }?.takeIf { !it.isnil() } ?: super.get(key)
+        }?.nullable ?: super.get(key)
     }
 
     override fun eq_b(value: LuaValue?): Boolean = message.toString() == value.toString()
@@ -89,7 +74,7 @@ class LuaKotlinMessage(
     override fun len(): LuaValue = LuaValue.valueOf(rawlen())
     override fun checktable(): LuaTable =
         if (message is MessageChain) LuaValue.listOf(message.map { it.asLuaValue(valueMapper) }.toTypedArray())
-        else throw LuaError("$message is not a MessageChain.")
+        else throw LuaError("$message is not a MessageChain")
 
     private fun LuaValue.checkMessage() = if (isuserdata()) checkuserdata() as Message else PlainText(toString())
     override fun add(rhs: LuaValue): LuaValue = (message + rhs.checkMessage()).asLuaValue(valueMapper)

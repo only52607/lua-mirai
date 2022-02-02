@@ -21,9 +21,10 @@ class StringExLib(
         valueMapper.provideScope {
             stringTable.edit {
                 "substring" to varArgFunctionOf { args: Varargs ->
-                    if (args.narg() > 2) return@varArgFunctionOf args[1].asKValue<String>()
-                        .substring(args[2].asKValue(), args[3].asKValue()).asLuaValue()
-                    return@varArgFunctionOf args[1].asKValue<String>().substring(args[2].asKValue<Int>()).asLuaValue()
+                    if (args.narg() > 2) return@varArgFunctionOf args.arg(1).asKValue<String>()
+                        .substring(args.arg(2).asKValue(), args.arg(3).asKValue()).asLuaValue()
+                    return@varArgFunctionOf args.arg(1).asKValue<String>().substring(args.arg(2).asKValue<Int>())
+                        .asLuaValue()
                 }
                 "encode" to luaFunctionOf { s: String, fromCharset: String, toCharset: String ->
                     return@luaFunctionOf String(s.toByteArray(Charset.forName(fromCharset)), Charset.forName(toCharset))

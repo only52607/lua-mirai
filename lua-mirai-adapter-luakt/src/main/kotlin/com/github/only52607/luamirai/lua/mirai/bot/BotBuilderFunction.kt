@@ -27,13 +27,13 @@ class BotBuilderFunction(
 ) : VarArgFunction() {
     override fun onInvoke(args: Varargs?): Varargs {
         args ?: return NIL
-        val account = args[1].checklong()
-        val pwd = args[2].checkjstring()
+        val account = args.arg(1).checklong()
+        val pwd = args.arg(2).checkjstring()
         val config = if (args.narg() >= 3) {
-            if (args[3].istable())
-                args[3].checktable().toBotConfiguration().setScope()
+            if (args.arg(3).istable())
+                args.arg(3).checktable().toBotConfiguration().setScope()
             else
-                BotConfiguration.Default.copy().setDeviceFile(args[3].checkjstring()).setScope()
+                BotConfiguration.Default.copy().setDeviceFile(args.arg(3).checkjstring()).setScope()
         } else {
             BotConfiguration.Default.setScope()
         }
