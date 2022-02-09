@@ -19,7 +19,7 @@ configurations.all {
 
 allprojects {
     group 'com.github.only52607'
-    version '2.4.0-alpha.1'
+    version '2.4.0-alpha.3'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn']
@@ -62,6 +62,7 @@ subprojects {
 publishing {
     publications {
         luaMiraiCore(MavenPublication) {
+            setArtifactId("lua-mirai-core")
             def coreProject = project(':lua-mirai-core')
             from coreProject.components.java
             artifact coreProject.tasks.sourcesJar
@@ -69,6 +70,7 @@ publishing {
         }
 
         luaktAdapter(MavenPublication) {
+            setArtifactId("lua-mirai-adapter-luakt")
             def luaktAdapterProject = project(':lua-mirai-adapter-luakt')
             from luaktAdapterProject.components.java
             artifact luaktAdapterProject.tasks.sourcesJar
