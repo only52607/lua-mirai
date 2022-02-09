@@ -19,7 +19,7 @@ configurations.all {
 
 allprojects {
     group 'com.github.only52607'
-    version '2.4.0-alpha.2'
+    version '2.4.0-alpha.3'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn']
