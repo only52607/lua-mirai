@@ -1,5 +1,9 @@
 package com.github.only52607.luamirai.core.script
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+
 /**
  * ClassName: AbstractBotScript
  * Description:
@@ -19,21 +23,28 @@ abstract class AbstractBotScript : BotScript {
     override val isStopped: Boolean
         get() = _stopped
 
-    override suspend fun start() {
+    override fun start(): Job {
         if (_stopped) throw BotScriptException("Stopped script could not be start again")
         if (_active) throw BotScriptException("Script has already been started")
-        onStart()
+        val job = launch {
+            onStart()
+        }
         _active = true
+        return job
     }
 
     abstract suspend fun onStart()
 
-    override suspend fun stop() {
+    override fun stop(): Job {
         if (_stopped) throw BotScriptException("Script has already stopped")
         if (!_active) throw BotScriptException("Script has not been started")
-        onStop()
+        val job = launch {
+            onStop()
+        }
+        cancel()
         _active = false
         _stopped = true
+        return job
     }
 
     abstract suspend fun onStop()

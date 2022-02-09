@@ -75,16 +75,12 @@ class LuaMiraiScript(
         }
         initGlobals()
         val func = globals.loadSource(source, sourceCache)
-        coroutineScope {
-            launch {
-                func.invoke()
-            }
-        }
+        func.invoke()
     }
 
     override suspend fun onStop() {
-        coroutineContext.cancel()
         taskLib.shutdown()
+        coroutineContext.cancel()
     }
 
     private fun initGlobals() {

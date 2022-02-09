@@ -43,9 +43,7 @@ class LuaMiraiCommand(
     }
 
     fun disable() {
-        runBlocking {
-            scriptList.forEach { if (it.isActive) it.stop() }
-        }
+        scriptList.forEach { if (it.isActive) it.stop() }
     }
 
     @SubCommand
@@ -106,7 +104,7 @@ class LuaMiraiCommand(
 
     @SubCommand("script stop")
     @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
-    suspend fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
+    fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
         scriptList[scriptId].stop()
         logger.info("停用脚本[${scriptList[scriptId]}]成功")
         scriptList.removeAt(scriptId)

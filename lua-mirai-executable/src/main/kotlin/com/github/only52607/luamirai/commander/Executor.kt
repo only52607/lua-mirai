@@ -27,7 +27,7 @@ class Executor : CliktCommand(help = "运行脚本", name = "exec") {
         runBlocking {
             val script = BotScriptSource.FileSource(file, "lua").buildBotScript()
             println(script)
-            script.start()
+            script.start().join()
         }
     }
 }

@@ -1,8 +1,9 @@
 package com.github.only52607.luamirai.core.script
 
-import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -14,12 +15,12 @@ interface BotScript : Closeable, CoroutineScope {
     /**
      * 运行此脚本，进行注册各类监听器，启动线程等任务
      */
-    suspend fun start()
+    fun start(): Job
 
     /**
      * 停止脚本，清除脚本内注册的监听器，清除脚本内启动的线程
      */
-    suspend fun stop()
+    fun stop(): Job
 
     /**
      * 脚本是否正在运行，当值为true时，代表脚本已经被运行，且脚本内注册的监听器处于活跃状态。
@@ -62,9 +63,9 @@ interface BotScript : Closeable, CoroutineScope {
     var stdin: InputStream?
 
     /**
-     * 阻塞关闭脚本
+     * 关闭脚本
      */
     override fun close() {
-        runBlocking { stop() }
+        launch { stop() }
     }
 }
