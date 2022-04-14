@@ -8,10 +8,9 @@ package com.github.only52607.luamirai.lua.mirai.message
  * @version
  */
 import com.github.only52607.luakt.ValueMapper
+import com.github.only52607.luakt.dsl.nullable
 import com.github.only52607.luakt.userdata.classes.LuaKotlinClass
 import com.github.only52607.luakt.userdata.objects.LuaKotlinObject
-import com.github.only52607.luakt.utils.asLuaValue
-import com.github.only52607.luakt.utils.nullable
 import net.mamoe.mirai.message.code.CodableMessage
 import net.mamoe.mirai.message.data.*
 import org.luaj.vm2.LuaError
@@ -23,8 +22,11 @@ import org.luaj.vm2.LuaValue
 class LuaKotlinMessage(
     val message: Message,
     luaKotlinMessageClass: LuaKotlinClass,
-    val valueMapper: ValueMapper
-) : LuaKotlinObject(message, luaKotlinMessageClass) {
+    valueMapper: ValueMapper
+) : LuaKotlinObject(message, luaKotlinMessageClass), ValueMapper by valueMapper {
+
+    private val Message.luaValue: LuaValue
+        get() = mapToLuaValue(this@Message)
 
     override fun typename(): String = when (message) {
         is MessageChain -> "MessageChain"
@@ -50,12 +52,12 @@ class LuaKotlinMessage(
      * 1-based
      */
     private fun getMessageElement(index: Int) = when (message) {
-        is MessageChain -> message.getOrNull(index - 1)?.asLuaValue(valueMapper) ?: LuaValue.NIL
+        is MessageChain -> message.getOrNull(index - 1)?.luaValue ?: LuaValue.NIL
         else -> throw LuaError("$message is not a MessageChain")
     }
 
     private fun getMessageElement(type: String) = when (message) {
-        is MessageChain -> message.find { typename() == type }.asLuaValue(valueMapper)
+        is MessageChain -> message.find { typename() == type}?.luaValue
         else -> throw LuaError("$message is not a MessageChain")
     }
 
@@ -74,14 +76,14 @@ class LuaKotlinMessage(
     override fun length(): Int = rawlen()
     override fun len(): LuaValue = LuaValue.valueOf(rawlen())
     override fun checktable(): LuaTable =
-        if (message is MessageChain) LuaValue.listOf(message.map { it.asLuaValue(valueMapper) }.toTypedArray())
+        if (message is MessageChain) LuaValue.listOf(message.map { it.luaValue }.toTypedArray())
         else throw LuaError("$message is not a MessageChain")
 
     private fun LuaValue.checkMessage() = if (isuserdata()) checkuserdata() as Message else PlainText(toString())
-    override fun add(rhs: LuaValue): LuaValue = (message + rhs.checkMessage()).asLuaValue(valueMapper)
-    override fun concat(rhs: LuaValue): LuaValue = (message + rhs.checkMessage()).asLuaValue(valueMapper)
-    override fun concatTo(lhs: LuaString): LuaValue = (PlainText(lhs.checkjstring()) + message).asLuaValue(valueMapper)
-    override fun concatTo(lhs: LuaValue): LuaValue = (lhs.checkMessage() + message).asLuaValue(valueMapper)
+    override fun add(rhs: LuaValue): LuaValue = (message + rhs.checkMessage()).luaValue
+    override fun concat(rhs: LuaValue): LuaValue = (message + rhs.checkMessage()).luaValue
+    override fun concatTo(lhs: LuaString): LuaValue = (PlainText(lhs.checkjstring()) + message).luaValue
+    override fun concatTo(lhs: LuaValue): LuaValue = (lhs.checkMessage() + message).luaValue
 
     override fun tojstring(): String = toString()
     override fun tostring(): LuaValue = LuaValue.valueOf(toString())

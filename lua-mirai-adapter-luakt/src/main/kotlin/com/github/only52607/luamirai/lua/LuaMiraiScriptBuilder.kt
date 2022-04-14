@@ -4,9 +4,6 @@ import com.github.only52607.luamirai.core.factory.BotScriptBuilder
 import com.github.only52607.luamirai.core.factory.BotScriptBuilderRegistry
 import com.github.only52607.luamirai.core.script.BotScript
 import com.github.only52607.luamirai.core.script.BotScriptSource
-import java.io.File
-import java.io.InputStream
-import java.net.URL
 
 /**
  * ClassName: LuaMiraiScriptBuilder

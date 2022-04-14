@@ -1,12 +1,9 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.github.only52607.luakt.ValueMapper
 import kotlinx.serialization.json.*
 import org.luaj.vm2.*
 
-open class KtxJsonLib(
-    valueMapper: ValueMapper
-) : JsonLib(valueMapper) {
+open class KtxJsonLib : JsonLib() {
     private val json = Json
 
     override fun LuaTable.asJsonString() = asJsonElement().toString()

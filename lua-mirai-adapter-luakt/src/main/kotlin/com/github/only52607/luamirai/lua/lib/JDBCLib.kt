@@ -1,25 +1,23 @@
 package com.github.only52607.luamirai.lua.lib
 
 import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.utils.provideScope
+import com.github.only52607.luakt.dsl.oneArgLuaFunctionOf
+import com.github.only52607.luakt.dsl.stringValue
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
 import java.sql.DriverManager
 
 class JDBCLib(
-    private val valueMapper: ValueMapper
-) : TwoArgFunction() {
+    valueMapper: ValueMapper
+) : TwoArgFunction(), ValueMapper by valueMapper {
     override fun call(modname: LuaValue?, env: LuaValue?): LuaValue {
-        val globals = env?.checkglobals()
         Class.forName("org.sqlite.JDBC")
-        valueMapper.provideScope {
-            globals?.edit {
-                "SqliteConnection" to luaFunctionOf { url: String ->
-                    return@luaFunctionOf DriverManager.getConnection("jdbc:sqlite:$url")
-                }
-                "Connection" to luaFunctionOf { url: String ->
-                    return@luaFunctionOf DriverManager.getConnection(url)
-                }
+        env?.checkglobals()?.apply {
+            this["SqliteConnection"] = oneArgLuaFunctionOf { url: LuaValue ->
+                mapToLuaValue(DriverManager.getConnection("jdbc:sqlite:${url.stringValue}"))
+            }
+            this["Connection"] = oneArgLuaFunctionOf { url: LuaValue ->
+                mapToLuaValue(DriverManager.getConnection(url.stringValue))
             }
         }
         return LuaValue.NIL

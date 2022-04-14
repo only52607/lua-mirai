@@ -8,9 +8,10 @@ import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.lua.lib.*
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
-import kotlinx.coroutines.*
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
 import org.luaj.vm2.LuaValue
@@ -23,7 +24,6 @@ import java.io.PrintStream
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 
-@OptIn(MiraiInternalApi::class, MiraiExperimentalApi::class)
 class LuaMiraiScript(
     override var source: BotScriptSource
 ) : AbstractBotScript(), CoroutineScope {
@@ -110,7 +110,7 @@ class LuaMiraiScript(
     }
 
     private fun loadMiraiLibs() = globals.apply {
-        load(StringExLib(LuaMiraiValueMapper))
+        load(StringExLib())
         load(MiraiLib(this@LuaMiraiScript, LuaMiraiValueMapper))
         load(LuaKotlinLib(this@LuaMiraiScript, LuaMiraiValueMapper, LuaMiraiLuaKotlinClassRegistry))
         load(KotlinCoroutineLib(this@LuaMiraiScript, LuaMiraiValueMapper))
@@ -118,7 +118,7 @@ class LuaMiraiScript(
 
     private fun loadExtendLibs() = globals.apply {
         load(HttpLib(LuaMiraiValueMapper))
-        load(KtxJsonLib(LuaMiraiValueMapper))
+        load(KtxJsonLib())
         load(JDBCLib(LuaMiraiValueMapper))
         load(JsoupLib(LuaMiraiValueMapper))
         load(SocketLib(LuaMiraiValueMapper))
