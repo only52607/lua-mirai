@@ -3,15 +3,11 @@ package com.github.only52607.luamirai.console
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.info
 
 @Suppress("unused")
 @OptIn(
-    ConsoleExperimentalApi::class,
-    MiraiInternalApi::class,
-    MiraiExperimentalApi::class
+    ConsoleExperimentalApi::class
 )
 object LuaMiraiPlugin : KotlinPlugin(LuaMiraiPluginDescription) {
     init {

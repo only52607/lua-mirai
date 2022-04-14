@@ -26,6 +26,6 @@ class BotScriptBuilderRegistry {
 }
 
 suspend fun BotScriptSource.buildBotScript(): BotScript =
-    BotScriptBuilderRegistry.getBotScriptBuilder(this.scriptLang).buildBotScript(this)
+    BotScriptBuilderRegistry.getBotScriptBuilder(this.lang).buildBotScript(this)
 
 class ScriptLangNotFoundException(lang: String) : Exception("Script lang for $lang has not been register")

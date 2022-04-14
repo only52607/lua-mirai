@@ -19,6 +19,6 @@ object LuaMiraiScriptBuilder : BotScriptBuilder {
     }
 
     override suspend fun buildBotScript(source: BotScriptSource): BotScript {
-        return LuaMiraiScript(source)
+        return LuaMiraiScript(source).apply { initSource() }
     }
 }

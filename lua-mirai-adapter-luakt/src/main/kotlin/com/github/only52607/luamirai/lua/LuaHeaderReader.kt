@@ -34,30 +34,10 @@ object LuaHeaderReader {
         throw InvalidScriptHeaderException("Missing header end label!")
     }
 
-    fun readHeader(source: BotScriptSource, readSourceString: (String) -> Unit): BotScriptHeader = when (source) {
-        is BotScriptSource.FileSource -> source.file
-            .readText(source.charset ?: Charsets.UTF_8)
-            .also(readSourceString)
+    fun readHeader(sourceString: String): BotScriptHeader =
+        sourceString
             .splitToSequence("\n")
             .let(::parseBotScriptHeader)
-        is BotScriptSource.StringSource -> source.content
-            .splitToSequence("\n")
-            .let(::parseBotScriptHeader)
-        is BotScriptSource.URLSource -> source.url
-            .readText(source.charset ?: Charsets.UTF_8)
-            .also(readSourceString)
-            .also { source.size = it.length.toLong() }
-            .splitToSequence("\n")
-            .let(::parseBotScriptHeader)
-        is BotScriptSource.InputStreamSource -> source.inputStream
-            .readBytes()
-            .toString(source.charset ?: Charsets.UTF_8)
-            .also(readSourceString)
-            .also { source.size = it.length.toLong() }
-            .splitToSequence("\n")
-            .let(::parseBotScriptHeader)
-        else -> throw Exception("Unsupported BotScriptSource $source")
-    }
 }
 
 class InvalidScriptHeaderException(override val message: String) : RuntimeException(message)

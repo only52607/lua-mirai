@@ -8,16 +8,14 @@ import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.lua.lib.*
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PrintStream
@@ -28,19 +26,21 @@ class LuaMiraiScript(
     override var source: BotScriptSource
 ) : AbstractBotScript(), CoroutineScope {
 
+    private lateinit var sourceString: String
+
+    fun initSource() {
+        sourceString = source.inputStream.readBytes().toString(source.charset ?: Charsets.UTF_8)
+    }
+
     override fun toString(): String {
-        return "LuaMiraiScript from $source"
+        return "LuaMiraiScript: $source"
     }
 
     override var coroutineContext: CoroutineContext = SupervisorJob()
 
     private var taskLib = TaskLib(LuaMiraiValueMapper)
 
-    private var sourceCache: String? = null
-
-    private val _header by lazy { LuaHeaderReader.readHeader(source) { sourceCache = it } }
-
-    override val header: BotScriptHeader = _header
+    override val header: BotScriptHeader by lazy { LuaHeaderReader.readHeader(sourceString) }
 
     override val lang: String = "lua"
 
@@ -69,12 +69,11 @@ class LuaMiraiScript(
     }
 
     override suspend fun onStart() {
-        _header     // read header first
         if (coroutineContext[ContinuationInterceptor] == null) {
             coroutineContext += taskLib.asCoroutineDispatcher()
         }
         initGlobals()
-        val func = globals.loadSource(source, sourceCache)
+        val func = globals.load(ByteArrayInputStream(sourceString.toByteArray(source.charset ?: Charsets.UTF_8)), source.name, "bt", globals)
         func.invoke()
     }
 
@@ -122,16 +121,5 @@ class LuaMiraiScript(
         load(JDBCLib(LuaMiraiValueMapper))
         load(JsoupLib(LuaMiraiValueMapper))
         load(SocketLib(LuaMiraiValueMapper))
-    }
-
-    private fun Globals.loadSource(source: BotScriptSource, cached: String? = null): LuaValue {
-        if (cached != null) {
-            return load(cached)
-        }
-        return when (source) {
-            is BotScriptSource.FileSource -> loadfile(source.file.absolutePath)
-            is BotScriptSource.StringSource -> load(source.content)
-            else -> throw Exception("Unsupported BotScriptSource $source")
-        }
     }
 }
