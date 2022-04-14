@@ -1,15 +1,11 @@
 package com.github.only52607.luamirai.lua.mirai.event
 
 import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.utils.asLuaValue
-import com.github.only52607.luakt.utils.provideScope
-import com.github.only52607.luakt.utils.varArgFunctionOf
-import com.github.only52607.luakt.utils.varargsToLuaValueList
+import com.github.only52607.luakt.dsl.unpackVarargs
+import com.github.only52607.luakt.dsl.varArgFunctionOf
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.GlobalEventChannel
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaTable
 
@@ -21,36 +17,31 @@ import org.luaj.vm2.LuaTable
  * @version
  */
 
-@OptIn(MiraiExperimentalApi::class, MiraiInternalApi::class)
 class EventTable(
-    private val coroutineScope: CoroutineScope,
-    private val valueMapper: ValueMapper
-) : LuaTable() {
+    coroutineScope: CoroutineScope,
+    valueMapper: ValueMapper
+) : LuaTable(), ValueMapper by valueMapper, CoroutineScope by coroutineScope {
     init {
-        valueMapper.provideScope {
-            edit {
-                "subscribe" to subscriberFunction
-            }
-        }
+        this["subscribe"] = subscriberFunction
     }
 
     private val subscriberFunction
         get() = varArgFunctionOf { varargs ->
-            var channel = GlobalEventChannel.parentScope(coroutineScope)
-            val varargsList = varargs.varargsToLuaValueList()
+            var channel = GlobalEventChannel.parentScope(this)
+            val varargsList = varargs.unpackVarargs()
             varargsList.take(varargs.narg() - 1).forEachIndexed { i, rule ->
                 channel = when {
-                    rule.isfunction() -> channel.filterByLuaFunction(rule.checkfunction(), valueMapper)
+                    rule.isfunction() -> channel.filterByLuaFunction(rule.checkfunction(), this)
                     rule.isstring() -> channel.filterByEventName(rule.checkjstring())
                     rule.isuserdata() -> channel.filterByUserData(rule.checkuserdata())
                     else -> throw LuaError("Unknown filter rule in arg $i.")
                 }
             }
             val listener = varargs.checkfunction(varargs.narg())
-            return@varArgFunctionOf channel.exceptionHandler {
+            return@varArgFunctionOf mapToLuaValue(channel.exceptionHandler {
                 it.printStackTrace()
             }.subscribeAlways<Event> {
-                listener.invoke(it.asLuaValue(valueMapper))
-            }.asLuaValue(valueMapper)
+                listener.invoke(mapToLuaValue(it))
+            })
         }
 }

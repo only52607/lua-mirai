@@ -1,7 +1,6 @@
 package com.github.only52607.luamirai.lua.mirai.event
 
 import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.utils.asLuaValue
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.event.EventChannel
@@ -21,7 +20,7 @@ import org.luaj.vm2.LuaFunction
  */
 
 fun EventChannel<*>.filterByLuaFunction(luaFunction: LuaFunction, valueMapper: ValueMapper): EventChannel<*> = filter {
-    val result = luaFunction.invoke(it.asLuaValue(valueMapper))
+    val result = luaFunction.invoke(valueMapper.mapToLuaValue(it))
     return@filter !result.isnil(0)
 }
 

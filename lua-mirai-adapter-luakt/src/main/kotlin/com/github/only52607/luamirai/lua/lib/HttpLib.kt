@@ -1,7 +1,7 @@
 package com.github.only52607.luamirai.lua.lib
 
 import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.utils.*
+import com.github.only52607.luakt.dsl.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 open class HttpLib(
     private val valueMapper: ValueMapper
-) : TwoArgFunction() {
+) : TwoArgFunction(), ValueMapper by valueMapper {
     companion object {
         fun getRedirectUrl(path: String, referer: String?): String {
             val url = URL(path)
@@ -35,31 +35,26 @@ open class HttpLib(
     }
 
     override fun call(modname: LuaValue?, env: LuaValue): LuaValue {
-        val globals: Globals = env.checkglobals()
-        val httpTable = LuaTable()
-        valueMapper.provideScope {
-            httpTable.edit {
-                "get" to varArgFunctionOf { args: Varargs ->
-                    defaultClient.newCall(args.toRequest("GET")).execute().toVarargs()
-                }
-                "post" to varArgFunctionOf { args: Varargs ->
-                    defaultClient.newCall(args.toRequest("POST")).execute().toVarargs()
-                }
-                "delete" to varArgFunctionOf { args: Varargs ->
-                    defaultClient.newCall(args.toRequest("DELETE")).execute().toVarargs()
-                }
-                "put" to varArgFunctionOf { args: Varargs ->
-                    defaultClient.newCall(args.toRequest("PUT")).execute().toVarargs()
-                }
-                "patch" to varArgFunctionOf { args: Varargs ->
-                    defaultClient.newCall(args.toRequest("PATCH")).execute().toVarargs()
-                }
-                "getRedirectUrl" to varArgFunctionOf { args: Varargs ->
-                    getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")).asLuaValue()
-                }
+        env.checkglobals().set("Http", luaTableOfStringKeys(
+            "get" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("GET")).execute().toVarargs()
+            },
+            "post" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("POST")).execute().toVarargs()
+            },
+            "delete" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("DELETE")).execute().toVarargs()
+            },
+            "put" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("PUT")).execute().toVarargs()
+            },
+            "patch" to varArgFunctionOf { args: Varargs ->
+                defaultClient.newCall(args.toRequest("PATCH")).execute().toVarargs()
+            },
+            "getRedirectUrl" to varArgFunctionOf { args: Varargs ->
+                mapToLuaValue(getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")))
             }
-        }
-        globals.set("Http", httpTable)
+        ))
         return LuaValue.NIL
     }
 
@@ -115,26 +110,24 @@ open class HttpLib(
 
     // Response Converter
 
-    private fun Headers.toLuaTable(): LuaTable = buildLuaTable(valueMapper) {
+    private fun Headers.toLuaTable(): LuaValue = buildLuaTable {
         this@toLuaTable.forEach { (key, value) ->
-            key to value
+            this@buildLuaTable[key] = value
         }
     }
 
     private fun Response.toVarargs(): Varargs = LuaValue.varargsOf(
         arrayOf(
             LuaValue.valueOf(this.body?.bytes()),
-            toDetailsLuaTable()
+            luaTableOfStringKeys(
+                "code" to code.luaValue,
+                "headers" to headers.toLuaTable(),
+                "isRedirect" to isRedirect.luaValue,
+                "isSuccessful" to isSuccessful.luaValue,
+                "message" to message.luaValue,
+                "receivedResponseAtMillis" to receivedResponseAtMillis.luaValue,
+                "sentRequestAtMillis" to sentRequestAtMillis.luaValue,
+            )
         )
     )
-
-    private fun Response.toDetailsLuaTable(): LuaTable = buildLuaTable(valueMapper) {
-        "code" to this@toDetailsLuaTable.code
-        "headers" to this@toDetailsLuaTable.headers.toLuaTable()
-        "isRedirect" to this@toDetailsLuaTable.isRedirect
-        "isSuccessful" to this@toDetailsLuaTable.isSuccessful
-        "message" to this@toDetailsLuaTable.message
-        "receivedResponseAtMillis" to this@toDetailsLuaTable.receivedResponseAtMillis
-        "sentRequestAtMillis" to this@toDetailsLuaTable.sentRequestAtMillis
-    }
 }

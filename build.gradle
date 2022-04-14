@@ -1,28 +1,32 @@
 buildscript {
     repositories {
+        mavenCentral()
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/public' }
-        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
     }
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version "1.6.10"
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
     id 'maven-publish'
 }
 
-configurations.all {
-    resolutionStrategy {
-        cacheChangingModulesFor 0, 'seconds'
-    }
-}
+//configurations.all {
+//    resolutionStrategy {
+//        cacheChangingModulesFor 0, 'seconds'
+//    }
+//}
 
 allprojects {
-    group 'com.github.only52607'
-    version '2.4.0-alpha.3'
+    group 'com.github.only52607.lua-mirai'
+    version '2.4.0'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
-            freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn']
+            freeCompilerArgs = ['-Xjvm-default=enable', '-Xopt-in=kotlin.RequiresOptIn', '-Xcontext-receivers']
             jvmTarget = "1.8"
         }
     }
@@ -62,7 +66,7 @@ subprojects {
 publishing {
     publications {
         luaMiraiCore(MavenPublication) {
-            setArtifactId("lua-mirai-core")
+            setArtifactId("core")
             def coreProject = project(':lua-mirai-core')
             from coreProject.components.java
             artifact coreProject.tasks.sourcesJar
@@ -70,7 +74,7 @@ publishing {
         }
 
         luaktAdapter(MavenPublication) {
-            setArtifactId("lua-mirai-adapter-luakt")
+            setArtifactId("adapter-lua")
             def luaktAdapterProject = project(':lua-mirai-adapter-luakt')
             from luaktAdapterProject.components.java
             artifact luaktAdapterProject.tasks.sourcesJar

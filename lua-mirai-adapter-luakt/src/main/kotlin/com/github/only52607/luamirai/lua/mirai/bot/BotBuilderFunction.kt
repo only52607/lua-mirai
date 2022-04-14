@@ -1,8 +1,7 @@
 package com.github.only52607.luamirai.lua.mirai.bot
 
 import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.utils.get
-import com.github.only52607.luakt.utils.provideScope
+import com.github.only52607.luakt.dsl.*
 import kotlinx.coroutines.CoroutineScope
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
@@ -22,9 +21,9 @@ import org.luaj.vm2.lib.VarArgFunction
  */
 class BotBuilderFunction(
     private val coroutineScope: CoroutineScope,
-    private val valueMapper: ValueMapper,
+    valueMapper: ValueMapper,
     private val onCreateBot: (Bot) -> Unit
-) : VarArgFunction() {
+) : VarArgFunction(), ValueMapper by valueMapper {
     override fun onInvoke(args: Varargs?): Varargs {
         args ?: return NIL
         val account = args.arg(1).checklong()
@@ -39,7 +38,7 @@ class BotBuilderFunction(
         }
         val bot = BotFactory.newBot(account, pwd, config)
         onCreateBot(bot)
-        return valueMapper.mapToLuaValue(bot)
+        return mapToLuaValue(bot)
     }
 
     private fun BotConfiguration.setDeviceFile(fileName: String) = apply {
@@ -52,43 +51,28 @@ class BotBuilderFunction(
 
     private fun LuaTable.toBotConfiguration(): BotConfiguration {
         val configuration = BotConfiguration.Default.copy()
-        valueMapper.provideScope {
-            configuration.apply {
-                getOrNull("protocol")?.let {
-                    protocol = it.toString().asMiraiProtocol()
-                }
-                getOrNull("fileBasedDeviceInfo")?.let {
-                    fileBasedDeviceInfo(it.toString())
-                }
-                getOrNull("heartbeatPeriodMillis")?.let {
-                    heartbeatPeriodMillis = it.checklong()
-                }
-                getOrNull("heartbeatTimeoutMillis")?.let {
-                    heartbeatTimeoutMillis = it.checklong()
-                }
-                getOrNull("reconnectionRetryTimes")?.let {
-                    reconnectionRetryTimes = it.checkint()
-                }
-                getOrNull("noNetworkLog")?.let {
-                    if (it.checkboolean()) noNetworkLog()
-                }
-                getOrNull("noBotLog")?.let {
-                    if (it.checkboolean()) noBotLog()
-                }
-                getOrNull("botLogger")?.let {
-                    val luaLogger = it.checkclosure()
-                    botLoggerSupplier = {
-                        SimpleLogger { message, _ ->
-                            luaLogger.call(message)
-                        }
+        configuration.apply {
+            protocol = this@toBotConfiguration["protocol"].stringValueOrNull?.asMiraiProtocol() ?: protocol
+            heartbeatPeriodMillis =
+                this@toBotConfiguration["heartbeatPeriodMillis"].longValueOrNull ?: heartbeatPeriodMillis
+            heartbeatTimeoutMillis =
+                this@toBotConfiguration["heartbeatTimeoutMillis"].longValueOrNull ?: heartbeatTimeoutMillis
+            reconnectionRetryTimes =
+                this@toBotConfiguration["reconnectionRetryTimes"].intValueOrNull ?: reconnectionRetryTimes
+            get("fileBasedDeviceInfo")?.stringValueOrNull?.let { fileBasedDeviceInfo(it) }
+            get("noNetworkLog")?.booleanValueOrNull?.takeIf { it }?.let { noNetworkLog() }
+            get("noBotLog")?.booleanValueOrNull?.takeIf { it }?.let { noBotLog() }
+            get("botLogger")?.functionValueOrNull?.let { luaFunc ->
+                botLoggerSupplier = {
+                    SimpleLogger { message, _ ->
+                        luaFunc.call(message)
                     }
                 }
-                getOrNull("networkLogger")?.let {
-                    val luaLogger = it.checkclosure()
-                    networkLoggerSupplier = {
-                        SimpleLogger { message, _ ->
-                            luaLogger.call(message)
-                        }
+            }
+            get("networkLogger")?.functionValueOrNull?.let { luaFunc ->
+                networkLoggerSupplier = {
+                    SimpleLogger { message, _ ->
+                        luaFunc.call(message)
                     }
                 }
             }

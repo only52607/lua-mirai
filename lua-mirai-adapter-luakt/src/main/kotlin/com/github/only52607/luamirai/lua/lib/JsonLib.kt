@@ -1,28 +1,23 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.utils.provideScope
+import com.github.only52607.luakt.dsl.*
 import org.luaj.vm2.*
 import org.luaj.vm2.lib.TwoArgFunction
 
-abstract class JsonLib(
-    private val valueMapper: ValueMapper
-) : TwoArgFunction() {
+abstract class JsonLib : TwoArgFunction() {
     override fun call(modname: LuaValue?, env: LuaValue?): LuaValue {
-        val globals = env?.checkglobals()
-        valueMapper.provideScope {
-            val parseJson = luaFunctionOf { raw: String ->
-                return@luaFunctionOf raw.asJsonLuaValue()
-            }
-            val toJson = luaFunctionOf { raw: LuaTable ->
-                return@luaFunctionOf raw.asJsonString()
-            }
-            globals?.set("Json", buildLuaTable {
-                "parseJson" to parseJson
-                "toJson" to toJson
-            })
-            LuaString.s_metatable[INDEX].set("parseJson", parseJson)
+        val globals = env?.checkglobals()?: return NIL
+        globals.apply {
+            this["Json"] = luaTableOfStringKeys(
+                "parseJson" to oneArgLuaFunctionOf {
+                    it.stringValue.asJsonLuaValue()
+                },
+                "toJson" to oneArgLuaFunctionOf {
+                    it.tableValue.asJsonString().luaValue
+                }
+            )
         }
+        LuaString.s_metatable[INDEX].set("parseJson", globals["Json"]["parseJson"])
         return LuaValue.NIL
     }
 

@@ -6,7 +6,7 @@ import com.github.only52607.luakt.ValueMapper
 import com.github.only52607.luakt.mappers.AbstractKValueMapper
 import com.github.only52607.luakt.mappers.AbstractLuaValueMapper
 import com.github.only52607.luakt.userdata.classes.LuaKotlinClass
-import com.github.only52607.luakt.userdata.classes.LuaKotlinClassRegistry
+import com.github.only52607.luakt.userdata.classes.registry.LuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mirai.message.LuaKotlinMessage
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.MessageChain
@@ -14,7 +14,6 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.toMessageChain
 import org.luaj.vm2.LuaValue
 import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 
 /**
