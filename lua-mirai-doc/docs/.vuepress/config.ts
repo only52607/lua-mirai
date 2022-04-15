@@ -97,13 +97,14 @@ export default defineUserConfig<DefaultThemeOptions>({
                         {
                             text: '支持库',
                             children: [
+                                '/reference/libs/collections',
                                 '/reference/libs/luaex',
                                 '/reference/libs/http',
                                 '/reference/libs/json',
                                 '/reference/libs/jsoup',
-                                '/reference/libs/luajava',
+                                '/reference/libs/luakotlin',
                                 '/reference/libs/requests',
-                                '/reference/libs/sqlite',
+                                '/reference/libs/jdbc',
                                 '/reference/libs/stringex',
                             ]
                         }
