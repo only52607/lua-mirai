@@ -2,8 +2,6 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - master
 
 name: Publish Release On Github
 
