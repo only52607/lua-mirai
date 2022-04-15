@@ -1,22 +1,13 @@
-# sqlite支持库
+# jdbc支持库
 
-#### 支持库基于 [sqlite-jdbc](https://github.com/xerial/sqlite-jdbc) ，详细 api 文档请自行查询，用法与 java 类似。
+#### JDBC是Java中用户操作数据库的统一接口，支持多种数据库。文档基于 [sqlite-jdbc](https://github.com/xerial/sqlite-jdbc) ，详细 api 文档请自行查询，用法与 java 类似。
 
-### 创建 Sqlite 连接
+### 创建Connection
 
-##### 函数名：SqliteConnection
-
-##### 参数列表：
-
-| 参数 | 类型   | 描述                 | 可空  |
-| ---- | ------ | -------------------- | ----- |
-| path | String | sqlite 数据库文件路径 | False |
-
-##### 返回值：
-
-| 类型       | 描述           |
-| ---------- | -------------- |
-| Connection | Connection 对象 |
+以创建Sqlite连接为例：
+```lua
+Connection("jdbc:sqlite:/path/to/db")
+```
 
 ### 创建语句执行环境
 

@@ -1,7 +1,7 @@
 # requests库
 
 ::: warning
-新版本已移除该支持库，请使用`http`支持库
+已弃用，请使用`http`支持库
 :::
 
 **基于okhttp3，整体上模仿Python的[requests](https://requests.readthedocs.io/zh_CN/latest/)库。目前仅实现了部分功能。**

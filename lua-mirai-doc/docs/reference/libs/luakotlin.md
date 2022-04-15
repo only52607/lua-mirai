@@ -1,4 +1,4 @@
-# luajava支持库
+# luakotlin支持库
 
 ## 在 lua 中调用 java 类
 
