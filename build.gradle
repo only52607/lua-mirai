@@ -15,12 +15,6 @@ plugins {
     id 'maven-publish'
 }
 
-//configurations.all {
-//    resolutionStrategy {
-//        cacheChangingModulesFor 0, 'seconds'
-//    }
-//}
-
 allprojects {
     group 'com.github.only52607.lua-mirai'
     version '2.4.0'
