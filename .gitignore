@@ -2,7 +2,7 @@ build
 .idea
 .gradle
 .settings
-local.properties
+local.*
 hs_err_*
 replay_*
 mcl-data
