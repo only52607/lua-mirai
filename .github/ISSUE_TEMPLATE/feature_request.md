@@ -1,5 +1,5 @@
 **你的新功能请求是否与某个问题有关，请描述**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+对问题的清晰而简明的描述。
 
 **描述你想要的解决方案**
 对你想要发生的事情的清晰而简洁的描述。
