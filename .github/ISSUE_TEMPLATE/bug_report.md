@@ -1,38 +1,22 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+**描述你遇到的bug**
+在进行XX操作后，出现了XX错误
 
----
+**复现步骤**
+通过下面的步骤可以复现这个问题
+1. 打开'...'
+2. 点击'....'
+3. 滚动到 '....'
+4. 看到错误
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**预期的行为**
+描述软件应该产生的正确的反馈
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**截图（可选）**
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**运行环境**
+ - 操作系统: [例: Windows]
+ - lua-mirai版本：[例: 1.0]
+ - JDK版本：[例: Open JDK 17]
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+**其他内容**
