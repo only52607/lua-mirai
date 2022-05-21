@@ -1,4 +1,4 @@
-# lua-mirai 
+# lua-mirai
 
 [![](https://www.jitpack.io/v/only52607/lua-mirai.svg)](https://www.jitpack.io/#only52607/lua-mirai)
 [![LICENSE](https://img.shields.io/github/license/only52607/LuaMiraiForAndroid)](https://github.com/only52607/LuaMiraiForAndroid)
@@ -7,11 +7,18 @@
 支持lua语言的qq bot快速开发框架，使用lua轻松创造qq bot。
 
 ## 开发文档
+
 [lua mirai doc](https://only52607.github.io/lua-mirai/)
+
+## 更新日志
+
+[CHANGE LOG](/changelog.md)
 
 ## Android
 
-[LuaMiraiForAndroid](https://github.com/only52607/LuaMiraiForAndroid)是lua-mirai在Android端的运行方案，具有高度可操作性，提供了强大的多Bot管理及构建参数完全控制和脚本可视化管理功能，强烈建议使用[LuaMiraiForAndroid](https://github.com/only52607/LuaMiraiForAndroid)作为Android端的运行环境。
+[LuaMiraiForAndroid](https://github.com/only52607/LuaMiraiForAndroid)
+是lua-mirai在Android端的运行方案，具有高度可操作性，提供了强大的多Bot管理及构建参数完全控制和脚本可视化管理功能，强烈建议使用[LuaMiraiForAndroid](https://github.com/only52607/LuaMiraiForAndroid)
+作为Android端的运行环境。
 
 ## Licenses
 
