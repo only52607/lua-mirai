@@ -11,7 +11,7 @@
 ```lua
 Event.subscribe("FriendMessageEvent", function(event)
     local reply = tostring(event.message):gsub("吗",""):gsub("?","!"):gsub("？","！")
-    event.friend:sendMessage(Quote(msg) .. reply)
+    event.friend:sendMessage(Quote(event.message) .. reply)
 end)
 
 -- 在mirai-console环境下可忽略下列代码

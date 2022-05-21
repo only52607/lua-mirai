@@ -24,9 +24,7 @@ footer:  Copyright © 2021-present Lua Mirai
 #### 实现"AI"仅需6行
 ```lua
 Event.subscribe("FriendMessageEvent", function(event)
-    local msg = event.message
-    local sender = event.sender
-    local rep = tostring(msg):gsub("吗",""):gsub("?","!"):gsub("？","！")
-    sender:sendMessage(Quote(msg) .. rep)
+    local rep = tostring(event.message):gsub("吗",""):gsub("?","!"):gsub("？","！")
+    event.sender:sendMessage(Quote(event.message) .. rep)
 end)
 ```
