@@ -21,7 +21,7 @@ footer:  Copyright © 2021-present Lua Mirai
 ---
 
 
-#### 实现"AI"仅需6行
+#### 实现"AI"仅需4行
 ```lua
 Event.subscribe("FriendMessageEvent", function(event)
     local rep = tostring(event.message):gsub("吗",""):gsub("?","!"):gsub("？","！")
