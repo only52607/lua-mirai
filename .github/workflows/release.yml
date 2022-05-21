@@ -40,6 +40,11 @@ jobs:
         run: ./gradlew clean build -s
       - name: Shadow Jar
         run: ./gradlew shadowJar
+      - name: Parse Changelog Entry
+        id: changelog
+        uses: coditory/changelog-parser@v1
+        with:
+          version: ${{ steps.tagName.outputs.tag }}
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
@@ -50,4 +55,5 @@ jobs:
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.changelog.outputs.description }}
           artifacts: "./lua-mirai-executable/build/libs/*all.jar,./lua-mirai-executable-mcl/build/libs/*all.jar,./lua-mirai-mcl-plugin/build/libs/*all.jar"
