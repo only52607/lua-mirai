@@ -2,15 +2,15 @@ package com.github.only52607.luamirai.console
 
 import com.github.only52607.luamirai.core.integration.BotScriptList
 import com.github.only52607.luamirai.core.integration.BotScriptSourceList
-import com.github.only52607.luamirai.core.script.*
+import com.github.only52607.luamirai.core.script.BotScriptSource
+import com.github.only52607.luamirai.core.script.ScriptAlreadyStoppedException
+import com.github.only52607.luamirai.core.script.ScriptNotYetStartedException
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 import java.net.URL
@@ -18,9 +18,7 @@ import java.net.URL
 private const val LUA = "lua"
 
 @OptIn(
-    MiraiExperimentalApi::class,
     ConsoleExperimentalApi::class,
-    MiraiInternalApi::class,
     kotlinx.serialization.ExperimentalSerializationApi::class
 )
 @Suppress("UNUSED")
@@ -105,7 +103,15 @@ class LuaMiraiCommand(
     @SubCommand("script stop")
     @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
     fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
-        scriptList[scriptId].stop()
+        try {
+            scriptList[scriptId].stop()
+        } catch (_: ScriptAlreadyStoppedException) {
+            logger.error("脚本[${scriptList[scriptId]}]已经停用，请勿重复操作")
+            return
+        } catch (_: ScriptNotYetStartedException) {
+            logger.error("脚本[${scriptList[scriptId]}]没有被启动，无需停止")
+            return
+        }
         logger.info("停用脚本[${scriptList[scriptId]}]成功")
         scriptList.removeAt(scriptId)
     }
@@ -120,7 +126,11 @@ class LuaMiraiCommand(
     @Description("重新读入脚本源以启动脚本")
     suspend fun ConsoleCommandSender.restart(@Name("脚本编号") scriptId: Int) {
         val source = scriptList[scriptId].source
-        scriptList[scriptId].stop()
+        try {
+            scriptList[scriptId].stop()
+        } catch (_: ScriptAlreadyStoppedException) {
+        } catch (_: ScriptNotYetStartedException) {
+        }
         scriptList.removeAt(scriptId)
         scriptList.addFromSource(source).start()
     }
@@ -128,8 +138,7 @@ class LuaMiraiCommand(
     @SubCommand("script info")
     @Description("查看运行中的脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        val source = scriptList[scriptId].header
-        source ?: return
+        val source = scriptList[scriptId].header ?: return
         logger.info("名称：${source["name"]}")
         logger.info("版本：${source["version"]}")
         logger.info("作者：${source["author"]}")
