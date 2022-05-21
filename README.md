@@ -7,7 +7,7 @@
 支持lua语言的qq bot快速开发框架，使用lua轻松创造qq bot。
 
 ## 开发文档
-[lua mirai doc](https://ooooonly.gitee.io/lua-mirai-doc)
+[lua mirai doc](https://only52607.github.io/lua-mirai/)
 
 ## Android
 

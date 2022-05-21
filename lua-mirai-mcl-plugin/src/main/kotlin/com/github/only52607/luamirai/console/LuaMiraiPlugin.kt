@@ -14,7 +14,7 @@ object LuaMiraiPlugin : KotlinPlugin(LuaMiraiPluginDescription) {
         Class.forName("com.github.only52607.luamirai.lua.LuaMiraiScriptBuilder")
     }
 
-    private const val scriptConfigFile = "scripts.json"
+    private const val scriptConfigFile = "lua-mirai.json"
 
     private val command: LuaMiraiCommand by lazy {
         LuaMiraiCommand(logger, resolveConfigFile(scriptConfigFile))

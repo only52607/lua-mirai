@@ -1,16 +1,18 @@
 package com.github.only52607.luamirai.console
 
+import com.github.only52607.luamirai.configuration.ConfigurableScriptSource
+import com.github.only52607.luamirai.console.config.PluginConfig
 import com.github.only52607.luamirai.core.integration.BotScriptList
-import com.github.only52607.luamirai.core.integration.BotScriptSourceList
-import com.github.only52607.luamirai.core.script.*
+import com.github.only52607.luamirai.core.script.BotScriptSource
+import com.github.only52607.luamirai.core.script.ScriptAlreadyStoppedException
+import com.github.only52607.luamirai.core.script.ScriptNotYetStartedException
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.encodeToStream
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 import java.net.URL
@@ -18,35 +20,30 @@ import java.net.URL
 private const val LUA = "lua"
 
 @OptIn(
-    MiraiExperimentalApi::class,
     ConsoleExperimentalApi::class,
-    MiraiInternalApi::class,
     kotlinx.serialization.ExperimentalSerializationApi::class
 )
 @Suppress("UNUSED")
 class LuaMiraiCommand(
     private val logger: MiraiLogger,
     private val configFile: File?
-): CompositeCommand(
-        owner = LuaMiraiPlugin,
-        primaryName = "lua",
-        description = "lua mirai 指令集"
-    ) {
+) : CompositeCommand(
+    owner = LuaMiraiPlugin,
+    primaryName = "lua",
+    description = "lua mirai 插件相关指令"
+) {
     private val scriptList = BotScriptList()
-
-    private val sourceList = BotScriptSourceList()
-
-    private val sourceAutoStart = mutableMapOf<BotScriptSource, Boolean>()
+    private val sourceList = mutableListOf<ConfigurableScriptSource>()
 
     fun enable() {
-        runBlocking { loadScriptsByConfigFile() }
+        runBlocking { initConfig() }
     }
 
     fun disable() {
         scriptList.forEach { if (it.isActive) it.stop() }
     }
 
-    @SubCommand
+    @SubCommand("doc")
     @Description("打开lua mirai开发文档")
     fun ConsoleCommandSender.doc() {
         val website = "https://ooooonly.gitee.io/lua-mirai-doc/#/"
@@ -68,7 +65,7 @@ class LuaMiraiCommand(
 
     @SubCommand("source add")
     @Description("新增脚本源")
-    suspend fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String) {
+    fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String) {
         val source = if (!fileName.contains("://")) {
             val file = File(fileName)
             if (!file.exists()) {
@@ -79,9 +76,8 @@ class LuaMiraiCommand(
         } else {
             BotScriptSource.URLSource(URL(fileName), LUA)
         }
-        sourceList.add(source)
+        sourceList.add(ConfigurableScriptSource(source))
         logger.info("添加脚本源[${sourceList.size - 1}] $fileName 成功")
-        scriptList.addFromSource(source)
         updateConfig()
     }
 
@@ -89,6 +85,20 @@ class LuaMiraiCommand(
     @Description("删除指定位置上的脚本源")
     fun ConsoleCommandSender.remove(@Name("索引") index: Int) {
         sourceList.removeAt(index)
+        updateConfig()
+    }
+
+    @SubCommand("source autostart")
+    @Description("设置脚本源自动启动")
+    fun ConsoleCommandSender.autostart(@Name("索引") index: Int, @Name("是否开启") autostart: Boolean) {
+        sourceList[index].autoStart = autostart
+        updateConfig()
+    }
+
+    @SubCommand("source alias")
+    @Description("设置脚本源别名")
+    fun ConsoleCommandSender.alias(@Name("索引") index: Int, @Name("别名") alias: String) {
+        sourceList[index].alias = alias
         updateConfig()
     }
 
@@ -105,12 +115,20 @@ class LuaMiraiCommand(
     @SubCommand("script stop")
     @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
     fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
-        scriptList[scriptId].stop()
+        try {
+            scriptList[scriptId].stop()
+        } catch (_: ScriptAlreadyStoppedException) {
+            logger.error("脚本[${scriptList[scriptId]}]已经停用，请勿重复操作")
+            return
+        } catch (_: ScriptNotYetStartedException) {
+            logger.error("脚本[${scriptList[scriptId]}]没有被启动，无需停止")
+            return
+        }
         logger.info("停用脚本[${scriptList[scriptId]}]成功")
         scriptList.removeAt(scriptId)
     }
 
-    @SubCommand("script start")
+    @SubCommand("script start", "source start")
     @Description("使用脚本源启动一个新脚本")
     suspend fun ConsoleCommandSender.start(@Name("脚本源编号") sourceId: Int) {
         scriptList.addFromSource(sourceList[sourceId]).start()
@@ -120,7 +138,11 @@ class LuaMiraiCommand(
     @Description("重新读入脚本源以启动脚本")
     suspend fun ConsoleCommandSender.restart(@Name("脚本编号") scriptId: Int) {
         val source = scriptList[scriptId].source
-        scriptList[scriptId].stop()
+        try {
+            scriptList[scriptId].stop()
+        } catch (_: ScriptAlreadyStoppedException) {
+        } catch (_: ScriptNotYetStartedException) {
+        }
         scriptList.removeAt(scriptId)
         scriptList.addFromSource(source).start()
     }
@@ -128,40 +150,35 @@ class LuaMiraiCommand(
     @SubCommand("script info")
     @Description("查看运行中的脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        val source = scriptList[scriptId].header
-        source ?: return
+        val source = scriptList[scriptId].header ?: return
         logger.info("名称：${source["name"]}")
         logger.info("版本：${source["version"]}")
         logger.info("作者：${source["author"]}")
         logger.info("描述：${source["description"]}")
     }
 
+    private val json by lazy {
+        Json { prettyPrint = true }
+    }
 
     /**
      * 从配置文件读取已加载脚本信息
      */
-    private suspend fun loadScriptsByConfigFile() {
+    private suspend fun initConfig() {
         if (configFile == null || !configFile.exists()) return
-        val jsonConfigArray = Json.parseToJsonElement(configFile.readText()).jsonArray
-        jsonConfigArray.forEachIndexed { _, itemElement ->
-            kotlin.runCatching {
-                val item = itemElement.jsonObject
-                val source: BotScriptSource = when (val typeName = item["type"]?.jsonPrimitive?.contentOrNull) {
-                    "file" -> BotScriptSource.FileSource(File(item["file"]?.jsonPrimitive?.contentOrNull!!), LUA)
-                    "content" -> BotScriptSource.StringSource(item["content"]?.jsonPrimitive?.contentOrNull!!, LUA)
-                    "url" -> BotScriptSource.URLSource(URL(item["url"]?.jsonPrimitive?.contentOrNull!!), LUA)
-                    else -> throw IllegalArgumentException("Unsupported script type $typeName")
-                }
-                sourceList.add(source)
-                if (item["enable"]?.jsonPrimitive?.booleanOrNull == true) {
-                    scriptList.addFromSource(source).start()
-                }
+        val pluginConfig = json.decodeFromStream(PluginConfig.serializer(), configFile.inputStream())
+        sourceList.clear()
+        sourceList.addAll(pluginConfig.sources)
+        for (source in pluginConfig.sources) {
+            if (!source.autoStart) continue
+            try {
+                val script = scriptList.addFromSource(source)
+                script.start()
+                logger.info("$source 自动启动成功")
+            } catch (e: Exception) {
+                logger.error("$source 自动启动失败", e)
             }
         }
-    }
-
-    private val jsonFormat by lazy {
-        Json { prettyPrint = true }
     }
 
     /**
@@ -169,28 +186,9 @@ class LuaMiraiCommand(
      */
     private fun updateConfig() {
         configFile ?: return
-        val configArray = buildJsonArray {
-            sourceList.forEach { source: BotScriptSource ->
-                add(buildJsonObject {
-                    when (source) {
-                        is BotScriptSource.FileSource -> {
-                            this@buildJsonObject.put("type", "file")
-                            this@buildJsonObject.put("file", source.file.path)
-                        }
-                        is BotScriptSource.StringSource -> {
-                            this@buildJsonObject.put("type", "content")
-                            this@buildJsonObject.put("content", source.content)
-                        }
-                        is BotScriptSource.URLSource -> {
-                            this@buildJsonObject.put("type", "url")
-                            this@buildJsonObject.put("url", source.url.toString())
-                        }
-                        else -> {}
-                    }
-                    this@buildJsonObject.put("enable", sourceAutoStart[source] == true)
-                })
-            }
-        }
-        configFile.writeText(jsonFormat.encodeToString(configArray))
+        val pluginConfig = PluginConfig(
+            sources = sourceList
+        )
+        json.encodeToStream(pluginConfig, configFile.outputStream())
     }
 }

@@ -1,0 +1,9 @@
+plugins {
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
+}
+
+dependencies {
+    implementation project(":lua-mirai-core")
+    runtimeOnly project(":lua-mirai-adapter-luakt")
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+}

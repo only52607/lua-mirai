@@ -24,8 +24,8 @@ abstract class AbstractBotScript : BotScript {
         get() = _stopped
 
     override fun start(): Job {
-        if (_stopped) throw BotScriptException("Stopped script could not be start again")
-        if (_active) throw BotScriptException("Script has already been started")
+        if (_stopped) throw ScriptAlreadyStoppedException("Stopped script could not be start again")
+        if (_active) throw ScriptAlreadyStartedException()
         val job = launch {
             onStart()
         }
@@ -36,8 +36,8 @@ abstract class AbstractBotScript : BotScript {
     abstract suspend fun onStart()
 
     override fun stop(): Job {
-        if (_stopped) throw BotScriptException("Script has already stopped")
-        if (!_active) throw BotScriptException("Script has not been started")
+        if (_stopped) throw ScriptAlreadyStoppedException()
+        if (!_active) throw ScriptNotYetStartedException()
         val job = launch {
             onStop()
         }
@@ -50,4 +50,10 @@ abstract class AbstractBotScript : BotScript {
     abstract suspend fun onStop()
 }
 
-class BotScriptException(message: String) : RuntimeException(message)
+open class BotScriptException(message: String) : RuntimeException(message)
+
+class ScriptAlreadyStoppedException(message: String = "Script has already stopped") : BotScriptException(message)
+
+class ScriptNotYetStartedException(message: String = "Script has not been started") : BotScriptException(message)
+
+class ScriptAlreadyStartedException(message: String = "Script has already stopped") : BotScriptException(message)
