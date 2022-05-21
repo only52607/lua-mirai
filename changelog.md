@@ -31,3 +31,9 @@
 - 完善Http库API设计
 - 重构mirai-console插件命令格式
 - 构建产物jar包分离
+
+[Unreleased]: https://github.com/only52607/lua-mirai/compare/2.5.0...HEAD
+
+[2.5.0]: https://github.com/only52607/lua-mirai/compare/2.4.0...2.5.0
+
+[2.4.0]: https://github.com/only52607/lua-mirai/compare/2.3.0...2.4.0
