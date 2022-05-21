@@ -74,5 +74,13 @@ publishing {
             artifact luaktAdapterProject.tasks.sourcesJar
             artifact luaktAdapterProject.tasks.javadocJar
         }
+
+        configuration(MavenPublication) {
+            setArtifactId("configuration")
+            def luaktAdapterProject = project(':lua-mirai-configuration')
+            from luaktAdapterProject.components.java
+            artifact luaktAdapterProject.tasks.sourcesJar
+            artifact luaktAdapterProject.tasks.javadocJar
+        }
     }
 }
