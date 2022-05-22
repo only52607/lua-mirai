@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [2.5.1] - 2022-05-22
+
+### 新增
+
+- 新增插件命令`source info`用于启动脚本前查看脚本源信息
+
 ## [2.5.0] - 2022-05-21
 
 ### 新增
@@ -32,7 +38,9 @@
 - 重构mirai-console插件命令格式
 - 构建产物jar包分离
 
-[Unreleased]: https://github.com/only52607/lua-mirai/compare/2.5.0...HEAD
+[Unreleased]: https://github.com/only52607/lua-mirai/compare/2.5.1...HEAD
+
+[2.5.1]: https://github.com/only52607/lua-mirai/compare/2.5.0...2.5.1
 
 [2.5.0]: https://github.com/only52607/lua-mirai/compare/2.4.0...2.5.0
 
