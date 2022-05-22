@@ -3,7 +3,6 @@ package com.github.only52607.luamirai.configuration
 import com.github.only52607.luamirai.core.script.BotScriptSource
 import kotlinx.serialization.Serializable
 import java.io.InputStream
-import java.nio.charset.Charset
 
 /**
  * ClassName: ConfigurableScriptSource
@@ -23,8 +22,8 @@ class ConfigurableScriptSource(
     size = source.size,
     charset = source.charset,
 ) {
-    override val inputStream: InputStream
-        get() = source.inputStream
+    override val mainInputStream: InputStream
+        get() = source.mainInputStream
 
     override fun toString(): String {
         return source.toString()

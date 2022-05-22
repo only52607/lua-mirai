@@ -3,14 +3,9 @@ package com.github.only52607.luamirai.commander
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
-import com.github.only52607.luamirai.core.factory.BotScriptBuilderRegistry
-import com.github.only52607.luamirai.core.factory.buildBotScript
+import com.github.only52607.luamirai.core.BotScriptBuilder
 import com.github.only52607.luamirai.core.script.BotScriptSource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * ClassName: Executor
@@ -25,7 +20,7 @@ class Executor : CliktCommand(help = "运行脚本", name = "exec") {
     override fun run() {
         println("----------Start running script----------")
         runBlocking {
-            val script = BotScriptSource.FileSource(file, "lua").buildBotScript()
+            val script = BotScriptBuilder.fromSource(BotScriptSource.FileSource(file, "lua")).buildInstance()
             println(script)
             script.start().join()
         }

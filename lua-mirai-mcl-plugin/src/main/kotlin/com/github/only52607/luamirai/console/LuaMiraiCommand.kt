@@ -2,7 +2,9 @@ package com.github.only52607.luamirai.console
 
 import com.github.only52607.luamirai.configuration.ConfigurableScriptSource
 import com.github.only52607.luamirai.console.config.PluginConfig
+import com.github.only52607.luamirai.core.BotScriptBuilder
 import com.github.only52607.luamirai.core.integration.BotScriptList
+import com.github.only52607.luamirai.core.script.BotScriptHeader
 import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.core.script.ScriptAlreadyStoppedException
 import com.github.only52607.luamirai.core.script.ScriptNotYetStartedException
@@ -32,15 +34,30 @@ class LuaMiraiCommand(
     primaryName = "lua",
     description = "lua mirai 插件相关指令"
 ) {
-    private val scriptList = BotScriptList()
-    private val sourceList = mutableListOf<ConfigurableScriptSource>()
+    private val runningScripts = BotScriptList()
+    private val builders = mutableListOf<BotScriptBuilder>()
+
+    private val BotScriptHeader.name: String?
+        get() = get("name")
+
+    private val BotScriptHeader.version: String?
+        get() = get("version")
+
+    private val BotScriptHeader.author: String?
+        get() = get("author")
+
+    private val BotScriptHeader.description: String?
+        get() = get("description")
+
+    private val BotScriptHeader.simpleInfo: String
+        get() = "名称：$name\n版本：$version\n作者：$author\n描述：$description"
 
     fun enable() {
         runBlocking { initConfig() }
     }
 
     fun disable() {
-        scriptList.forEach { if (it.isActive) it.stop() }
+        runningScripts.forEach { if (it.isActive) it.stop() }
     }
 
     @SubCommand("doc")
@@ -58,14 +75,28 @@ class LuaMiraiCommand(
     @SubCommand("source list")
     @Description("列出所有脚本源")
     fun ConsoleCommandSender.list() {
-        sourceList.forEachIndexed { index, botScriptSource ->
-            logger.info("[$index] $botScriptSource")
+        builders.forEachIndexed { index, builder ->
+            logger.info("[$index] ${builder.botScriptSource}")
         }
+    }
+
+    @SubCommand("source info")
+    @Description("查看脚本源信息")
+    suspend fun ConsoleCommandSender.sourceInfo(@Name("脚本源编号") sourceId: Int) {
+        val header = builders[sourceId].readHeader()
+        logger.info("")
+        logger.info(header.simpleInfo)
+    }
+
+    @SubCommand("source update")
+    @Description("更新脚本源")
+    suspend fun ConsoleCommandSender.updateSource(@Name("脚本源编号") sourceId: Int) {
+        builders[sourceId].update()
     }
 
     @SubCommand("source add")
     @Description("新增脚本源")
-    fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String) {
+    suspend fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String) {
         val source = if (!fileName.contains("://")) {
             val file = File(fileName)
             if (!file.exists()) {
@@ -76,29 +107,31 @@ class LuaMiraiCommand(
         } else {
             BotScriptSource.URLSource(URL(fileName), LUA)
         }
-        sourceList.add(ConfigurableScriptSource(source))
-        logger.info("添加脚本源[${sourceList.size - 1}] $fileName 成功")
+        val builder = BotScriptBuilder.fromSource(ConfigurableScriptSource(source))
+        builders.add(builder)
+        logger.info("添加脚本源[${builders.size - 1}] $fileName 成功，脚本信息：")
+        logger.info(builder.readHeader().simpleInfo)
         updateConfig()
     }
 
     @SubCommand("source remove")
     @Description("删除指定位置上的脚本源")
     fun ConsoleCommandSender.remove(@Name("索引") index: Int) {
-        sourceList.removeAt(index)
+        builders.removeAt(index)
         updateConfig()
     }
 
     @SubCommand("source autostart")
     @Description("设置脚本源自动启动")
     fun ConsoleCommandSender.autostart(@Name("索引") index: Int, @Name("是否开启") autostart: Boolean) {
-        sourceList[index].autoStart = autostart
+        (builders[index].botScriptSource as ConfigurableScriptSource).autoStart = autostart
         updateConfig()
     }
 
     @SubCommand("source alias")
     @Description("设置脚本源别名")
     fun ConsoleCommandSender.alias(@Name("索引") index: Int, @Name("别名") alias: String) {
-        sourceList[index].alias = alias
+        (builders[index].botScriptSource as ConfigurableScriptSource).alias = alias
         updateConfig()
     }
 
@@ -107,7 +140,7 @@ class LuaMiraiCommand(
     @SubCommand("script list")
     @Description("列出运行中的脚本")
     fun ConsoleCommandSender.listScript() {
-        scriptList.forEachIndexed { index, botScript ->
+        runningScripts.forEachIndexed { index, botScript ->
             logger.info("[$index] $botScript")
         }
     }
@@ -116,45 +149,43 @@ class LuaMiraiCommand(
     @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
     fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
         try {
-            scriptList[scriptId].stop()
+            runningScripts[scriptId].stop()
         } catch (_: ScriptAlreadyStoppedException) {
-            logger.error("脚本[${scriptList[scriptId]}]已经停用，请勿重复操作")
+            logger.error("脚本[${runningScripts[scriptId]}]已经停用，请勿重复操作")
             return
         } catch (_: ScriptNotYetStartedException) {
-            logger.error("脚本[${scriptList[scriptId]}]没有被启动，无需停止")
+            logger.error("脚本[${runningScripts[scriptId]}]没有被启动，无需停止")
             return
         }
-        logger.info("停用脚本[${scriptList[scriptId]}]成功")
-        scriptList.removeAt(scriptId)
+        logger.info("停用脚本[${runningScripts[scriptId]}]成功")
+        runningScripts.removeAt(scriptId)
     }
 
     @SubCommand("script start", "source start")
     @Description("使用脚本源启动一个新脚本")
     suspend fun ConsoleCommandSender.start(@Name("脚本源编号") sourceId: Int) {
-        scriptList.addFromSource(sourceList[sourceId]).start()
+        runningScripts.add(builders[sourceId].buildInstance())
     }
 
     @SubCommand("script restart")
     @Description("重新读入脚本源以启动脚本")
     suspend fun ConsoleCommandSender.restart(@Name("脚本编号") scriptId: Int) {
-        val source = scriptList[scriptId].source
+        val source = runningScripts[scriptId].source
         try {
-            scriptList[scriptId].stop()
+            runningScripts[scriptId].stop()
         } catch (_: ScriptAlreadyStoppedException) {
         } catch (_: ScriptNotYetStartedException) {
         }
-        scriptList.removeAt(scriptId)
-        scriptList.addFromSource(source).start()
+        runningScripts.removeAt(scriptId)
+        runningScripts.addFromSource(source).start()
     }
 
     @SubCommand("script info")
     @Description("查看运行中的脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        val source = scriptList[scriptId].header ?: return
-        logger.info("名称：${source["name"]}")
-        logger.info("版本：${source["version"]}")
-        logger.info("作者：${source["author"]}")
-        logger.info("描述：${source["description"]}")
+        val header = runningScripts[scriptId].header ?: return
+        logger.info("")
+        logger.info(header.simpleInfo)
     }
 
     private val json by lazy {
@@ -167,12 +198,12 @@ class LuaMiraiCommand(
     private suspend fun initConfig() {
         if (configFile == null || !configFile.exists()) return
         val pluginConfig = json.decodeFromStream(PluginConfig.serializer(), configFile.inputStream())
-        sourceList.clear()
-        sourceList.addAll(pluginConfig.sources)
+        builders.clear()
+        builders.addAll(pluginConfig.sources.map { BotScriptBuilder.fromSource(it) })
         for (source in pluginConfig.sources) {
             if (!source.autoStart) continue
             try {
-                val script = scriptList.addFromSource(source)
+                val script = runningScripts.addFromSource(source)
                 script.start()
                 logger.info("$source 自动启动成功")
             } catch (e: Exception) {
@@ -187,7 +218,7 @@ class LuaMiraiCommand(
     private fun updateConfig() {
         configFile ?: return
         val pluginConfig = PluginConfig(
-            sources = sourceList
+            sources = builders.map { it.botScriptSource as ConfigurableScriptSource }
         )
         json.encodeToStream(pluginConfig, configFile.outputStream())
     }

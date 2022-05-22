@@ -18,9 +18,10 @@ abstract class BotScriptSource(
     val lang: String,
     var name: String,
     open var size: Long?,
-    open val charset: Charset?
+    open val charset: Charset?,
+    val resourceFinder: BotScriptResourceFinder? = null
 ) {
-    abstract val inputStream: InputStream
+    abstract val mainInputStream: InputStream
 
     class FileSource(
         val file: File,
@@ -28,7 +29,7 @@ abstract class BotScriptSource(
         name: String = "@${file.name}",
         charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(scriptLang, name, file.length(), charset) {
-        override val inputStream: InputStream
+        override val mainInputStream: InputStream
             get() = file.inputStream()
 
         override fun toString(): String {
@@ -42,7 +43,7 @@ abstract class BotScriptSource(
         name: String = content,
         override val charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(lang, name, content.length.toLong(), charset) {
-        override val inputStream: InputStream
+        override val mainInputStream: InputStream
             get() = ByteArrayInputStream(content.toByteArray(charset = charset))
 
         override fun toString(): String {
@@ -56,7 +57,7 @@ abstract class BotScriptSource(
         name: String = url.toString(),
         override val charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(lang, name, null, charset) {
-        override val inputStream: InputStream
+        override val mainInputStream: InputStream
             get() = url.openStream()
 
         override fun toString(): String {

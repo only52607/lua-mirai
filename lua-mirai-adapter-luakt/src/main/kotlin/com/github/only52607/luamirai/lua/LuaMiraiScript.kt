@@ -4,18 +4,21 @@ import com.github.only52607.luakt.lib.KotlinCoroutineLib
 import com.github.only52607.luakt.lib.LuaKotlinLib
 import com.github.only52607.luamirai.core.script.AbstractBotScript
 import com.github.only52607.luamirai.core.script.BotScriptHeader
+import com.github.only52607.luamirai.core.script.BotScriptResourceFinder
 import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.lua.lib.*
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.compiler.LuaC
 import org.luaj.vm2.lib.*
 import org.luaj.vm2.lib.jse.*
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PrintStream
@@ -23,14 +26,10 @@ import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 
 class LuaMiraiScript(
-    override var source: BotScriptSource
+    override var source: BotScriptSource,
+    override val header: BotScriptHeader,
+    mainInputStream: InputStream
 ) : AbstractBotScript(), CoroutineScope {
-
-    private lateinit var sourceString: String
-
-    fun initSource() {
-        sourceString = source.inputStream.readBytes().toString(source.charset ?: Charsets.UTF_8)
-    }
 
     override fun toString(): String {
         return "LuaMiraiScript: $source"
@@ -40,9 +39,11 @@ class LuaMiraiScript(
 
     private var taskLib = TaskLib(LuaMiraiValueMapper)
 
-    override val header: BotScriptHeader by lazy { LuaHeaderReader.readHeader(sourceString) }
-
     override val lang: String = "lua"
+
+    private val globals: Globals = Globals()
+
+    private val mainFunc: LuaValue
 
     override var stdout: OutputStream? = System.out
         set(value) {
@@ -62,30 +63,29 @@ class LuaMiraiScript(
             field = value
         }
 
-    private val globals = Globals().apply {
-        STDOUT = stdout?.let(::PrintStream)
-        STDERR = stderr?.let(::PrintStream)
-        STDIN = stdin
+    init {
+        installLibs()
+        LoadState.install(globals)
+        LuaC.install(globals)
+        globals.finder = ResourceFinderAdapter(globals.finder, source.resourceFinder)
+        globals.apply {
+            STDOUT = stdout?.let(::PrintStream)
+            STDERR = stderr?.let(::PrintStream)
+            STDIN = stdin
+        }
+        mainFunc = globals.load(mainInputStream, source.name, "bt", globals)
     }
 
     override suspend fun onStart() {
         if (coroutineContext[ContinuationInterceptor] == null) {
             coroutineContext += taskLib.asCoroutineDispatcher()
         }
-        initGlobals()
-        val func = globals.load(ByteArrayInputStream(sourceString.toByteArray(source.charset ?: Charsets.UTF_8)), source.name, "bt", globals)
-        func.invoke()
+        mainFunc.invoke()
     }
 
     override suspend fun onStop() {
         taskLib.shutdown()
         coroutineContext.cancel()
-    }
-
-    private fun initGlobals() {
-        installLibs()
-        LoadState.install(globals)
-        LuaC.install(globals)
     }
 
     private fun installLibs() {
@@ -121,5 +121,16 @@ class LuaMiraiScript(
         load(JDBCLib(LuaMiraiValueMapper))
         load(JsoupLib(LuaMiraiValueMapper))
         load(SocketLib(LuaMiraiValueMapper))
+    }
+
+    class ResourceFinderAdapter(
+        private val parentFinder: ResourceFinder,
+        private val botScriptResourceFinder: BotScriptResourceFinder?
+    ) : ResourceFinder {
+        override fun findResource(filename: String): InputStream {
+            val resource = botScriptResourceFinder?.findResource(filename)
+            if (resource != null) return resource
+            return parentFinder.findResource(filename)
+        }
     }
 }

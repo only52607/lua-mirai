@@ -1,9 +1,10 @@
 package com.github.only52607.luamirai.lua
 
 import com.github.only52607.luamirai.core.script.BotScriptHeader
-import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.core.script.MutableBotScriptHeader
 import com.github.only52607.luamirai.core.script.mutableBotScriptHeaderOf
+import java.io.InputStream
+import java.util.*
 
 /**
  * ClassName: LuaHeaderReader
@@ -38,6 +39,17 @@ object LuaHeaderReader {
         sourceString
             .splitToSequence("\n")
             .let(::parseBotScriptHeader)
+
+    fun readHeader(inputStream: InputStream): BotScriptHeader = mutableBotScriptHeaderOf {
+        val scanner = Scanner(inputStream)
+        if (!scanner.hasNextLine() || !scanner.nextLine().matches(REGEX_HEADER_START)) return@mutableBotScriptHeaderOf
+        while (scanner.hasNextLine()) {
+            val line = scanner.nextLine()
+            if (line.matches(REGEX_HEADER_END)) return@mutableBotScriptHeaderOf
+            addFieldByLine(line)
+        }
+        throw InvalidScriptHeaderException("Missing header end label!")
+    }
 }
 
 class InvalidScriptHeaderException(override val message: String) : RuntimeException(message)

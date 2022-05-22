@@ -1,6 +1,6 @@
 package com.github.only52607.luamirai.core.integration.impl
 
-import com.github.only52607.luamirai.core.factory.buildBotScript
+import com.github.only52607.luamirai.core.BotScriptBuilder
 import com.github.only52607.luamirai.core.integration.BotScriptList
 import com.github.only52607.luamirai.core.script.BotScript
 import com.github.only52607.luamirai.core.script.BotScriptSource
@@ -14,7 +14,7 @@ import com.github.only52607.luamirai.core.script.BotScriptSource
  */
 internal class BotScriptListImpl : BotScriptList, MutableList<BotScript> by mutableListOf() {
     override suspend fun addFromSource(source: BotScriptSource): BotScript {
-        val script = source.buildBotScript()
+        val script = BotScriptBuilder.fromSource(source).buildInstance()
         add(script)
         return script
     }
