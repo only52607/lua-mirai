@@ -80,7 +80,11 @@ class LuaMiraiScript(
         if (coroutineContext[ContinuationInterceptor] == null) {
             coroutineContext += taskLib.asCoroutineDispatcher()
         }
-        mainFunc.invoke()
+        try {
+            mainFunc.invoke()
+        } catch (e: Exception) {
+            e.printStackTrace(PrintStream(stderr ?: System.err))
+        }
     }
 
     override suspend fun onStop() {
@@ -127,7 +131,7 @@ class LuaMiraiScript(
         private val parentFinder: ResourceFinder,
         private val botScriptResourceFinder: BotScriptResourceFinder?
     ) : ResourceFinder {
-        override fun findResource(filename: String): InputStream {
+        override fun findResource(filename: String): InputStream? {
             val resource = botScriptResourceFinder?.findResource(filename)
             if (resource != null) return resource
             return parentFinder.findResource(filename)
