@@ -64,4 +64,20 @@ abstract class BotScriptSource(
             return "URLSource(name=$name, url=$url, lang=$lang)"
         }
     }
+
+    open class Wrapper(
+        val source: BotScriptSource
+    ) : BotScriptSource(
+        lang = source.lang,
+        name = source.name,
+        size = source.size,
+        charset = source.charset,
+    ) {
+        override val mainInputStream: InputStream
+            get() = source.mainInputStream
+
+        override fun toString(): String {
+            return source.toString()
+        }
+    }
 }
