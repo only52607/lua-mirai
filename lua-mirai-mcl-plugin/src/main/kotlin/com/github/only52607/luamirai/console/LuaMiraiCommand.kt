@@ -3,11 +3,7 @@ package com.github.only52607.luamirai.console
 import com.github.only52607.luamirai.configuration.ConfigurableScriptSource
 import com.github.only52607.luamirai.console.config.PluginConfig
 import com.github.only52607.luamirai.core.BotScriptBuilder
-import com.github.only52607.luamirai.core.integration.BotScriptList
-import com.github.only52607.luamirai.core.script.BotScriptHeader
-import com.github.only52607.luamirai.core.script.BotScriptSource
-import com.github.only52607.luamirai.core.script.ScriptAlreadyStoppedException
-import com.github.only52607.luamirai.core.script.ScriptNotYetStartedException
+import com.github.only52607.luamirai.core.script.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -34,7 +30,12 @@ class LuaMiraiCommand(
     primaryName = "lua",
     description = "lua mirai 插件相关指令"
 ) {
-    private val runningScripts = BotScriptList()
+    data class RunningScript(
+        var instance: BotScript,
+        val builder: BotScriptBuilder
+    )
+
+    private val runningScripts = mutableListOf<RunningScript>()
     private val builders = mutableListOf<BotScriptBuilder>()
 
     private val BotScriptHeader.name: String?
@@ -57,7 +58,7 @@ class LuaMiraiCommand(
     }
 
     fun disable() {
-        runningScripts.forEach { if (it.isActive) it.stop() }
+        runningScripts.forEach { if (it.instance.isActive) it.instance.stop() }
     }
 
     @SubCommand("doc")
@@ -84,8 +85,7 @@ class LuaMiraiCommand(
     @Description("查看脚本源信息")
     suspend fun ConsoleCommandSender.sourceInfo(@Name("脚本源编号") sourceId: Int) {
         val header = builders[sourceId].readHeader()
-        logger.info("")
-        logger.info(header.simpleInfo)
+        logger.info("\n" + header.simpleInfo)
     }
 
     @SubCommand("source update")
@@ -140,8 +140,8 @@ class LuaMiraiCommand(
     @SubCommand("script list")
     @Description("列出运行中的脚本")
     fun ConsoleCommandSender.listScript() {
-        runningScripts.forEachIndexed { index, botScript ->
-            logger.info("[$index] $botScript")
+        runningScripts.forEachIndexed { index, runningScript ->
+            logger.info("[$index] ${runningScript.instance}")
         }
     }
 
@@ -149,7 +149,7 @@ class LuaMiraiCommand(
     @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
     fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
         try {
-            runningScripts[scriptId].stop()
+            runningScripts[scriptId].instance.stop()
         } catch (_: ScriptAlreadyStoppedException) {
             logger.error("脚本[${runningScripts[scriptId]}]已经停用，请勿重复操作")
             return
@@ -164,28 +164,32 @@ class LuaMiraiCommand(
     @SubCommand("script start", "source start")
     @Description("使用脚本源启动一个新脚本")
     suspend fun ConsoleCommandSender.start(@Name("脚本源编号") sourceId: Int) {
-        runningScripts.add(builders[sourceId].buildInstance())
+        val script = builders[sourceId].buildInstance()
+        runningScripts.add(
+            RunningScript(script, builders[sourceId])
+        )
+        script.start()
     }
 
     @SubCommand("script restart")
     @Description("重新读入脚本源以启动脚本")
     suspend fun ConsoleCommandSender.restart(@Name("脚本编号") scriptId: Int) {
-        val source = runningScripts[scriptId].source
+        val runningScript = runningScripts[scriptId]
         try {
-            runningScripts[scriptId].stop()
+            runningScript.instance.stop()
         } catch (_: ScriptAlreadyStoppedException) {
         } catch (_: ScriptNotYetStartedException) {
         }
-        runningScripts.removeAt(scriptId)
-        runningScripts.addFromSource(source).start()
+        runningScript.builder.update()
+        runningScript.instance = runningScript.builder.buildInstance()
+        runningScript.instance.start()
     }
 
     @SubCommand("script info")
     @Description("查看运行中的脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        val header = runningScripts[scriptId].header ?: return
-        logger.info("")
-        logger.info(header.simpleInfo)
+        val header = runningScripts[scriptId].instance.header ?: return
+        logger.info("\n" + header.simpleInfo)
     }
 
     private val json by lazy {
@@ -203,8 +207,10 @@ class LuaMiraiCommand(
         for (source in pluginConfig.sources) {
             if (!source.autoStart) continue
             try {
-                val script = runningScripts.addFromSource(source)
-                script.start()
+                val builder = BotScriptBuilder.fromSource(source)
+                val runningScript = RunningScript(builder.buildInstance(), builder)
+                runningScripts.add(runningScript)
+                runningScript.instance.start()
                 logger.info("$source 自动启动成功")
             } catch (e: Exception) {
                 logger.error("$source 自动启动失败", e)
