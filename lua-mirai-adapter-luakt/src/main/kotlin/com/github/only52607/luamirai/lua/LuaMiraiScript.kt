@@ -26,7 +26,7 @@ import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 
 class LuaMiraiScript(
-    override var source: BotScriptSource,
+    override val source: BotScriptSource,
     override val header: BotScriptHeader,
     mainInputStream: InputStream
 ) : AbstractBotScript(), CoroutineScope {
@@ -73,6 +73,7 @@ class LuaMiraiScript(
             STDERR = stderr?.let(::PrintStream)
             STDIN = stdin
         }
+        initSearchPath(source)
         mainFunc = globals.load(mainInputStream, source.name, "bt", globals)
     }
 
@@ -125,6 +126,19 @@ class LuaMiraiScript(
         load(JDBCLib(LuaMiraiValueMapper))
         load(JsoupLib(LuaMiraiValueMapper))
         load(SocketLib(LuaMiraiValueMapper))
+    }
+
+    private fun initSearchPath(botScriptSource: BotScriptSource) {
+        when (botScriptSource) {
+            is BotScriptSource.Wrapper -> {
+                initSearchPath(botScriptSource.source)
+            }
+            is BotScriptSource.FileSource -> {
+                globals.get("package").apply {
+                    set("path", get("path").optjstring("?.lua") + ";${botScriptSource.file.parent}/?.lua")
+                }
+            }
+        }
     }
 
     class ResourceFinderAdapter(
