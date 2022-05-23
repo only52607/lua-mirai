@@ -2,7 +2,6 @@ package com.github.only52607.luamirai.configuration
 
 import com.github.only52607.luamirai.core.script.BotScriptSource
 import kotlinx.serialization.Serializable
-import java.io.InputStream
 
 /**
  * ClassName: ConfigurableScriptSource
@@ -13,19 +12,7 @@ import java.io.InputStream
  */
 @Serializable(ConfigurableScriptSourceSerializer::class)
 class ConfigurableScriptSource(
-    val source: BotScriptSource,
+    source: BotScriptSource,
     var alias: String? = null,
     var autoStart: Boolean = false
-) : BotScriptSource(
-    lang = source.lang,
-    name = source.name,
-    size = source.size,
-    charset = source.charset,
-) {
-    override val mainInputStream: InputStream
-        get() = source.mainInputStream
-
-    override fun toString(): String {
-        return source.toString()
-    }
-}
+) : BotScriptSource.Wrapper(source)
