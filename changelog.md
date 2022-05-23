@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [2.6.0] - 2022-05-23
+
+### 新增
+
+- 新的脚本包格式`LMPK`(#83 )
+
+### 其他
+
+- 优化`require`路径解析规则
+
 ## [2.5.1] - 2022-05-22
 
 ### 新增
@@ -38,7 +48,9 @@
 - 重构mirai-console插件命令格式
 - 构建产物jar包分离
 
-[Unreleased]: https://github.com/only52607/lua-mirai/compare/2.5.1...HEAD
+[Unreleased]: https://github.com/only52607/lua-mirai/compare/2.6.0...HEAD
+
+[2.6.0]: https://github.com/only52607/lua-mirai/compare/2.5.1...2.6.0
 
 [2.5.1]: https://github.com/only52607/lua-mirai/compare/2.5.0...2.5.1
 
