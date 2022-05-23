@@ -64,6 +64,15 @@ abstract class BotScriptSource(
         name: String = "@${file.name}",
         charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(scriptLang, name, file.length(), charset) {
+        override val resourceFinder: BotScriptResourceFinder = object : BotScriptResourceFinder {
+            val directory = file.parentFile
+            override fun findResource(filename: String): InputStream? {
+                val file = File(directory, filename)
+                if (!file.exists()) return null
+                return file.inputStream()
+            }
+        }
+
         override val mainInputStream: InputStream
             get() = file.inputStream()
 
