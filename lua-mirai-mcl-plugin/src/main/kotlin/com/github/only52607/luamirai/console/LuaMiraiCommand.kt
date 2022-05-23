@@ -109,8 +109,8 @@ class LuaMiraiCommand(
         }
         val builder = BotScriptBuilder.fromSource(ConfigurableScriptSource(source))
         builders.add(builder)
-        logger.info("添加脚本源[${builders.size - 1}] $fileName 成功，脚本信息：")
-        logger.info(builder.readHeader().simpleInfo)
+        logger.info("添加脚本源[${builders.size - 1}] $fileName 成功")
+        logger.info("脚本信息：\n" + builder.readHeader().simpleInfo)
         updateConfig()
     }
 
