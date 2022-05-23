@@ -25,7 +25,6 @@ abstract class BotScriptSource(
     var name: String,
     open var size: Long?,
     open val charset: Charset?,
-
 ) {
     abstract val mainInputStream: InputStream
 
@@ -37,15 +36,11 @@ abstract class BotScriptSource(
         name: String = "@${file.name}",
         charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(scriptLang, name, file.length(), charset) {
-        private var textFileSource: TextFileSource? = null
-        private var zipFileSource: ZipSource? = null
 
-        init {
-            if (isPackage()) {
-                zipFileSource = ZipSource(file, scriptLang, name, charset)
-            } else {
-                textFileSource = TextFileSource(file, scriptLang, name, charset)
-            }
+        private val scriptSource: BotScriptSource = when {
+            file.isDirectory -> DirectorySource(file, scriptLang, name, charset)
+            isPackage() -> ZipSource(file, scriptLang, name, charset)
+            else -> TextFileSource(file, scriptLang, name, charset)
         }
 
         private fun isPackage(): Boolean {
@@ -53,11 +48,10 @@ abstract class BotScriptSource(
         }
 
         override val mainInputStream: InputStream
-            get() = zipFileSource?.mainInputStream ?: textFileSource?.mainInputStream
-            ?: throw Exception("FileSource has not been initialized")
+            get() = scriptSource.mainInputStream
 
         override val resourceFinder: BotScriptResourceFinder?
-            get() = zipFileSource?.resourceFinder ?: textFileSource?.resourceFinder
+            get() = scriptSource.resourceFinder
 
         override fun toString(): String {
             return "FileSource(name=$name, file=$file, lang=$lang)"
@@ -78,6 +72,43 @@ abstract class BotScriptSource(
         }
     }
 
+    class DirectorySource(
+        val directory: File,
+        scriptLang: String,
+        name: String = "@${directory.name}",
+        charset: Charset = Charsets.UTF_8
+    ) : BotScriptSource(scriptLang, name, directory.length(), charset) {
+
+        override val resourceFinder: BotScriptResourceFinder = object : BotScriptResourceFinder {
+            override fun findResource(filename: String): InputStream? {
+                val file = File(directory, filename)
+                if (!file.exists()) return null
+                return file.inputStream()
+            }
+        }
+
+        private val json = Json
+
+        override val mainInputStream: InputStream
+            get() = resourceFinder.findResource(mainFileName)
+                ?: throw FileNotFoundException("File $mainFileName not found in ${directory.absolutePath}")
+
+        private val manifest: JsonObject = resourceFinder.findResource("manifest.json")?.let {
+            json.parseToJsonElement(String(it.readBytes())).jsonObject
+        } ?: throw FileNotFoundException("manifest.json not found in ${directory.absolutePath}")
+
+        private val mainFileName: String = manifest["main"]?.jsonPrimitive?.content
+            ?: throw Exception("You must specify the main field as the script entry")
+
+        init {
+            super.name = mainFileName
+        }
+
+        override fun toString(): String {
+            return "DirectorySource(name=$name, directory=$directory, lang=$lang)"
+        }
+    }
+
     class ZipSource(
         val file: File,
         scriptLang: String,
@@ -85,11 +116,19 @@ abstract class BotScriptSource(
         charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(scriptLang, name, file.length(), charset) {
 
+        override val resourceFinder: BotScriptResourceFinder = object : BotScriptResourceFinder {
+            override fun findResource(filename: String): InputStream? {
+                val zipEntryName = filename.replace("\\", "/")
+                val zipEntry = zipFile.getEntry(zipEntryName) ?: return null
+                return zipFile.getInputStream(zipEntry)
+            }
+        }
+
         private val zipFile = ZipFile(file)
 
         private val json = Json
 
-        private val manifest: JsonObject = getInputStream("manifest.json")?.let {
+        private val manifest: JsonObject = resourceFinder.findResource("manifest.json")?.let {
             json.parseToJsonElement(String(it.readBytes())).jsonObject
         } ?: throw FileNotFoundException("manifest.json not found in ${file.absolutePath}")
 
@@ -100,19 +139,9 @@ abstract class BotScriptSource(
             super.name = mainFileName
         }
 
-        private fun getInputStream(name: String) = zipFile.getEntry(name)?.let { zipFile.getInputStream(it) }
-
         override val mainInputStream: InputStream
-            get() = getInputStream(mainFileName)
+            get() = resourceFinder.findResource(mainFileName)
                 ?: throw FileNotFoundException("File $mainFileName not found in ${file.absolutePath}")
-
-        override val resourceFinder: BotScriptResourceFinder
-            get() = object : BotScriptResourceFinder {
-                override fun findResource(filename: String): InputStream? {
-                    val zipEntryName = filename.replace("\\", "/")
-                    return getInputStream(zipEntryName)
-                }
-            }
 
         override fun toString(): String {
             return "ZipSource(name=$name, file=$file, lang=$lang)"
