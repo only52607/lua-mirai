@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import java.io.BufferedInputStream
+import java.io.InputStream
 
 /**
  * ClassName: LuaMiraiScriptBuilder
@@ -36,37 +36,9 @@ class LuaMiraiScriptBuilder(
     override val lang: String
         get() = LANG
 
-    private lateinit var mainInputStream: BufferedInputStream
-    private lateinit var header: BotScriptHeader
-    private var mainInputStreamInitialized: Boolean = false
-    private var headerInitialized: Boolean = false
-
-    private fun prepareMainInputStream() {
-        if (mainInputStreamInitialized) return
-        mainInputStream = BufferedInputStream(botScriptSource.mainInputStream)
-        mainInputStreamInitialized = true
-    }
-
-    private suspend fun prepareHeader() {
-        if (headerInitialized) return
-        val manifestInputStream = source.resourceFinder?.findResource("manifest.json")
-        header = if (manifestInputStream != null) {
-            readHeaderFromJsonManifest(String(manifestInputStream.readBytes()))
-        } else {
-            prepareMainInputStream()
-            readHeaderFromCodeInputStream()
-        }
-        headerInitialized = true
-    }
-
-    private suspend fun readHeaderFromCodeInputStream(): BotScriptHeader {
-        mainInputStream.mark(MAX_SCRIPT_HEADER)
+    private suspend fun readHeaderFromCodeInputStream(inputStream: InputStream): BotScriptHeader {
         return withContext(Dispatchers.IO) {
-            try {
-                LuaHeaderReader.readHeader(mainInputStream)
-            } finally {
-                mainInputStream.reset()
-            }
+            LuaHeaderReader.readHeader(inputStream)
         }
     }
 
@@ -81,25 +53,17 @@ class LuaMiraiScriptBuilder(
     }
 
     override suspend fun buildInstance(): BotScript {
-        prepareMainInputStream()
-        prepareHeader()
-        mainInputStream.mark(MAX_SCRIPT_HEADER)
         return withContext(Dispatchers.IO) {
-            try {
-                LuaMiraiScript(source, header, mainInputStream)
-            } finally {
-                mainInputStream.reset()
-            }
+            LuaMiraiScript(source, readHeader(), botScriptSource.mainInputStream)
         }
     }
 
     override suspend fun readHeader(): BotScriptHeader {
-        prepareHeader()
-        return header
-    }
-
-    override suspend fun update() {
-        mainInputStreamInitialized = false
-        headerInitialized = false
+        val manifestInputStream = source.resourceFinder?.findResource("manifest.json")
+        return if (manifestInputStream != null) {
+            readHeaderFromJsonManifest(String(manifestInputStream.readBytes()))
+        } else {
+            readHeaderFromCodeInputStream(botScriptSource.mainInputStream)
+        }
     }
 }

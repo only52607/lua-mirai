@@ -90,8 +90,8 @@ class LuaMiraiCommand(
 
     @SubCommand("source update")
     @Description("更新脚本源")
-    suspend fun ConsoleCommandSender.updateSource(@Name("脚本源编号") sourceId: Int) {
-        builders[sourceId].update()
+    fun ConsoleCommandSender.updateSource(@Name("脚本源编号") sourceId: Int) {
+
     }
 
     @SubCommand("source add")
@@ -180,7 +180,6 @@ class LuaMiraiCommand(
         } catch (_: ScriptAlreadyStoppedException) {
         } catch (_: ScriptNotYetStartedException) {
         }
-        runningScript.builder.update()
         runningScript.instance = runningScript.builder.buildInstance()
         runningScript.instance.start()
     }

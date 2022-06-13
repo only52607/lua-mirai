@@ -38,9 +38,6 @@ abstract class BotScriptBuilder(
     abstract suspend fun buildInstance(): BotScript
 
     abstract suspend fun readHeader(): BotScriptHeader
-
-    abstract suspend fun update()
 }
-
 
 class ScriptLangNotFoundException(lang: String) : Exception("Script lang for $lang has not been register")
