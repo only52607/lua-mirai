@@ -56,6 +56,21 @@ abstract class BotScriptSource(
         override fun toString(): String {
             return "FileSource(name=$name, file=$file, lang=$lang)"
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as FileSource
+
+            if (file != other.file) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return file.hashCode()
+        }
     }
 
     class TextFileSource(
@@ -78,6 +93,21 @@ abstract class BotScriptSource(
 
         override fun toString(): String {
             return "TextFileSource(name=$name, file=$file, lang=$lang)"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as TextFileSource
+
+            if (file != other.file) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return file.hashCode()
         }
     }
 
@@ -115,6 +145,21 @@ abstract class BotScriptSource(
 
         override fun toString(): String {
             return "DirectorySource(name=$name, directory=$directory, lang=$lang)"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as DirectorySource
+
+            if (directory != other.directory) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return directory.hashCode()
         }
     }
 
@@ -155,6 +200,21 @@ abstract class BotScriptSource(
         override fun toString(): String {
             return "ZipSource(name=$name, file=$file, lang=$lang)"
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ZipSource
+
+            if (file != other.file) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return file.hashCode()
+        }
     }
 
     class StringSource(
@@ -169,6 +229,21 @@ abstract class BotScriptSource(
         override fun toString(): String {
             return "StringSource(name=$name, content=${content.hashCode()}, lang=$lang)"
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as StringSource
+
+            if (content != other.content) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return content.hashCode()
+        }
     }
 
     class URLSource(
@@ -182,6 +257,21 @@ abstract class BotScriptSource(
 
         override fun toString(): String {
             return "URLSource(name=$name, url=$url, lang=$lang)"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as URLSource
+
+            if (url != other.url) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return url.hashCode()
         }
     }
 
@@ -201,6 +291,21 @@ abstract class BotScriptSource(
 
         override fun toString(): String {
             return source.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Wrapper
+
+            if (source != other.source) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return source.hashCode()
         }
     }
 }
