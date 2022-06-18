@@ -26,11 +26,8 @@ class KotlinCoroutineLib(
     private val scriptCoroutineScope: CoroutineScope
 ) : JSLib() {
     @JvmSynthetic
-    override val nameInJs = "coroutine"
-
-    @JvmSynthetic
-    override fun importTo(scope: Scriptable, context: Context) {
-        ScriptableObject.putProperty(scope, nameInJs, Context.javaToJS(this, scope))
+    override fun load(scope: Scriptable, context: Context) {
+        ScriptableObject.putProperty(scope, "coroutine", Context.javaToJS(this, scope))
     }
 
     @JvmField

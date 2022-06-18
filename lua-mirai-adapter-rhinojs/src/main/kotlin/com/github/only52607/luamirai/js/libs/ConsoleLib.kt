@@ -10,7 +10,7 @@ import java.io.PrintStream
 import java.util.*
 
 @Suppress("unused")
-class LoggerLib : JSLib() {
+class ConsoleLib : JSLib() {
 
     var stdout: OutputStream = System.out
         set(value) {
@@ -36,20 +36,33 @@ class LoggerLib : JSLib() {
 
     private var stdinScanner = Scanner(stdin)
 
-    override val nameInJs: String = "logger"
-
     inner class Console {
-        /*fun log(cx: Context, thisObj: Scriptable, args: Array<Any>, funObj: FunctionObject) {
-            stdoutPrintStream.println(args.joinToString(separator = " ") { it.toString() })
-        }*/
+        fun clear(vararg args: Any) {
+        }
 
-        fun log(content: String) {
-            stdoutPrintStream.println(content)
+        fun log(vararg args: Any) {
+            stdoutPrintStream.println(args.joinToString(separator = " ") { it.toString() })
+        }
+
+        fun info(vararg args: Any) {
+            stdoutPrintStream.println(args.joinToString(separator = " ") { it.toString() })
+        }
+
+        fun warn(vararg args: Any) {
+            stdoutPrintStream.println(args.joinToString(separator = " ") { it.toString() })
+        }
+
+        fun error(vararg args: Any) {
+            stderrPrintStream.println(args.joinToString(separator = " ") { it.toString() })
+        }
+
+        fun assert(result: Boolean, message: String) {
+            if (!result) error("Assertion failed: $message")
         }
     }
 
     @JvmSynthetic
-    override fun importTo(scope: Scriptable, context: Context) {
+    override fun load(scope: Scriptable, context: Context) {
         ScriptableObject.putProperty(scope, "console", Context.javaToJS(Console(), scope))
     }
 }

@@ -9,10 +9,7 @@ import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.lua.lib.*
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
 import org.luaj.vm2.LuaValue
@@ -35,7 +32,7 @@ class LuaMiraiScript(
         return "LuaMiraiScript: $source"
     }
 
-    override var coroutineContext: CoroutineContext = SupervisorJob()
+
 
     private var taskLib = TaskLib(LuaMiraiValueMapper)
 
@@ -55,6 +52,7 @@ class LuaMiraiScript(
         set(value) {
             globals.STDERR = value?.let(::PrintStream)
             field = value
+            stdErrPrintStream = PrintStream(value ?: System.err)
         }
 
     override var stdin: InputStream? = System.`in`
@@ -62,6 +60,12 @@ class LuaMiraiScript(
             globals.STDIN = value
             field = value
         }
+
+    private var stdErrPrintStream: PrintStream = PrintStream(stderr ?: System.err)
+
+    override var coroutineContext: CoroutineContext = SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
+        stdErrPrintStream.println(throwable)
+    }
 
     init {
         installLibs()

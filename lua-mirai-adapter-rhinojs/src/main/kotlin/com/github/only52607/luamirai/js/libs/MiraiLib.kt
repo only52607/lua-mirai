@@ -19,11 +19,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 class MiraiLib : JSLib() {
     @JvmSynthetic
-    override val nameInJs: String = "mirai"
-
-    @JvmSynthetic
-    override fun importTo(scope: Scriptable, context: Context) {
-        ScriptableObject.putProperty(scope, "${nameInJs}Kt", Context.javaToJS(this, scope))
+    override fun load(scope: Scriptable, context: Context) {
+        ScriptableObject.putProperty(scope, "miraiKt", Context.javaToJS(this, scope))
     }
 
     fun <E : Event> wrapEventChannel(eventChannel: EventChannel<E>) =

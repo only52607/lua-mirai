@@ -9,10 +9,7 @@ import org.mozilla.javascript.ScriptableObject
 
 class OkHttpLib : JSLib() {
     @JvmSynthetic
-    override val nameInJs: String = "http"
-
-    @JvmSynthetic
-    override fun importTo(scope: Scriptable, context: Context) {
+    override fun load(scope: Scriptable, context: Context) {
         ScriptableObject.putProperty(scope, "__MutableOkHttp__", NativeJavaClass(scope, MutableOkHttp::class.java))
         context.evaluateString(
             scope, """
@@ -25,7 +22,7 @@ class OkHttpLib : JSLib() {
               This code is licensed under Mozilla Public License Version 2.0
               See: https://github.com/hyb1996/Auto.js/blob/master/LICENSE.md
              */
-            const $nameInJs = (function() {
+            const http = (function() {
                 importPackage(Packages["okhttp3"]);
                 var http = {};
 

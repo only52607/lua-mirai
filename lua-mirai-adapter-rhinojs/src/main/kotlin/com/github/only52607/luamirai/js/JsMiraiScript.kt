@@ -3,7 +3,7 @@ package com.github.only52607.luamirai.js
 import com.github.only52607.luamirai.core.script.AbstractBotScript
 import com.github.only52607.luamirai.core.script.BotScriptHeader
 import com.github.only52607.luamirai.core.script.BotScriptSource
-import com.github.only52607.luamirai.js.libs.LoggerLib
+import com.github.only52607.luamirai.js.libs.ConsoleLib
 import com.github.only52607.luamirai.js.libs.MiraiLib
 import kotlinx.coroutines.*
 import org.mozilla.javascript.Context
@@ -32,7 +32,7 @@ class JsMiraiScript(
     override val lang: String
         get() = source.lang
 
-    private val loggerLib = LoggerLib()
+    private val loggerLib = ConsoleLib()
 
     override var stdout: OutputStream?
         get() = loggerLib.stdout
