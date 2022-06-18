@@ -13,6 +13,7 @@ import org.mozilla.javascript.Scriptable
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.PrintStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
@@ -43,7 +44,8 @@ class JsMiraiScript(
     override var stderr: OutputStream?
         get() = loggerLib.stderr
         set(value) {
-            loggerLib.stderr = value!!
+            loggerLib.stderr = value ?: System.err
+            stdErrPrintStream = PrintStream(value ?: System.err)
         }
 
     override var stdin: InputStream?
@@ -52,20 +54,21 @@ class JsMiraiScript(
             loggerLib.stdin = value!!
         }
 
+    private var stdErrPrintStream: PrintStream = PrintStream(stderr ?: System.err)
+
     private val contextThreadDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     override val coroutineContext: CoroutineContext
-        get() = SupervisorJob() + contextThreadDispatcher
+        get() = SupervisorJob() + contextThreadDispatcher + CoroutineExceptionHandler { _, throwable ->
+            stdErrPrintStream.println(throwable)
+        }
 
     private lateinit var context: Context
-
-    private lateinit var globalScope: Scriptable
 
     private val moduleSearchPaths = listOf("?", "?.js")
 
     override suspend fun onStart() {
         prepareContext()
-        prepareGlobalScope()
         execMainScript()
     }
 
@@ -84,22 +87,16 @@ class JsMiraiScript(
         }
     }
 
-    private fun prepareGlobalScope() {
-        globalScope = context.initStandardObjects()
-        context.loadLib(MiraiLib(), globalScope)
-//        context.loadLib(OkHttpLib(), globalScope)
-        context.loadLib(loggerLib, globalScope)
-    }
-
     private fun execMainScript() {
         val mainScript = context.compileReader(InputStreamReader(source.mainInputStream), source.name, -1, null)
         mainScript.exec(context, buildModuleScope())
     }
 
-    private fun buildModuleScope() = ImporterTopLevel().apply {
-        parentScope = globalScope
+    private fun buildModuleScope() = ImporterTopLevel(context).apply {
         put("require", this, FunctionObject("require", ::loadModule.javaMethod, this))
         put("module", this, context.evaluateString(this, "{}", "module", -1, null))
+        context.loadLib(MiraiLib(), this)
+        context.loadLib(loggerLib, this)
     }
 
     private val moduleCache: ConcurrentHashMap<String, Scriptable> = ConcurrentHashMap()
