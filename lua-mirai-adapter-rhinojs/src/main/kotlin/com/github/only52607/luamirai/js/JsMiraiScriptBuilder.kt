@@ -7,10 +7,6 @@ import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.core.script.mutableBotScriptHeaderOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * ClassName: JsMiraiScriptBuilder
@@ -19,6 +15,7 @@ import kotlinx.serialization.json.jsonPrimitive
  * @author ooooonly
  * @version
  */
+@Suppress("unused")
 class JsMiraiScriptBuilder(
     val source: BotScriptSource
 ) : BotScriptBuilder(source) {
@@ -39,19 +36,9 @@ class JsMiraiScriptBuilder(
         }
     }
 
-    private fun readHeaderFromJsonManifest(jsonString: String): BotScriptHeader {
-        val json = Json
-        val manifest: JsonObject = json.parseToJsonElement(jsonString).jsonObject
-        return mutableBotScriptHeaderOf {
-            manifest["header"]?.jsonObject?.forEach { key, value ->
-                this@mutableBotScriptHeaderOf[key] = value.jsonPrimitive.content
-            }
-        }
-    }
-
     override suspend fun readHeader(): BotScriptHeader {
         val manifestInputStream =
             source.resourceFinder?.findResource("manifest.json") ?: return mutableBotScriptHeaderOf()
-        return readHeaderFromJsonManifest(String(manifestInputStream.readBytes()))
+        return BotScriptHeader.fromJsonManifest(String(manifestInputStream.readBytes()))
     }
 }

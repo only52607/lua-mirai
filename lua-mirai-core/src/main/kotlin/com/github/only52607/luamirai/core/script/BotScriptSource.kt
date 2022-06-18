@@ -1,5 +1,6 @@
 package com.github.only52607.luamirai.core.script
 
+import com.github.only52607.luamirai.core.util.getExtension
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -21,8 +22,8 @@ import java.util.zip.ZipFile
  */
 
 abstract class BotScriptSource(
-    val lang: String,
-    var name: String,
+    open val lang: String,
+    open var name: String,
     open var size: Long?,
     open val charset: Charset?,
 ) {
@@ -32,7 +33,7 @@ abstract class BotScriptSource(
 
     class FileSource(
         val file: File,
-        scriptLang: String,
+        private val scriptLang: String = "",
         name: String = "@${file.name}",
         charset: Charset = Charsets.UTF_8
     ) : BotScriptSource(scriptLang, name, file.length(), charset) {
@@ -41,6 +42,22 @@ abstract class BotScriptSource(
             file.isDirectory -> DirectorySource(file, scriptLang, name, charset)
             isPackage() -> ZipSource(file, scriptLang, name, charset)
             else -> TextFileSource(file, scriptLang, name, charset)
+        }
+
+        override val lang: String by lazy {
+            scriptLang.takeIf { it.isNotBlank() } ?: findSourceLang()
+        }
+
+        private fun findSourceLang(): String {
+            if (!isPackage() && !file.isDirectory) {
+                return file.absolutePath.getExtension()
+            }
+            val header = scriptSource.resourceFinder?.findResource("manifest.json")
+                ?.let { BotScriptHeader.fromJsonManifest(String(it.readBytes())) }
+                ?: throw SourceLangParseException("manifest.json not found in package")
+            header["lang"]?.let { return@findSourceLang it }
+            header["main"]?.let { return@findSourceLang it.getExtension() }
+            throw SourceLangParseException("Field 'lang' or 'main' not found in manifest.json")
         }
 
         private fun isPackage(): Boolean {
@@ -71,6 +88,8 @@ abstract class BotScriptSource(
         override fun hashCode(): Int {
             return file.hashCode()
         }
+
+        class SourceLangParseException(message: String) : Exception(message)
     }
 
     class TextFileSource(
@@ -248,12 +267,16 @@ abstract class BotScriptSource(
 
     class URLSource(
         val url: URL,
-        lang: String,
+        private val scriptLang: String = "",
         name: String = url.toString(),
         override val charset: Charset = Charsets.UTF_8
-    ) : BotScriptSource(lang, name, null, charset) {
+    ) : BotScriptSource(scriptLang, name, null, charset) {
         override val mainInputStream: InputStream
             get() = url.openStream()
+
+        override val lang: String by lazy {
+            scriptLang.takeIf { it.isNotBlank() } ?: url.toString().getExtension()
+        }
 
         override fun toString(): String {
             return "URLSource(name=$name, url=$url, lang=$lang)"

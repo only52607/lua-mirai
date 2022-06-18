@@ -59,16 +59,6 @@ class LuaMiraiCommand(
         runningScripts.forEach { if (it.instance.isActive) it.instance.stop() }
     }
 
-    private fun parseSourceLang(sourcePath: String): String {
-        if (sourcePath.endsWith(".lua") || sourcePath.endsWith(".lmpk")) {
-            return "lua"
-        }
-        if (sourcePath.endsWith(".js")) {
-            return "js"
-        }
-        throw Exception("Unknown source lang")
-    }
-
     @SubCommand("doc")
     @Description("打开lua mirai开发文档")
     fun ConsoleCommandSender.doc() {
@@ -111,9 +101,9 @@ class LuaMiraiCommand(
                 logger.error("文件${file.absolutePath}不存在")
                 return
             }
-            BotScriptSource.FileSource(file, parseSourceLang(file.absolutePath))
+            BotScriptSource.FileSource(file)
         } else {
-            BotScriptSource.URLSource(URL(fileName), parseSourceLang(fileName))
+            BotScriptSource.URLSource(URL(fileName))
         }
         val builder = BotScriptBuilder.fromSource(ConfigurableScriptSource(source))
         builders.add(builder)
