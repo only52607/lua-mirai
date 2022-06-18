@@ -12,6 +12,7 @@ import net.mamoe.mirai.utils.info
 object LuaMiraiPlugin : KotlinPlugin(LuaMiraiPluginDescription) {
     init {
         Class.forName("com.github.only52607.luamirai.lua.LuaMiraiScriptBuilder")
+        Class.forName("com.github.only52607.luamirai.js.JsMiraiScriptBuilder")
     }
 
     private const val scriptConfigFile = "lua-mirai.json"

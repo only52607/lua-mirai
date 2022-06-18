@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation project(":lua-mirai-core")
     runtimeOnly project(":lua-mirai-adapter-luakt")
+    runtimeOnly project(":lua-mirai-adapter-rhinojs")
     implementation project(":lua-mirai-mcl-plugin")
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "net.mamoe:mirai-console:2.0.0"
