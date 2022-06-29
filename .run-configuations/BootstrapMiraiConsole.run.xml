@@ -1,15 +1,11 @@
 <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="BootstrapMiraiConsole" type="JetRunConfigurationType">
-        <module name="lua-mirai.lua-mirai-executable-mcl.test"/>
-        <option name="VM_PARAMETERS" value=""/>
-        <option name="PROGRAM_PARAMETERS" value=""/>
-        <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
-        <option name="ALTERNATIVE_JRE_PATH"/>
-        <option name="PASS_PARENT_ENVS" value="true"/>
         <option name="MAIN_CLASS_NAME" value="com.github.only52607.luamirai.console.MainKt"/>
-        <option name="WORKING_DIRECTORY" value="file://$ProjectFileDir$/lua-mirai-executable-mcl/mcl-data"/>
+        <module name="lua-mirai.lua-mirai-executable-mcl.test"/>
+        <shortenClasspath name="NONE"/>
+        <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/lua-mirai-executable-mcl/mcl-data"/>
         <method v="2">
-            <option name="Make" enabled="true"/>
+            <option name="MakeProject" enabled="true"/>
         </method>
     </configuration>
 </component>
