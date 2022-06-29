@@ -7,9 +7,6 @@ import com.github.only52607.luamirai.js.libs.ConsoleLib
 import com.github.only52607.luamirai.js.libs.MiraiLib
 import kotlinx.coroutines.*
 import org.mozilla.javascript.Context
-import org.mozilla.javascript.FunctionObject
-import org.mozilla.javascript.ImporterTopLevel
-import org.mozilla.javascript.Scriptable
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
@@ -17,7 +14,6 @@ import java.io.PrintStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.jvm.javaMethod
 
 /**
  * ClassName: JsMiraiScript
@@ -65,8 +61,6 @@ class JsMiraiScript(
 
     private lateinit var context: Context
 
-    private val moduleSearchPaths = listOf("?", "?.js")
-
     override suspend fun onStart() {
         prepareContext()
         execMainScript()
@@ -89,43 +83,17 @@ class JsMiraiScript(
 
     private fun execMainScript() {
         val mainScript = context.compileReader(InputStreamReader(source.mainInputStream), source.name, -1, null)
-        mainScript.exec(context, buildModuleScope())
-    }
-
-    private fun buildModuleScope() = ImporterTopLevel(context).apply {
-        put("require", this, FunctionObject("require", ::loadModule.javaMethod, this))
-        put("module", this, context.evaluateString(this, "{}", "module", -1, null))
-        context.loadLib(MiraiLib(), this)
-        context.loadLib(loggerLib, this)
-    }
-
-    private val moduleCache: ConcurrentHashMap<String, Scriptable> = ConcurrentHashMap()
-
-    private fun loadModule(name: String): Scriptable {
-        val resourceFinder = source.resourceFinder ?: throw Exception("ResourceFinder not found")
-        val searchedPaths = mutableListOf<String>()
-        for (searchPath in moduleSearchPaths) {
-            val actualPath = searchPath.replace("?", name)
-            moduleCache[actualPath]?.let {
-                return@loadModule it
-            }
-            resourceFinder.findResource(actualPath)?.let { resourceInputStream ->
-                val scope = buildModuleScope()
-                val script = context.compileReader(InputStreamReader(resourceInputStream), actualPath, -1, null)
-                script.exec(context, scope)
-                val exports = scope.get("exports", scope.get("module", scope) as Scriptable) as Scriptable
-                moduleCache[actualPath] = exports
-                return exports
-            }
-            searchedPaths.add(actualPath)
-        }
-        throw Exception(
-            "Module $name not found in the following path.\n${
-                searchedPaths.joinToString(
-                    separator = "\n",
-                    prefix = "\t"
-                )
-            }"
+        mainScript.exec(
+            context, JSMiraiModuleScope(
+                context = context,
+                resourceFinder = source.resourceFinder ?: throw Exception("ResourceFinder not found"),
+                moduleCache = ConcurrentHashMap(),
+                libs = listOf(
+                    MiraiLib(),
+                    loggerLib
+                ),
+                moduleSearchPaths = listOf("?", "?.js")
+            )
         )
     }
 }
