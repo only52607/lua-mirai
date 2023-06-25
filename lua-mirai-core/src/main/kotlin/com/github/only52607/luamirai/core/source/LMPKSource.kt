@@ -12,7 +12,7 @@ import java.util.zip.ZipFile
 
 class LMPKSource private constructor(
     val root: File,
-    override val config: ScriptConfiguration,
+    private val config: ScriptConfiguration,
     override val resourceFinder: ScriptResourceFinder,
 ) : ScriptSource {
 

@@ -12,7 +12,6 @@ class TextFileSource(
     val file: File,
     override val lang: String = file.name.getExtension(),
     override val name: String = "@${file.name}",
-    override val config: ScriptConfiguration? = null,
     override val charset: Charset = Charsets.UTF_8
 ) : ScriptSource {
     override val size: Long
