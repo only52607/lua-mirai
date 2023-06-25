@@ -1,7 +1,7 @@
-plugins {
-    id("me.him188.kotlin-jvm-blocking-bridge") version "2.1.0-162.1"
-    id("net.mamoe.mirai-console") version "2.8.0"
-}
+//plugins {
+//    id("me.him188.kotlin-jvm-blocking-bridge") version "2.1.0-162.1"
+//    id("net.mamoe.mirai-console") version "2.8.0"
+//}
 
 dependencies {
     implementation project(":lua-mirai-core")

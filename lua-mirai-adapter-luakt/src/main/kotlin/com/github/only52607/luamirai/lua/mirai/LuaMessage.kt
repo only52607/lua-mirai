@@ -1,4 +1,4 @@
-package com.github.only52607.luamirai.lua.mirai.message
+package com.github.only52607.luamirai.lua.mirai
 
 /**
  * ClassName: MessageWrapper

@@ -69,3 +69,11 @@ interface Script : Closeable, CoroutineScope {
         launch { stop() }
     }
 }
+
+open class ScriptException(message: String) : RuntimeException(message)
+
+class ScriptAlreadyStoppedException(message: String = "Script has already stopped") : ScriptException(message)
+
+class ScriptNotYetStartedException(message: String = "Script has not been started") : ScriptException(message)
+
+class ScriptAlreadyStartedException(message: String = "Script has already stopped") : ScriptException(message)

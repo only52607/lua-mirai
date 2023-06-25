@@ -26,7 +26,7 @@ class LuaScriptProvider: ScriptProvider {
         }
     }
 
-    override suspend fun fromSource(source: ScriptSource): Script {
+    override suspend fun load(source: ScriptSource): Script {
         return LuaMiraiScript(source, readConfiguration(source))
     }
 }

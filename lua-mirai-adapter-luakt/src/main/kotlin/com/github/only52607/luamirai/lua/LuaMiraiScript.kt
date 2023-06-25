@@ -7,7 +7,6 @@ import com.github.only52607.luamirai.core.ScriptConfiguration
 import com.github.only52607.luamirai.core.ScriptResourceFinder
 import com.github.only52607.luamirai.core.ScriptSource
 import com.github.only52607.luamirai.lua.lib.*
-import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
 import kotlinx.coroutines.*
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LoadState
