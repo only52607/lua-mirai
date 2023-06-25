@@ -2,12 +2,11 @@ package com.github.only52607.luamirai.lua
 
 import com.github.only52607.luakt.lib.KotlinCoroutineLib
 import com.github.only52607.luakt.lib.LuaKotlinLib
-import com.github.only52607.luamirai.core.script.AbstractBotScript
-import com.github.only52607.luamirai.core.script.BotScriptHeader
-import com.github.only52607.luamirai.core.script.BotScriptResourceFinder
-import com.github.only52607.luamirai.core.script.BotScriptSource
+import com.github.only52607.luamirai.core.AbstractScript
+import com.github.only52607.luamirai.core.ScriptConfiguration
+import com.github.only52607.luamirai.core.ScriptResourceFinder
+import com.github.only52607.luamirai.core.ScriptSource
 import com.github.only52607.luamirai.lua.lib.*
-import com.github.only52607.luamirai.lua.mapper.LuaMiraiLuaKotlinClassRegistry
 import com.github.only52607.luamirai.lua.mapper.LuaMiraiValueMapper
 import kotlinx.coroutines.*
 import org.luaj.vm2.Globals
@@ -23,24 +22,21 @@ import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 
 class LuaMiraiScript(
-    override val source: BotScriptSource,
-    override val header: BotScriptHeader,
-    mainInputStream: InputStream
-) : AbstractBotScript(), CoroutineScope {
+    override val source: ScriptSource,
+    override val configuration: ScriptConfiguration
+) : AbstractScript(), CoroutineScope {
 
     override fun toString(): String {
         return "LuaMiraiScript: $source"
     }
 
-
-
-    private var taskLib = TaskLib(LuaMiraiValueMapper)
+    private var taskLib = TaskLib()
 
     override val lang: String = "lua"
 
     private val globals: Globals = Globals()
 
-    private val mainFunc: LuaValue
+    private val lMain: LuaValue
 
     override var stdout: OutputStream? = System.out
         set(value) {
@@ -77,7 +73,7 @@ class LuaMiraiScript(
             STDERR = stderr?.let(::PrintStream)
             STDIN = stdin
         }
-        mainFunc = globals.load(mainInputStream, source.name, "bt", globals)
+        lMain = globals.load(source.main, source.name, "bt", globals)
     }
 
     override suspend fun onStart() {
@@ -85,8 +81,8 @@ class LuaMiraiScript(
             coroutineContext += taskLib.asCoroutineDispatcher()
         }
         try {
-            mainFunc.invoke()
-        } catch (e: Exception) {
+            lMain.invoke()
+        } catch (e: Throwable) {
             e.printStackTrace(PrintStream(stderr ?: System.err))
         }
     }
@@ -118,25 +114,25 @@ class LuaMiraiScript(
 
     private fun loadMiraiLibs() = globals.apply {
         load(StringExLib())
-        load(MiraiLib(this@LuaMiraiScript, LuaMiraiValueMapper))
-        load(LuaKotlinLib(this@LuaMiraiScript, LuaMiraiValueMapper, LuaMiraiLuaKotlinClassRegistry))
-        load(KotlinCoroutineLib(this@LuaMiraiScript, LuaMiraiValueMapper))
+        load(MiraiLib(this@LuaMiraiScript))
+        load(LuaKotlinLib())
+        load(KotlinCoroutineLib(this@LuaMiraiScript))
     }
 
     private fun loadExtendLibs() = globals.apply {
-        load(HttpLib(LuaMiraiValueMapper))
+        load(HttpLib())
         load(KtxJsonLib())
-        load(JDBCLib(LuaMiraiValueMapper))
-        load(JsoupLib(LuaMiraiValueMapper))
-        load(SocketLib(LuaMiraiValueMapper))
+        load(JDBCLib())
+        load(JsoupLib())
+        load(SocketLib())
     }
 
     class ResourceFinderAdapter(
         private val parentFinder: ResourceFinder,
-        private val botScriptResourceFinder: BotScriptResourceFinder?
+        private val scriptResourceFinder: ScriptResourceFinder?
     ) : ResourceFinder {
         override fun findResource(filename: String): InputStream? {
-            val resource = botScriptResourceFinder?.findResource(filename)
+            val resource = scriptResourceFinder?.findResource(filename)
             if (resource != null) return resource
             return parentFinder.findResource(filename)
         }

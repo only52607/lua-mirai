@@ -2,8 +2,7 @@ package com.github.only52607.luamirai.console
 
 import com.github.only52607.luamirai.configuration.ConfigurableScriptSource
 import com.github.only52607.luamirai.console.config.PluginConfig
-import com.github.only52607.luamirai.core.BotScriptBuilder
-import com.github.only52607.luamirai.core.script.*
+import com.github.only52607.luamirai.core.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -29,26 +28,26 @@ class LuaMiraiCommand(
     description = "lua mirai 插件相关指令"
 ) {
     data class RunningScript(
-        var instance: BotScript,
-        val builder: BotScriptBuilder
+        var instance: Script,
+        val builder: ScriptBuilder
     )
 
     private val runningScripts = mutableListOf<RunningScript>()
-    private val builders = mutableListOf<BotScriptBuilder>()
+    private val builders = mutableListOf<ScriptBuilder>()
 
-    private val BotScriptHeader.name: String?
+    private val ScriptConfiguration.name: String?
         get() = get("name")
 
-    private val BotScriptHeader.version: String?
+    private val ScriptConfiguration.version: String?
         get() = get("version")
 
-    private val BotScriptHeader.author: String?
+    private val ScriptConfiguration.author: String?
         get() = get("author")
 
-    private val BotScriptHeader.description: String?
+    private val ScriptConfiguration.description: String?
         get() = get("description")
 
-    private val BotScriptHeader.simpleInfo: String
+    private val ScriptConfiguration.simpleInfo: String
         get() = "名称：$name\n版本：$version\n作者：$author\n描述：$description"
 
     fun enable() {
@@ -75,7 +74,7 @@ class LuaMiraiCommand(
     @Description("列出所有脚本源")
     fun ConsoleCommandSender.list() {
         builders.forEachIndexed { index, builder ->
-            logger.info("[$index] ${builder.botScriptSource}")
+            logger.info("[$index] ${builder.scriptSource}")
         }
     }
 
@@ -101,11 +100,11 @@ class LuaMiraiCommand(
                 logger.error("文件${file.absolutePath}不存在")
                 return
             }
-            BotScriptSource.FileSource(file)
+            ScriptSource.FileSource(file)
         } else {
-            BotScriptSource.URLSource(URL(fileName))
+            ScriptSource.URLSource(URL(fileName))
         }
-        val builder = BotScriptBuilder.fromSource(ConfigurableScriptSource(source))
+        val builder = ScriptBuilder.fromSource(ConfigurableScriptSource(source))
         builders.add(builder)
         logger.info("添加脚本源[${builders.size - 1}] $fileName 成功")
         logger.info("脚本信息：\n" + builder.readHeader().simpleInfo)
@@ -122,14 +121,14 @@ class LuaMiraiCommand(
     @SubCommand("source autostart")
     @Description("设置脚本源自动启动")
     fun ConsoleCommandSender.autostart(@Name("索引") index: Int, @Name("是否开启") autostart: Boolean) {
-        (builders[index].botScriptSource as ConfigurableScriptSource).autoStart = autostart
+        (builders[index].scriptSource as ConfigurableScriptSource).autoStart = autostart
         updateConfig()
     }
 
     @SubCommand("source alias")
     @Description("设置脚本源别名")
     fun ConsoleCommandSender.alias(@Name("索引") index: Int, @Name("别名") alias: String) {
-        (builders[index].botScriptSource as ConfigurableScriptSource).alias = alias
+        (builders[index].scriptSource as ConfigurableScriptSource).alias = alias
         updateConfig()
     }
 
@@ -185,7 +184,7 @@ class LuaMiraiCommand(
     @SubCommand("script info")
     @Description("查看运行中的脚本信息")
     fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        val header = runningScripts[scriptId].instance.header ?: return
+        val header = runningScripts[scriptId].instance.configuration ?: return
         logger.info("\n" + header.simpleInfo)
     }
 
@@ -200,11 +199,11 @@ class LuaMiraiCommand(
         if (configFile == null || !configFile.exists()) return
         val pluginConfig = json.decodeFromStream(PluginConfig.serializer(), configFile.inputStream())
         builders.clear()
-        builders.addAll(pluginConfig.sources.map { BotScriptBuilder.fromSource(it) })
+        builders.addAll(pluginConfig.sources.map { ScriptBuilder.fromSource(it) })
         for (source in pluginConfig.sources) {
             if (!source.autoStart) continue
             try {
-                val builder = BotScriptBuilder.fromSource(source)
+                val builder = ScriptBuilder.fromSource(source)
                 val runningScript = RunningScript(builder.buildInstance(), builder)
                 runningScripts.add(runningScript)
                 runningScript.instance.start()
@@ -221,7 +220,7 @@ class LuaMiraiCommand(
     private fun updateConfig() {
         configFile ?: return
         val pluginConfig = PluginConfig(
-            sources = builders.map { it.botScriptSource as ConfigurableScriptSource }
+            sources = builders.map { it.scriptSource as ConfigurableScriptSource }
         )
         json.encodeToStream(pluginConfig, configFile.outputStream())
     }

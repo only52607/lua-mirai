@@ -7,7 +7,7 @@ import com.github.only52607.luakt.mappers.AbstractKValueMapper
 import com.github.only52607.luakt.mappers.AbstractLuaValueMapper
 import com.github.only52607.luakt.userdata.classes.LuaKotlinClass
 import com.github.only52607.luakt.userdata.classes.registry.LuaKotlinClassRegistry
-import com.github.only52607.luamirai.lua.mirai.message.LuaKotlinMessage
+import com.github.only52607.luamirai.lua.mirai.message.LuaMessage
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.PlainText
@@ -31,7 +31,7 @@ class LuaMiraiMessageMapper(
 ) : AbstractKValueMapper() {
     override fun mapToLuaValue(obj: Any?): LuaValue {
         if (obj is Message) {
-            return LuaKotlinMessage(obj, registry.obtainLuaKotlinClass(obj::class) as LuaKotlinClass, valueMapper)
+            return LuaMessage(obj, registry.obtainLuaKotlinClass(obj::class) as LuaKotlinClass, valueMapper)
         }
         return nextMapToLuaValue(obj)
     }

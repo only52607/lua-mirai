@@ -1,4 +1,4 @@
-package com.github.only52607.luamirai.core.script
+package com.github.only52607.luamirai.core
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
  * @author ooooonly
  * @version
  */
-abstract class AbstractBotScript : BotScript {
+abstract class AbstractScript : Script {
 
     private var _active = false
 
@@ -49,11 +49,3 @@ abstract class AbstractBotScript : BotScript {
 
     abstract suspend fun onStop()
 }
-
-open class BotScriptException(message: String) : RuntimeException(message)
-
-class ScriptAlreadyStoppedException(message: String = "Script has already stopped") : BotScriptException(message)
-
-class ScriptNotYetStartedException(message: String = "Script has not been started") : BotScriptException(message)
-
-class ScriptAlreadyStartedException(message: String = "Script has already stopped") : BotScriptException(message)

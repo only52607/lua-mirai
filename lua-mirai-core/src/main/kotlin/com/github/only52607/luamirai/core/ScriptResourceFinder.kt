@@ -1,4 +1,4 @@
-package com.github.only52607.luamirai.core.script
+package com.github.only52607.luamirai.core
 
 import java.io.InputStream
 
@@ -9,6 +9,6 @@ import java.io.InputStream
  * @author ooooonly
  * @version
  */
-interface BotScriptResourceFinder {
+interface ScriptResourceFinder {
     fun findResource(filename: String): InputStream?
 }

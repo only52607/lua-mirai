@@ -1,8 +1,5 @@
 package com.github.only52607.luamirai.js
 
-import com.github.only52607.luamirai.core.script.AbstractBotScript
-import com.github.only52607.luamirai.core.script.BotScriptHeader
-import com.github.only52607.luamirai.core.script.BotScriptSource
 import com.github.only52607.luamirai.js.libs.ConsoleLib
 import com.github.only52607.luamirai.js.libs.MiraiLib
 import kotlinx.coroutines.*
@@ -23,7 +20,7 @@ import kotlin.coroutines.CoroutineContext
  * @version
  */
 class JsMiraiScript(
-    override val source: BotScriptSource,
+    override val source: ScriptSource,
     override val header: BotScriptHeader
 ) : AbstractBotScript(), CoroutineScope {
     override val lang: String

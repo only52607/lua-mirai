@@ -1,13 +1,11 @@
 package com.github.only52607.luamirai.configuration
 
-import com.github.only52607.luamirai.core.script.BotScriptSource
+import com.github.only52607.luamirai.core.ScriptSource
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 import java.net.URL
 
@@ -52,9 +50,9 @@ object ConfigurableScriptSourceSerializer : KSerializer<ConfigurableScriptSource
                 }
             }
             val source = when (type) {
-                TYPE_FILE -> BotScriptSource.FileSource(File(value), lang)
-                TYPE_CONTENT -> BotScriptSource.StringSource(value, lang)
-                TYPE_URL -> BotScriptSource.URLSource(URL(value), lang)
+                TYPE_FILE -> ScriptSource.FileSource(File(value), lang)
+                TYPE_CONTENT -> ScriptSource.StringSource(value, lang)
+                TYPE_URL -> ScriptSource.URLSource(URL(value), lang)
                 else -> throw IllegalArgumentException("Unsupported script type $type")
             }
             return ConfigurableScriptSource(source, alias, autoStart)
@@ -64,15 +62,15 @@ object ConfigurableScriptSourceSerializer : KSerializer<ConfigurableScriptSource
     override fun serialize(encoder: Encoder, value: ConfigurableScriptSource) {
         return encoder.encodeStructure(descriptor) {
             when (value.source) {
-                is BotScriptSource.FileSource -> {
+                is ScriptSource.FileSource -> {
                     encodeStringElement(descriptor, 0, TYPE_FILE)
                     encodeStringElement(descriptor, 1, value.source.file.path)
                 }
-                is BotScriptSource.StringSource -> {
+                is ScriptSource.StringSource -> {
                     encodeStringElement(descriptor, 0, TYPE_CONTENT)
                     encodeStringElement(descriptor, 1, value.source.content)
                 }
-                is BotScriptSource.URLSource -> {
+                is ScriptSource.URLSource -> {
                     encodeStringElement(descriptor, 0, TYPE_URL)
                     encodeStringElement(descriptor, 1, value.source.url.toString())
                 }

@@ -1,4 +1,4 @@
-package com.github.only52607.luamirai.core.script
+package com.github.only52607.luamirai.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -11,7 +11,7 @@ import java.io.OutputStream
  * Bot脚本接口，代表一个可以执行的脚本
  */
 @Suppress("unused")
-interface BotScript : Closeable, CoroutineScope {
+interface Script : Closeable, CoroutineScope {
     /**
      * 运行此脚本，进行注册各类监听器，启动线程等任务
      */
@@ -38,14 +38,14 @@ interface BotScript : Closeable, CoroutineScope {
     val lang: String
 
     /**
-     * 脚本头部的附带信息
+     * 脚本配置信息
      */
-    val header: BotScriptHeader?
+    val configuration: ScriptConfiguration?
 
     /**
      * 脚本源
      */
-    val source: BotScriptSource
+    val source: ScriptSource
 
     /**
      * 脚本标准输出流

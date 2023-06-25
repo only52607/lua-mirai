@@ -3,8 +3,8 @@ package com.github.only52607.luamirai.commander
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
-import com.github.only52607.luamirai.core.BotScriptBuilder
-import com.github.only52607.luamirai.core.script.BotScriptSource
+import com.github.only52607.luamirai.core.ScriptBuilder
+import com.github.only52607.luamirai.core.ScriptSource
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -20,7 +20,7 @@ class Executor : CliktCommand(help = "运行脚本", name = "exec") {
     override fun run() {
         println("----------Start running script----------")
         runBlocking {
-            val script = BotScriptBuilder.fromSource(BotScriptSource.FileSource(file, "lua")).buildInstance()
+            val script = ScriptBuilder.fromSource(ScriptSource.FileSource(file, "lua")).buildInstance()
             println(script)
             script.start().join()
         }

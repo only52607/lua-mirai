@@ -8,7 +8,7 @@ package com.github.only52607.luamirai.core.util
  * @version
  */
 
-class CommonPath(
+internal class CommonPath(
     private val pathString: String
 ) {
     companion object {

@@ -7,7 +7,7 @@ package com.github.only52607.luamirai.core.util
  * @author ooooonly
  * @version
  */
-fun String.getExtension(): String {
+internal fun String.getExtension(): String {
     val i = lastIndexOf('.')
     if (i < 0) throw Exception("Could not parse extension for $this")
     return substring(i + 1)

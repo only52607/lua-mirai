@@ -1,7 +1,7 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.github.only52607.luakt.ValueMapper
-import com.github.only52607.luakt.dsl.*
+import com.github.only52607.luakt.CoerceKotlinToLua
+import com.github.only52607.luakt.extension.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -12,9 +12,7 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-open class HttpLib(
-    private val valueMapper: ValueMapper
-) : TwoArgFunction(), ValueMapper by valueMapper {
+open class HttpLib : TwoArgFunction() {
     companion object {
         fun getRedirectUrl(path: String, referer: String?): String {
             val url = URL(path)
@@ -36,23 +34,23 @@ open class HttpLib(
 
     override fun call(modname: LuaValue?, env: LuaValue): LuaValue {
         env.checkglobals().set("Http", luaTableOfStringKeys(
-            "get" to varArgFunctionOf { args: Varargs ->
+            "get" to VarArgFunction { args: Varargs ->
                 defaultClient.newCall(args.toRequest("GET")).execute().toVarargs()
             },
-            "post" to varArgFunctionOf { args: Varargs ->
+            "post" to VarArgFunction { args: Varargs ->
                 defaultClient.newCall(args.toRequest("POST")).execute().toVarargs()
             },
-            "delete" to varArgFunctionOf { args: Varargs ->
+            "delete" to VarArgFunction { args: Varargs ->
                 defaultClient.newCall(args.toRequest("DELETE")).execute().toVarargs()
             },
-            "put" to varArgFunctionOf { args: Varargs ->
+            "put" to VarArgFunction { args: Varargs ->
                 defaultClient.newCall(args.toRequest("PUT")).execute().toVarargs()
             },
-            "patch" to varArgFunctionOf { args: Varargs ->
+            "patch" to VarArgFunction { args: Varargs ->
                 defaultClient.newCall(args.toRequest("PATCH")).execute().toVarargs()
             },
-            "getRedirectUrl" to varArgFunctionOf { args: Varargs ->
-                mapToLuaValue(getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")))
+            "getRedirectUrl" to VarArgFunction { args: Varargs ->
+                CoerceKotlinToLua.coerce(getRedirectUrl(args.arg1().optjstring(""), args.arg(2).optjstring("")))
             }
         ))
         return LuaValue.NIL

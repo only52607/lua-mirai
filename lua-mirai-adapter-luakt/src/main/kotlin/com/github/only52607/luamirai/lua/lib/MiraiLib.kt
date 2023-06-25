@@ -12,8 +12,7 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
 
 open class MiraiLib(
-    private val coroutineScope: CoroutineScope,
-    private val valueMapper: ValueMapper
+    private val coroutineScope: CoroutineScope
 ) : TwoArgFunction() {
     override fun call(modName: LuaValue?, env: LuaValue): LuaValue? {
         val globals = env.checkglobals()

@@ -1,7 +1,13 @@
 package com.github.only52607.luamirai.lua.lib
 
-import com.github.only52607.luakt.dsl.*
-import org.luaj.vm2.*
+import com.github.only52607.luakt.CoerceKotlinToLua
+import com.github.only52607.luakt.extension.OneArgFunction
+import com.github.only52607.luakt.extension.luaTableOfStringKeys
+import com.github.only52607.luakt.extension.stringValue
+import com.github.only52607.luakt.extension.tableValue
+import org.luaj.vm2.LuaString
+import org.luaj.vm2.LuaTable
+import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.TwoArgFunction
 
 abstract class JsonLib : TwoArgFunction() {
@@ -9,11 +15,11 @@ abstract class JsonLib : TwoArgFunction() {
         val globals = env?.checkglobals()?: return NIL
         globals.apply {
             this["Json"] = luaTableOfStringKeys(
-                "parseJson" to oneArgLuaFunctionOf {
+                "parseJson" to OneArgFunction {
                     it.stringValue.asJsonLuaValue()
                 },
-                "toJson" to oneArgLuaFunctionOf {
-                    it.tableValue.asJsonString().luaValue
+                "toJson" to OneArgFunction {
+                    CoerceKotlinToLua.coerce(it.tableValue.asJsonString())
                 }
             )
         }

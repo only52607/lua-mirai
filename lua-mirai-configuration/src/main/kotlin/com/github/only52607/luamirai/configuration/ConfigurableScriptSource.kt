@@ -1,6 +1,6 @@
 package com.github.only52607.luamirai.configuration
 
-import com.github.only52607.luamirai.core.script.BotScriptSource
+import com.github.only52607.luamirai.core.ScriptSource
 import kotlinx.serialization.Serializable
 
 /**
@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable(ConfigurableScriptSourceSerializer::class)
 class ConfigurableScriptSource(
-    source: BotScriptSource,
+    source: ScriptSource,
     var alias: String? = null,
     var autoStart: Boolean = false
-) : BotScriptSource.Wrapper(source)
+) : ScriptSource.Wrapper(source)
