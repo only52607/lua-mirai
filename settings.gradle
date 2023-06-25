@@ -5,7 +5,6 @@ include ':lua-mirai-adapter-rhinojs'
 include ':lua-mirai-mcl-plugin'
 include ':lua-mirai-executable'
 include ':lua-mirai-executable-mcl'
-include 'lua-mirai-configuration'
 
 if (file("local.settings.gradle").exists()) {
     apply from: 'local.settings.gradle'

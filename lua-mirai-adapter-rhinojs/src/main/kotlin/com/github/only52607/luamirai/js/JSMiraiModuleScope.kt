@@ -1,6 +1,6 @@
 package com.github.only52607.luamirai.js
 
-import com.github.only52607.luamirai.core.script.BotScriptResourceFinder
+import com.github.only52607.luamirai.core.ScriptResourceFinder
 import com.github.only52607.luamirai.core.util.CommonPath
 import org.mozilla.javascript.*
 import java.io.InputStreamReader
@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.javaMethod
 class JSMiraiModuleScope(
     private val context: Context,
     private val moduleCache: ConcurrentHashMap<String, Scriptable>,
-    private val resourceFinder: BotScriptResourceFinder,
+    private val resourceFinder: ScriptResourceFinder,
     private val moduleSearchPaths: List<String>,
     private val libs: List<JSLib>
 ) : ImporterTopLevel(context) {

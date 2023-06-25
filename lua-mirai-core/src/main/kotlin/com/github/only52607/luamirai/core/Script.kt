@@ -40,7 +40,8 @@ interface Script : Closeable, CoroutineScope {
     /**
      * 脚本配置信息
      */
-    val configuration: ScriptConfiguration?
+    val config: ScriptConfiguration?
+        get() = null
 
     /**
      * 脚本源

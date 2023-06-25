@@ -41,4 +41,5 @@ interface ScriptSource {
      * 脚本资源搜索器
      */
     val resourceFinder: ScriptResourceFinder?
+        get() = null
 }

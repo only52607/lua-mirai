@@ -1,5 +1,8 @@
 package com.github.only52607.luamirai.js
 
+import com.github.only52607.luamirai.core.AbstractScript
+import com.github.only52607.luamirai.core.ScriptConfiguration
+import com.github.only52607.luamirai.core.ScriptSource
 import com.github.only52607.luamirai.js.libs.ConsoleLib
 import com.github.only52607.luamirai.js.libs.MiraiLib
 import kotlinx.coroutines.*
@@ -21,8 +24,8 @@ import kotlin.coroutines.CoroutineContext
  */
 class JsMiraiScript(
     override val source: ScriptSource,
-    override val header: BotScriptHeader
-) : AbstractBotScript(), CoroutineScope {
+    override val config: ScriptConfiguration
+) : AbstractScript(), CoroutineScope {
     override val lang: String
         get() = source.lang
 
@@ -79,7 +82,7 @@ class JsMiraiScript(
     }
 
     private fun execMainScript() {
-        val mainScript = context.compileReader(InputStreamReader(source.mainInputStream), source.name, -1, null)
+        val mainScript = context.compileReader(InputStreamReader(source.main), source.name, -1, null)
         mainScript.exec(
             context, JSMiraiModuleScope(
                 context = context,

@@ -1,5 +1,6 @@
 package com.github.only52607.luamirai.core.source
 
+import com.github.only52607.luamirai.core.ScriptConfiguration
 import com.github.only52607.luamirai.core.ScriptResourceFinder
 import com.github.only52607.luamirai.core.ScriptSource
 import java.io.ByteArrayInputStream
@@ -11,8 +12,10 @@ class StringSource(
     override val lang: String,
     override val name: String = content,
     override val charset: Charset = Charsets.UTF_8,
+    override val config: ScriptConfiguration? = null,
     override val resourceFinder: ScriptResourceFinder? = null
 ) : ScriptSource {
+
     override val size: Long = content.length.toLong()
     override val main: InputStream
         get() = ByteArrayInputStream(content.toByteArray(charset = charset))

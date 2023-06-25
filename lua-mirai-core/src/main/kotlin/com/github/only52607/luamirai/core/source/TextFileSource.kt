@@ -1,5 +1,6 @@
 package com.github.only52607.luamirai.core.source
 
+import com.github.only52607.luamirai.core.ScriptConfiguration
 import com.github.only52607.luamirai.core.ScriptResourceFinder
 import com.github.only52607.luamirai.core.ScriptSource
 import com.github.only52607.luamirai.core.util.getExtension
@@ -11,6 +12,7 @@ class TextFileSource(
     val file: File,
     override val lang: String = file.name.getExtension(),
     override val name: String = "@${file.name}",
+    override val config: ScriptConfiguration? = null,
     override val charset: Charset = Charsets.UTF_8
 ) : ScriptSource {
     override val size: Long

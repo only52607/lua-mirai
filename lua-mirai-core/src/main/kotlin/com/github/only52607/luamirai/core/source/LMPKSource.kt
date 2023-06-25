@@ -12,7 +12,7 @@ import java.util.zip.ZipFile
 
 class LMPKSource private constructor(
     val root: File,
-    private val config: ScriptConfiguration,
+    override val config: ScriptConfiguration,
     override val resourceFinder: ScriptResourceFinder,
 ) : ScriptSource {
 
@@ -35,7 +35,7 @@ class LMPKSource private constructor(
         }
     }
 
-    class ZipResourceFinder(private val file: File) : ScriptResourceFinder {
+    class ZipResourceFinder(file: File) : ScriptResourceFinder {
         private val zipFile = ZipFile(file)
         override fun findResource(filename: String): InputStream? {
             val zipEntryName = filename.replace("\\", "/")

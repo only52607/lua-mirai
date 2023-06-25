@@ -1,8 +1,7 @@
 package com.github.only52607.luamirai.console
 
-import com.github.only52607.luamirai.configuration.ConfigurableScriptSource
-import com.github.only52607.luamirai.console.config.PluginConfig
 import com.github.only52607.luamirai.core.*
+import com.github.only52607.luamirai.core.source.LMPKSource
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -12,50 +11,49 @@ import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
-import java.net.URL
+import java.util.UUID
 
 @OptIn(
     ConsoleExperimentalApi::class,
     kotlinx.serialization.ExperimentalSerializationApi::class
 )
-@Suppress("UNUSED")
+@Suppress("UNUSED", "UnusedReceiverParameter")
 class LuaMiraiCommand(
     private val logger: MiraiLogger,
-    private val configFile: File?
+    private val configFile: File
 ) : CompositeCommand(
     owner = LuaMiraiPlugin,
     primaryName = "lua",
     description = "lua mirai 插件相关指令"
 ) {
-    data class RunningScript(
-        var instance: Script,
-        val builder: ScriptBuilder
-    )
+    private val json = Json { prettyPrint = true }
+    private val scripts = mutableMapOf<String, Script>()
+    private val sourceConfigs = mutableMapOf<Script, PluginConfig.ScriptSource>()
+    lateinit var pluginConfig: PluginConfig
+    private fun Script.tryStop() {
+        try { 
+            stop()
+        } catch (_: ScriptAlreadyStoppedException) {
+        } catch (_: ScriptNotYetStartedException) {
+        }
+    }
+    
+    private val Script.statusText
+        get() = when {
+            isActive -> "已启用"
+            isStopped -> "已停用"
+            else -> "未启用"
+        }
 
-    private val runningScripts = mutableListOf<RunningScript>()
-    private val builders = mutableListOf<ScriptBuilder>()
-
-    private val ScriptConfiguration.name: String?
-        get() = get("name")
-
-    private val ScriptConfiguration.version: String?
-        get() = get("version")
-
-    private val ScriptConfiguration.author: String?
-        get() = get("author")
-
-    private val ScriptConfiguration.description: String?
-        get() = get("description")
-
-    private val ScriptConfiguration.simpleInfo: String
-        get() = "名称：$name\n版本：$version\n作者：$author\n描述：$description"
-
-    fun enable() {
-        runBlocking { initConfig() }
+    private fun checkScript(key: String): Script {
+        return scripts[key] ?: throw IllegalArgumentException("脚本 $key 不存在")
     }
 
-    fun disable() {
-        runningScripts.forEach { if (it.instance.isActive) it.instance.stop() }
+    private fun PluginConfig.ScriptSource.toScriptSource(): ScriptSource {
+        return when(type) {
+            "file" -> LMPKSource.fromZipFile(File(value))
+            else -> throw Exception("Unknown source type $type")
+        }
     }
 
     @SubCommand("doc")
@@ -68,160 +66,88 @@ class LuaMiraiCommand(
         logger.info(website)
     }
 
-    // Source Commands
-
-    @SubCommand("source list")
-    @Description("列出所有脚本源")
+    @SubCommand("list")
+    @Description("列出所有脚本")
     fun ConsoleCommandSender.list() {
-        builders.forEachIndexed { index, builder ->
-            logger.info("[$index] ${builder.scriptSource}")
+        scripts.forEach { (key, script) ->
+            logger.info("[$key] ${script.config?.getStringOrNull("name") ?: "未知脚本"} (${script.statusText})")
         }
     }
 
-    @SubCommand("source info")
-    @Description("查看脚本源信息")
-    suspend fun ConsoleCommandSender.sourceInfo(@Name("脚本源编号") sourceId: Int) {
-        val header = builders[sourceId].readHeader()
-        logger.info("\n" + header.simpleInfo)
-    }
-
-    @SubCommand("source update")
-    @Description("更新脚本源")
-    fun ConsoleCommandSender.updateSource(@Name("脚本源编号") sourceId: Int) {
-
-    }
-
-    @SubCommand("source add")
-    @Description("新增脚本源")
-    suspend fun ConsoleCommandSender.add(@Name("文件名或URL") fileName: String) {
-        val source = if (!fileName.contains("://")) {
-            val file = File(fileName)
-            if (!file.exists()) {
-                logger.error("文件${file.absolutePath}不存在")
-                return
-            }
-            ScriptSource.FileSource(file)
-        } else {
-            ScriptSource.URLSource(URL(fileName))
-        }
-        val builder = ScriptBuilder.fromSource(ConfigurableScriptSource(source))
-        builders.add(builder)
-        logger.info("添加脚本源[${builders.size - 1}] $fileName 成功")
-        logger.info("脚本信息：\n" + builder.readHeader().simpleInfo)
-        updateConfig()
-    }
-
-    @SubCommand("source remove")
-    @Description("删除指定位置上的脚本源")
-    fun ConsoleCommandSender.remove(@Name("索引") index: Int) {
-        builders.removeAt(index)
-        updateConfig()
-    }
-
-    @SubCommand("source autostart")
-    @Description("设置脚本源自动启动")
-    fun ConsoleCommandSender.autostart(@Name("索引") index: Int, @Name("是否开启") autostart: Boolean) {
-        (builders[index].scriptSource as ConfigurableScriptSource).autoStart = autostart
-        updateConfig()
-    }
-
-    @SubCommand("source alias")
-    @Description("设置脚本源别名")
-    fun ConsoleCommandSender.alias(@Name("索引") index: Int, @Name("别名") alias: String) {
-        (builders[index].scriptSource as ConfigurableScriptSource).alias = alias
-        updateConfig()
-    }
-
-    // Script Commands
-
-    @SubCommand("script list")
-    @Description("列出运行中的脚本")
-    fun ConsoleCommandSender.listScript() {
-        runningScripts.forEachIndexed { index, runningScript ->
-            logger.info("[$index] ${runningScript.instance}")
-        }
-    }
-
-    @SubCommand("script stop")
-    @Description("停用一个运行中的脚本（该操作会停止脚本以及脚本内注册的所有事件监听器）")
-    fun ConsoleCommandSender.stop(@Name("脚本编号") scriptId: Int) {
-        try {
-            runningScripts[scriptId].instance.stop()
-        } catch (_: ScriptAlreadyStoppedException) {
-            logger.error("脚本[${runningScripts[scriptId]}]已经停用，请勿重复操作")
-            return
-        } catch (_: ScriptNotYetStartedException) {
-            logger.error("脚本[${runningScripts[scriptId]}]没有被启动，无需停止")
-            return
-        }
-        logger.info("停用脚本[${runningScripts[scriptId]}]成功")
-        runningScripts.removeAt(scriptId)
-    }
-
-    @SubCommand("script start", "source start")
-    @Description("使用脚本源启动一个新脚本")
-    suspend fun ConsoleCommandSender.start(@Name("脚本源编号") sourceId: Int) {
-        val script = builders[sourceId].buildInstance()
-        runningScripts.add(
-            RunningScript(script, builders[sourceId])
+    @SubCommand("info")
+    @Description("显示脚本详细信息")
+    fun ConsoleCommandSender.info(@Name("脚本编号") key: String) {
+        val script = checkScript(key)
+        val name = script.config?.getStringOrNull("name") ?: ""
+        val version = script.config?.getStringOrNull("version") ?: ""
+        val author = script.config?.getStringOrNull("author") ?: ""
+        val description = script.config?.getStringOrNull("description") ?: ""
+        logger.info(
+            "状态：${script.statusText}\n名称：$name\n版本：$version\n作者：$author\n描述：$description"
         )
-        script.start()
+    }
+    
+    @SubCommand("stop")
+    @Description("停止脚本")
+    fun ConsoleCommandSender.stop(@Name("脚本编号") key: String) {
+        checkScript(key).tryStop()
     }
 
-    @SubCommand("script restart")
-    @Description("重新读入脚本源以启动脚本")
-    suspend fun ConsoleCommandSender.restart(@Name("脚本编号") scriptId: Int) {
-        val runningScript = runningScripts[scriptId]
-        try {
-            runningScript.instance.stop()
-        } catch (_: ScriptAlreadyStoppedException) {
-        } catch (_: ScriptNotYetStartedException) {
+    @SubCommand("remove")
+    @Description("移除脚本")
+    fun ConsoleCommandSender.remove(@Name("脚本编号") key: String) {
+        checkScript(key).tryStop()
+        scripts.remove(key)
+    }
+
+    @SubCommand("start")
+    @Description("启动脚本")
+    fun ConsoleCommandSender.start(@Name("脚本编号") key: String) {
+        checkScript(key).start()
+    }
+
+    @SubCommand("update")
+    @Description("更新脚本，如果脚本正在运行将会重启脚本")
+    suspend fun ConsoleCommandSender.update(@Name("脚本编号") key: String) {
+        val script = checkScript(key)
+        val sourceConfig = sourceConfigs[script]!!
+        val running = script.isActive
+        script.tryStop()
+        val newScript = sourceConfig.toScriptSource().load()
+        scripts.remove(key)
+        sourceConfigs.remove(script)
+        scripts[key] = newScript
+        sourceConfigs[newScript] = sourceConfig
+        if (running) {
+            newScript.start()
         }
-        runningScript.instance = runningScript.builder.buildInstance()
-        runningScript.instance.start()
     }
 
-    @SubCommand("script info")
-    @Description("查看运行中的脚本信息")
-    fun ConsoleCommandSender.info(@Name("脚本编号") scriptId: Int) {
-        val header = runningScripts[scriptId].instance.configuration ?: return
-        logger.info("\n" + header.simpleInfo)
-    }
-
-    private val json by lazy {
-        Json { prettyPrint = true }
-    }
-
-    /**
-     * 从配置文件读取已加载脚本信息
-     */
-    private suspend fun initConfig() {
-        if (configFile == null || !configFile.exists()) return
-        val pluginConfig = json.decodeFromStream(PluginConfig.serializer(), configFile.inputStream())
-        builders.clear()
-        builders.addAll(pluginConfig.sources.map { ScriptBuilder.fromSource(it) })
-        for (source in pluginConfig.sources) {
-            if (!source.autoStart) continue
-            try {
-                val builder = ScriptBuilder.fromSource(source)
-                val runningScript = RunningScript(builder.buildInstance(), builder)
-                runningScripts.add(runningScript)
-                runningScript.instance.start()
-                logger.info("$source 自动启动成功")
-            } catch (e: Exception) {
-                logger.error("$source 自动启动失败", e)
+    private suspend fun loadScripts() {
+        if (!configFile.exists()) return
+        pluginConfig = json.decodeFromStream(PluginConfig.serializer(), configFile.inputStream())
+        pluginConfig.sources.forEach { c ->
+            val script = c.toScriptSource().load()
+            val id = UUID.randomUUID().toString()
+            scripts[id] = script
+            sourceConfigs[script] = c
+            if (c.autoStart) {
+                script.start()
             }
         }
     }
 
-    /**
-     * 写出脚本信息到配置文件
-     */
     private fun updateConfig() {
-        configFile ?: return
-        val pluginConfig = PluginConfig(
-            sources = builders.map { it.scriptSource as ConfigurableScriptSource }
-        )
         json.encodeToStream(pluginConfig, configFile.outputStream())
+    }
+
+    fun enable() {
+        runBlocking {
+            loadScripts()
+        }
+    }
+
+    fun disable() {
+        scripts.values.forEach { if (it.isActive) it.stop() }
     }
 }

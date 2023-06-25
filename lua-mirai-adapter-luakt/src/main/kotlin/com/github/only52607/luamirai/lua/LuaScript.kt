@@ -20,9 +20,9 @@ import java.io.PrintStream
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 
-class LuaMiraiScript(
+class LuaScript(
     override val source: ScriptSource,
-    override val configuration: ScriptConfiguration
+    override val config: ScriptConfiguration
 ) : AbstractScript(), CoroutineScope {
 
     override fun toString(): String {
@@ -113,9 +113,9 @@ class LuaMiraiScript(
 
     private fun loadMiraiLibs() = globals.apply {
         load(StringExLib())
-        load(MiraiLib(this@LuaMiraiScript))
+        load(MiraiLib(this@LuaScript))
         load(LuaKotlinLib())
-        load(KotlinCoroutineLib(this@LuaMiraiScript))
+        load(KotlinCoroutineLib(this@LuaScript))
     }
 
     private fun loadExtendLibs() = globals.apply {

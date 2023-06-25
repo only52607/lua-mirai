@@ -5,7 +5,6 @@ package com.github.only52607.luamirai.js.libs
 import com.github.only52607.luamirai.js.utils.KtLambdaInterfaceBridge
 import kotlinx.coroutines.*
 import me.him188.kotlin.jvm.blocking.bridge.JvmBlockingBridge
-import net.mamoe.mirai.console.util.cast
 import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.event.*
 import net.mamoe.mirai.event.events.*
@@ -14,8 +13,19 @@ import com.github.only52607.luamirai.js.JSLib
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
 import org.mozilla.javascript.ScriptableObject
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+
+@OptIn(ExperimentalContracts::class)
+@JvmSynthetic
+inline fun <reified T : Any> Any?.cast(): T {
+    contract {
+        returns() implies (this@cast is T)
+    }
+    return this as T
+}
 
 class MiraiLib : JSLib() {
     @JvmSynthetic

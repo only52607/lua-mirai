@@ -13,6 +13,10 @@ buildscript {
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id 'maven-publish'
+    id 'me.him188.kotlin-jvm-blocking-bridge' version '2.1.0-162.1' apply(false)
+    id 'net.mamoe.mirai-console' version '2.8.0' apply(false)
+    id 'com.github.johnrengelman.shadow' version '5.2.0' apply(false)
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10' apply(false)
 }
 
 allprojects {
@@ -23,7 +27,6 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
     repositories {
-        mavenLocal()
         maven { url 'https://jitpack.io' }
         mavenCentral()
     }
