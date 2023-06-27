@@ -1,8 +1,14 @@
+plugins {
+    id "org.jetbrains.kotlin.kapt"
+}
+
 dependencies {
     implementation project(":lua-mirai-core")
     implementation "com.squareup.okhttp3:okhttp:4.7.2"
-//    implementation 'org.xerial:sqlite-jdbc:3.25.274'
+    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
     implementation "com.github.only52607.luakt:luakt:2.5.7"
+    implementation 'com.google.auto.service:auto-service:1.1.1'
+    kapt 'com.google.auto.service:auto-service:1.1.1'
 }

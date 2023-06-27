@@ -29,6 +29,7 @@ classes {
 }
 
 shadowJar {
+    mergeServiceFiles()
     dependencies {
         exclude(dependency('net.mamoe:mirai-.*'))
     }

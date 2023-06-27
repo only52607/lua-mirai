@@ -9,6 +9,7 @@ dependencies {
 }
 
 shadowJar {
+    mergeServiceFiles()
     manifest {
         attributes(
                 'Main-Class': 'com.github.only52607.luamirai.MainKt'

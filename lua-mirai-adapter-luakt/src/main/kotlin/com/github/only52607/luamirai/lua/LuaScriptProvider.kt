@@ -5,9 +5,11 @@ import com.github.only52607.luamirai.core.ScriptConfiguration
 import com.github.only52607.luamirai.core.ScriptProvider
 import com.github.only52607.luamirai.core.ScriptSource
 import com.github.only52607.luamirai.core.configuation.JsonScriptConfiguration
+import com.google.auto.service.AutoService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@AutoService(ScriptProvider::class)
 class LuaScriptProvider: ScriptProvider {
     override fun supportSource(source: ScriptSource): Boolean {
         return source.lang.lowercase() == "lua"

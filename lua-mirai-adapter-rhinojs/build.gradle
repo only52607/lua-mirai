@@ -1,6 +1,7 @@
 plugins {
     id('org.jetbrains.kotlin.jvm')
     id("me.him188.kotlin-jvm-blocking-bridge")
+    id "org.jetbrains.kotlin.kapt"
 }
 
 dependencies {
@@ -10,5 +11,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'com.google.auto.service:auto-service:1.1.1'
+    kapt 'com.google.auto.service:auto-service:1.1.1'
 }
 

@@ -7,7 +7,6 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 
 @MiraiExperimentalApi
 fun main(args: Array<String>) {
-    Class.forName("com.github.only52607.luamirai.lua.LuaMiraiScriptBuilder")
     val executor = Executor()
     Commander().subcommands(executor).main(args)
 }
