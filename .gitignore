@@ -7,3 +7,4 @@ hs_err_*
 replay_*
 mcl-data
 local-script
+/cache
